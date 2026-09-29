@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <style>
 :root{
   --paper:#F3F5F4; --card:#FFFFFF; --ink:#13202A; --muted:#5D6D74; --line:#DCE2E0;
@@ -117,7 +117,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .tile i{font-style:normal;font-family:var(--font);font-weight:500;font-size:calc(var(--t)*.16);color:var(--muted);position:absolute;bottom:calc(var(--t)*.08);white-space:nowrap}
 .nopass{font-size:calc(var(--u)*3);font-weight:600}
 .qr{margin:0;background:#fff;color:#111;border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.6);display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*1)}
-.qr-code img,.qr-code canvas{display:block;width:calc(var(--u)*21)!important;height:calc(var(--u)*21)!important;image-rendering:pixelated}
+.qr-code img{display:block;width:calc(var(--u)*21)!important;height:calc(var(--u)*21)!important;image-rendering:pixelated}
 .qr figcaption{font-size:calc(var(--u)*1.3);text-align:center;max-width:calc(var(--u)*21)}
 .portrait .wifi{grid-template-columns:1fr;align-content:center;gap:calc(var(--u)*3)}
 .portrait .qr{justify-self:center}
@@ -184,6 +184,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ctrl button:active{background:color-mix(in srgb,var(--paper) 18%,transparent)}
 .ctrl .pz{color:var(--signal)}
 .hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*8);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:calc(var(--u)*.9) calc(var(--u)*1.8);border-radius:99px;font-size:calc(var(--u)*1.35);z-index:29;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+.dwarn{position:fixed;left:calc(var(--u)*2);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*6.4);z-index:35;background:var(--alert);color:#fff;font-size:calc(var(--u)*1.3);font-weight:600;padding:calc(var(--u)*.6) calc(var(--u)*1.4);border-radius:99px;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font)}
 .pv-bar{position:fixed;left:calc(var(--u)*2);top:calc(env(safe-area-inset-top,0px) + var(--u)*.6);z-index:60}
 .pv-bar button{border:0;background:var(--signal);color:var(--signal-ink);border-radius:99px;padding:8px 16px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font)}
 
@@ -377,6 +378,50 @@ code.k{font-family:var(--mono);font-size:12.5px;background:var(--paper);padding:
 .acc .in{padding:0 14px 8px}
 .acc .srow .sc.wide{max-width:none}
 
+/* 연결 설정 · 점검 */
+.connect textarea{font-family:var(--mono);font-size:13px}
+.connect ol{margin:0 0 18px;padding-left:20px;color:var(--muted);line-height:1.8;font-size:14.5px}
+.connect ol b{color:var(--ink)}
+.result{margin-top:14px;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6}
+.result.ok{background:color-mix(in srgb,var(--board) 14%,transparent)}
+.result.bad{background:color-mix(in srgb,var(--alert) 12%,transparent)}
+.result.warn{background:color-mix(in srgb,var(--signal) 22%,transparent)}
+.diag{list-style:none;margin:0 0 14px;padding:0}
+.diag li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.55}
+.diag li:first-child{border-top:0}
+.diag i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:700;color:#fff;margin-top:1px}
+.diag .ok i{background:var(--board)}.diag .warn i{background:#C99400}.diag .bad i{background:var(--alert)}
+.diag small{display:block;color:var(--muted);font-size:12.5px}
+.banner-bad{background:var(--alert);color:#fff;padding:10px 20px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner-bad .btn{background:#fff;color:var(--alert);border-color:#fff}
+.links{width:100%;border-collapse:collapse;font-size:14px}
+.links td{padding:8px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.links td:first-child{font-weight:600;white-space:nowrap}
+.links td.u{color:var(--muted);font-family:var(--mono);font-size:12px;max-width:0;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links td.b{white-space:nowrap;text-align:right}
+.qrbig{display:grid;place-items:center;padding:10px;background:#fff;border-radius:12px;margin-bottom:12px}
+#printArea{display:none}
+@media print{
+  body > *:not(#printArea){display:none!important}
+  #printArea{display:grid!important;grid-template-columns:repeat(3,1fr);gap:18px;padding:10px;color:#000;font-family:var(--font)}
+  #printArea .pc{border:1px solid #999;border-radius:10px;padding:12px;text-align:center;break-inside:avoid}
+  #printArea .pc b{display:block;font-size:22px;margin-bottom:8px}
+  #printArea .pc img{margin:0 auto;width:200px!important;height:200px!important}
+  #printArea .pc small{display:block;margin-top:6px;font-size:11px;color:#444}
+}
+
+.conn-grid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:22px;align-items:start}
+@media (max-width:760px){.conn-grid{grid-template-columns:1fr}}
+.conn-qr{border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;background:var(--paper)}
+.conn-qr b{display:block;font-size:14.5px;margin-bottom:10px}
+.conn-qr .qbox{background:#fff;border-radius:10px;padding:10px;display:grid;place-items:center;cursor:zoom-in}
+.conn-qr .qbox img{width:180px!important;height:180px!important}
+.conn-qr small{display:block;color:var(--muted);font-size:12.5px;line-height:1.5;margin:10px 0}
+.qrmodal .box{max-width:520px;text-align:center}
+.qrmodal .qbig{background:#fff;border-radius:14px;padding:16px;display:grid;place-items:center;margin:4px 0 14px}
+.qrmodal .qbig img{width:min(360px,70vw)!important;height:min(360px,70vw)!important}
+.qrmodal select{margin-bottom:12px}
+
 /* 미리보기 패널 */
 .pv-panel{position:sticky;top:124px}
 .pv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -414,13 +459,17 @@ code.k{font-family:var(--mono);font-size:12.5px;background:var(--paper);padding:
    그 밖의 환경에서는 이 브라우저에만 저장되는 데모 모드로 동작합니다.
    ===================================================================== */
 const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "",
-  projectId: "",
-  appId: ""
+  apiKey: "AIzaSyA13xsF7gdB6H9HauFhLK6SybelHdYsZfs",
+  authDomain: "tablet-display-5ebaa.firebaseapp.com",
+  databaseURL: "https://tablet-display-5ebaa-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tablet-display-5ebaa",
+  storageBucket: "tablet-display-5ebaa.firebasestorage.app",
+  messagingSenderId: "725470622368",
+  appId: "1:725470622368:web:508f1d8af6f25a7f780fc5"
 };
 
+let FBC = FIREBASE_CONFIG;
+const FB_KEYS = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'appId'];
 const SALT = 'tsd-v1:';
 const FB_VER = '10.12.2';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -451,6 +500,39 @@ function onColor(h) {
   const n = parseInt(h.slice(1), 16);
   const c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); });
   return (.2126 * c[0] + .7152 * c[1] + .0722 * c[2]) > .36 ? '#0B1512' : '#FFFFFF';
+}
+
+function b64e(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function b64d(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+function parseFbConfig(text) {
+  const o = {}, re = /["']?(\w+)["']?\s*:\s*["'`]([^"'`]+)["'`]/g; let m;
+  while ((m = re.exec(text || ''))) if (FB_KEYS.includes(m[1])) o[m[1]] = m[2].trim();
+  if (!o.databaseURL) { const u = /(https:\/\/[\w.-]+(?:firebaseio\.com|firebasedatabase\.app))/.exec(text || ''); if (u) o.databaseURL = u[1]; }
+  return o;
+}
+function fbSource() {
+  if (FIREBASE_CONFIG.databaseURL) return { cfg: FIREBASE_CONFIG, from: 'file' };
+  try {
+    const h = new URLSearchParams(location.hash.slice(1)).get('fb');
+    if (h) { const c = JSON.parse(b64d(h)); if (c && c.databaseURL) { LS.set('tsd-fb', c); return { cfg: c, from: 'link' }; } }
+  } catch (e) {}
+  const c = LS.get('tsd-fb', null);
+  return c && c.databaseURL ? { cfg: c, from: 'saved' } : null;
+}
+async function checkRest(url) {
+  try {
+    const r = await fetch(String(url).replace(/\/$/, '') + '/app.json?shallow=true', { cache: 'no-store' });
+    if (r.ok) return 'ok';
+    if (r.status === 401 || r.status === 403) return 'rules';
+    if (r.status === 404) return 'url';
+    return 'http' + r.status;
+  } catch (e) { return 'net'; }
+}
+async function loadFirebase() {
+  if (window.firebase && firebase.database && firebase.auth) return;
+  const base = `https://www.gstatic.com/firebasejs/${FB_VER}/`;
+  await loadScript(base + 'firebase-app-compat.js');
+  await Promise.all([loadScript(base + 'firebase-database-compat.js'), loadScript(base + 'firebase-auth-compat.js')]);
 }
 
 const LEVELS = {
@@ -550,7 +632,7 @@ const S = {
   config: mergeConfig(null), weeks: [], alerts: [], status: {}, log: [], admins: [],
   loaded: { config: false, weeks: false, alerts: false, admins: false },
   classId: null, deviceId: '', view: '', preview: false, previewClass: null,
-  connected: true, reloadSeen: null, depth: 0, who: '', weekOverride: undefined, pvMode: false
+  connected: true, discSince: 0, lastSync: 0, reloadSeen: null, depth: 0, who: '', weekOverride: undefined, pvMode: false
 };
 S.deviceId = LS.get('tsd-device', '') || (() => { const d = uid(); LS.set('tsd-device', d); return d; })();
 
@@ -563,49 +645,55 @@ function loadScript(src) {
   return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(s); });
 }
 const Store = {
-  mode: 'local', db: null, fb: null, assets: null, local: new Map(), bc: null,
+  mode: 'local', db: null, fb: null, assets: null, local: new Map(), bc: null, problem: '', detail: '', fbFrom: '', issue: '',
   async init() {
     if (window.claude && typeof window.claude.use === 'function') {
       try {
         const db = await window.claude.use('db');
         if (db) { this.db = db; this.mode = 'claude'; try { this.assets = await window.claude.use('assets'); } catch (e) {} return; }
       } catch (e) {}
+      this.mode = 'error'; this.problem = 'claude'; return;
     }
-    if (FIREBASE_CONFIG.databaseURL) {
+    const src = fbSource();
+    if (src) {
+      FBC = src.cfg; this.fbFrom = src.from;
       try {
-        const base = `https://www.gstatic.com/firebasejs/${FB_VER}/`;
-        await loadScript(base + 'firebase-app-compat.js');
-        await Promise.all([loadScript(base + 'firebase-database-compat.js'), loadScript(base + 'firebase-auth-compat.js')]);
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        await loadFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(FBC);
         this.fb = firebase.database(); this.mode = 'firebase';
         this.fb.ref('.info/connected').on('value', s => setConnected(!!s.val()));
         return;
-      } catch (e) { console.warn('Firebase 연결 실패', e); }
+      } catch (e) { console.warn('Firebase 연결 실패', e); this.mode = 'error'; this.problem = 'fbload'; this.detail = String((e && e.message) || e); return; }
     }
+    if (LS.get('tsd-demo', false)) { this.initLocal(); return; }
+    this.mode = 'error'; this.problem = 'noconfig';
+  },
+  initLocal() {
     this.mode = 'local';
     try { this.bc = new BroadcastChannel('tsd'); this.bc.onmessage = e => this.emit(e.data); } catch (e) {}
     window.addEventListener('storage', e => { if (e.key && e.key.startsWith('tsd-db:')) this.emit(e.key.slice(7)); });
   },
-  label() { return { claude: 'Claude 공유 저장소', firebase: 'Firebase', local: '이 기기에만 저장 (데모)' }[this.mode]; },
+  readFail(e) { const t = String((e && (e.code || e.message)) || e); if (/permission|denied|not_granted|unauth/i.test(t)) { this.issue = 'rules'; onData('issue'); } },
+  label() { return { claude: 'Claude 공유 저장소', firebase: 'Firebase' + (FBC.projectId ? ` (${FBC.projectId})` : ''), local: '이 기기에만 저장 (데모)', error: '연결 안 됨' }[this.mode]; },
   emit(path) { this.local.forEach((fns, key) => { if (key === path || path.startsWith(key + '/')) fns.forEach(f => f()); }); },
   on(key, f) { if (!this.local.has(key)) this.local.set(key, new Set()); this.local.get(key).add(f); return () => this.local.get(key).delete(f); },
   watch(path, cb) {
     const cached = LS.get('tsd-cache:' + path, undefined);
     if (cached !== undefined && this.mode !== 'local') cb(cached, false);
-    const deliver = (v, server) => { if (server && this.mode !== 'local') LS.set('tsd-cache:' + path, v); cb(v, server); };
+    const deliver = (v, server) => { if (server) { S.lastSync = Date.now(); if (this.mode !== 'local') LS.set('tsd-cache:' + path, v); } cb(v, server); };
     if (this.mode === 'claude') {
       let un = null, alive = true;
       const start = () => {
         un = this.db.doc(path).onSnapshot(
           s => { setConnected(true); deliver(s.exists ? unwrap(s.data()) : null, !s.metadata.fromCache); },
-          err => { console.warn(err); if (err && err.code === 'unavailable' && alive) { setConnected(false); setTimeout(start, 3000 + Math.random() * 3000); } }
+          err => { console.warn(err); if (err && err.code === 'unavailable' && alive) { setConnected(false); setTimeout(start, 3000 + Math.random() * 3000); } else this.readFail(err); }
         );
       };
       start();
       return () => { alive = false; un && un(); };
     }
     if (this.mode === 'firebase') {
-      const r = this.fb.ref(path); const h = r.on('value', s => deliver(unwrap(s.val()), true), e => { console.warn(e); deliver(null, true); });
+      const r = this.fb.ref(path); const h = r.on('value', s => { if (this.issue === 'rules' && path.startsWith('app/')) { this.issue = ''; onData('issue'); } deliver(unwrap(s.val()), true); }, e => { console.warn(e); if (path.startsWith('app/')) this.readFail(e); deliver(null, true); });
       return () => r.off('value', h);
     }
     const f = () => deliver(unwrap(LS.get('tsd-db:' + path, null)), true);
@@ -680,7 +768,7 @@ function resolveSrc(src) {
   }
   return Promise.resolve(src);
 }
-function setConnected(v) { if (S.connected === v) return; S.connected = v; $$('#net').forEach(n => n.classList.toggle('off', !v)); }
+function setConnected(v) { if (S.connected === v) return; S.connected = v; if (!v) S.discSince = Date.now(); $$('#net').forEach(n => n.classList.toggle('off', !v)); }
 window.addEventListener('online', () => setConnected(true));
 window.addEventListener('offline', () => setConnected(false));
 
@@ -766,11 +854,11 @@ const Auth = {
     try {
       const cred = await firebase.auth().createUserWithEmailAndPassword(email, pw);
       try { await Store.set('admins/' + cred.user.uid, { name, email, addedBy: '(첫 관리자)', at: Date.now() }); }
-      catch (e) { await cred.user.delete().catch(() => {}); throw { code: 'exists' }; }
+      catch (e) { await cred.user.delete().catch(() => {}); throw { code: (await checkRest(FBC.databaseURL)) === 'rules' ? 'norules' : 'exists' }; }
     } finally { this.bootstrapping = false; this.watch(); }
   },
   async addFb(name, email, pw) {
-    const sec = firebase.initializeApp(FIREBASE_CONFIG, 'sec-' + Date.now());
+    const sec = firebase.initializeApp(FBC, 'sec-' + Date.now());
     try {
       const cred = await sec.auth().createUserWithEmailAndPassword(email, pw);
       await Store.set('admins/' + cred.user.uid, { name, email, addedBy: S.who, at: Date.now() });
@@ -931,12 +1019,14 @@ function route(v, push = true) {
   show(v);
 }
 function show(v) {
+  if (Store.mode === 'error') v = 'connect';
   if (S.view === 'display') Display.stop();
   if (S.view === 'admin' && v !== 'admin') Admin.stop();
   S.view = v; document.body.className = 'view-' + v;
   const app = $('#app'); app.onclick = null; app.oninput = null; app.onchange = null;
   if (v === 'display') Display.start();
   else if (v === 'admin') Admin.start();
+  else if (v === 'connect') Connect.render();
   else Setup.render();
 }
 function home() { return S.classId ? 'display' : 'setup'; }
@@ -948,10 +1038,79 @@ window.addEventListener('popstate', e => {
   show(st.v || home());
 });
 function onData(kind) {
+  if (kind === 'issue') { if (S.view === 'admin') Admin.refresh('issue'); return; }
   if (S.view === 'display') Display.refresh(kind);
   else if (S.view === 'admin') Admin.refresh(kind);
   else if (S.view === 'setup' && kind === 'config') Setup.render();
 }
+
+function shareHash() {
+  if (Store.mode !== 'firebase' || Store.fbFrom === 'file') return '';
+  const o = {}; FB_KEYS.forEach(k => { if (FBC[k]) o[k] = FBC[k]; });
+  return '#fb=' + b64e(JSON.stringify(o));
+}
+function canShare() { return Store.mode === 'firebase' && location.protocol !== 'file:'; }
+const hasQR = () => typeof window.qrcode === 'function';
+/* QR 생성: 긴 주소·한글도 정확히 인코딩되는 qrcode-generator 사용 */
+function drawQR(el, text, size, level) {
+  if (!el) return false;
+  el.innerHTML = '';
+  if (!hasQR()) { el.textContent = 'QR을 불러오지 못했습니다'; return false; }
+  try {
+    if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+    const q = qrcode(0, level || 'M'); q.addData(text, 'Byte'); q.make();
+    const margin = 2, cell = Math.max(2, Math.floor(size / (q.getModuleCount() + margin * 2)));
+    const img = new Image(); img.alt = 'QR 코드'; img.src = q.createDataURL(cell, cell * margin);
+    img.style.imageRendering = 'pixelated'; el.appendChild(img); return true;
+  } catch (e) { console.warn(e); el.textContent = 'QR을 만들지 못했습니다'; return false; }
+}
+function linkFor(q) { return location.origin + location.pathname + (q ? '?' + q : '') + shareHash(); }
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (x) {} ta.remove(); return ok; }
+}
+
+/* ================= 서버 연결 설정 ================= */
+const Connect = {
+  render() {
+    applyTheme('auto');
+    const p = Store.problem, saved = LS.get('tsd-fb', null);
+    const msg = {
+      noconfig: '이 페이지가 아직 서버와 연결되지 않았습니다. 연결하면 관리자 노트북에서 바꾼 내용이 모든 노트북·태블릿에 바로 나타나고, 반별 태블릿 상태도 볼 수 있습니다.',
+      fbload: `Firebase에 연결하지 못했습니다. 설정값을 다시 확인해 주세요. (${Store.detail})`,
+      claude: '이 주소는 claude.ai에 로그인한 기기에서만 공지 데이터를 볼 수 있습니다. 여러 태블릿에 띄우려면 GitHub Pages에 올린 주소와 Firebase를 쓰세요.'
+    }[p] || '';
+    $('#app').innerHTML = `<main class="setup connect">
+      <h1>서버 연결</h1><p>${esc(msg)}</p>
+      ${p === 'claude' ? '' : `
+      <ol>
+        <li>Firebase 콘솔 → 톱니바퀴 → <b>프로젝트 설정</b> → 아래쪽 <b>내 앱</b> → 웹 앱 선택 → <b>구성</b></li>
+        <li>나오는 <b>const firebaseConfig = { … }</b> 코드를 통째로 복사해 아래에 붙여넣기</li>
+        <li><b>연결 테스트하고 저장</b>을 누르면 이 기기가 연결됩니다. 다른 태블릿은 관리자 페이지 → 설정 → <b>태블릿 연결</b>의 주소나 QR로 한 번에 연결합니다.</li>
+      </ol>
+      <textarea id="fbText" rows="9" spellcheck="false" placeholder="const firebaseConfig = {\n  apiKey: &quot;...&quot;,\n  authDomain: &quot;...&quot;,\n  databaseURL: &quot;https://...firebasedatabase.app&quot;,\n  projectId: &quot;...&quot;,\n  appId: &quot;...&quot;\n};">${saved ? esc('const firebaseConfig = ' + JSON.stringify(saved, null, 2) + ';') : ''}</textarea>
+      <div class="inline" style="margin-top:12px"><button class="btn pri" id="fbTest">연결 테스트하고 저장</button>${saved ? '<button class="btn" id="fbForget">저장된 연결 지우기</button>' : ''}</div>
+      <div id="fbResult"></div>
+      <p style="margin-top:34px;font-size:13.5px">서버 없이 화면만 먼저 확인하고 싶다면 <button class="link" id="demo">이 기기에서만 연습하기(데모)</button> · 데모에서는 다른 기기와 연결되지 않습니다.</p>`}
+    </main>`;
+    const out = (cls, html) => { $('#fbResult').innerHTML = `<div class="result ${cls}">${html}</div>`; };
+    $('#demo') && ($('#demo').onclick = () => { LS.set('tsd-demo', true); location.reload(); });
+    $('#fbForget') && ($('#fbForget').onclick = () => { LS.del('tsd-fb'); location.hash = ''; location.reload(); });
+    $('#fbTest') && ($('#fbTest').onclick = async () => {
+      const c = parseFbConfig($('#fbText').value);
+      if (!c.apiKey) return out('bad', '붙여넣은 내용에서 <b>apiKey</b>를 찾지 못했습니다. firebaseConfig 코드 전체를 복사했는지 확인하세요.');
+      if (!c.databaseURL) return out('bad', '<b>databaseURL</b>이 없습니다. Realtime Database를 웹 앱보다 나중에 만들면 빠져 있곤 합니다. Realtime Database → 데이터 탭 맨 위 주소(https://…firebasedatabase.app)를 복사해 <code class="k">databaseURL: "주소",</code> 한 줄을 추가하세요.');
+      out('warn', '연결 확인 중…');
+      const r = await checkRest(c.databaseURL);
+      const save = () => { LS.set('tsd-fb', c); LS.del('tsd-demo'); history.replaceState(null, '', location.pathname + location.search); location.reload(); };
+      if (r === 'ok') { out('ok', '연결되었습니다. 잠시 후 다시 불러옵니다…'); setTimeout(save, 900); return; }
+      if (r === 'rules') { out('warn', '서버 주소는 맞지만 <b>보안 규칙이 아직 게시되지 않았습니다</b>. 이대로는 태블릿이 공지를 읽지 못합니다. Firebase → Realtime Database → <b>규칙</b> 탭에 database.rules.json 내용을 붙여넣고 <b>게시</b>한 뒤 다시 테스트하세요.<div style="margin-top:10px"><button class="btn sm" id="saveAnyway">규칙은 나중에 하고 일단 저장</button></div>'); $('#saveAnyway').onclick = save; return; }
+      if (r === 'url') return out('bad', '<b>databaseURL 주소가 맞지 않습니다.</b> Realtime Database → 데이터 탭 맨 위 주소와 똑같은지 확인하세요.');
+      if (r === 'net') return out('bad', '서버 주소에 접속하지 못했습니다. 인터넷 연결과 databaseURL 철자를 확인하세요.');
+      out('bad', '알 수 없는 응답입니다 (' + esc(r) + '). 설정값을 다시 확인하세요.');
+    });
+  }
+};
 
 /* ================= 반 선택 ================= */
 const Setup = {
@@ -997,6 +1156,7 @@ const Display = {
       <div id="dOverlay"></div>
       <div class="ctrl off" id="ctrl"><button data-c="prev" id="cPrev"></button><button data-c="pause" id="cPause"></button><button data-c="next" id="cNext"></button></div>
       <div class="hint" id="hint"></div>
+      <div class="dwarn hidden" id="dWarn"></div>
       ${S.preview ? `<div class="pv-bar"><button id="pvExit">← 관리자로 돌아가기 · ${esc(className(S.previewClass))} 미리보기</button></div>` : ''}
     </div>`;
     $('#hint').textContent = T('hint');
@@ -1008,7 +1168,7 @@ const Display = {
     this.refresh();
     this.clockT = setInterval(() => this.tick(), 1000);
     this.alertT = setInterval(() => this.renderAlerts(), 1000);
-    if (!S.preview) { this.beat(); this.hbT = setInterval(() => this.beat(), 60000); }
+    if (!S.preview) { this.beat(); this.hbT = setInterval(() => this.beat(), 30000); }
     this.lockScreen();
     this.onResize = () => { clearTimeout(this.resizeT); this.resizeT = setTimeout(() => { this.orient(); this.show(this.idx, false, true); this.tickerSig = ''; this.renderTicker(); this.alertSig = ''; this.renderAlerts(); }, 250); };
     window.addEventListener('resize', this.onResize);
@@ -1076,7 +1236,7 @@ const Display = {
     this.dir = d; this.idx = (this.idx + d + len) % len; this.show(this.idx, len > 1);
   },
   menu() {
-    modal(`<h3>화면 메뉴</h3><p>${esc(className(S.classId))} · 저장소: ${esc(Store.label())}</p>
+    modal(`<h3>화면 메뉴</h3><p>${esc(className(S.classId))} · 저장소: ${esc(Store.label())}\n서버 연결: ${S.connected ? '연결됨' : '끊김'} · 마지막 동기화 ${S.lastSync ? hm(new Date(S.lastSync)) : '없음'}</p>
       <div class="menu">
         <button class="btn" data-m="fs">전체 화면으로 보기</button>
         <button class="btn" data-m="cls">표시할 반 바꾸기</button>
@@ -1249,7 +1409,7 @@ const Display = {
     const amb = { '0': T('hDigit'), 'O': T('hUpper'), 'o': T('hLower'), '1': T('hDigit'), 'l': T('hLower') + ' L', 'I': T('hUpper') + ' i' };
     const hasAmb = [...pw].some(ch => amb[ch]);
     const tiles = [...pw].map(ch => `<span class="tile${/\d/.test(ch) ? ' dg' : ''}">${ch === ' ' ? '␣' : esc(ch)}${hasAmb && amb[ch] ? `<i>${esc(amb[ch])}</i>` : ''}</span>`).join('');
-    const qr = S.config.showQR && window.QRCode ? `<figure class="qr"><div class="qr-code" data-qr="${esc(this.wifiString(w))}"></div><figcaption>${esc(T('wifiQr'))}</figcaption></figure>` : '';
+    const qr = S.config.showQR && hasQR() ? `<figure class="qr"><div class="qr-code" data-qr="${esc(this.wifiString(w))}"></div><figcaption>${esc(T('wifiQr'))}</figcaption></figure>` : '';
     return `<div class="wifi"><div class="wifi-main">
       <h2>${esc(T('wifiKicker'))}${w.note ? `<small>${esc(w.note)}</small>` : ''}</h2>
       <div><span class="lab">${esc(T('wifiSsid'))}</span><div class="ssid">${esc(w.ssid)}</div></div>
@@ -1264,10 +1424,7 @@ const Display = {
   post(el, s, u) {
     u = u || uPx();
     const qr = $('.qr-code', el);
-    if (qr && window.QRCode) {
-      try { new QRCode(qr, { text: qr.dataset.qr, width: 512, height: 512, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); }
-      catch (e) { qr.closest('.qr').remove(); }
-    }
+    if (qr && !drawQR(qr, qr.dataset.qr, 512, 'M')) qr.closest('.qr').remove();
     const tiles = $('.tiles', el);
     if (tiles) {
       const n = Number(tiles.dataset.n) || 1, gap = 0.6 * u, avail = tiles.getBoundingClientRect().width / (this.scaleOf(tiles) || 1);
@@ -1305,8 +1462,16 @@ const Display = {
     }
   },
   fullSec(a) { const f = S.config.alertFull || {}; return a ? Math.max(0, Number(f[a.level]) || 0) : 20; },
+  warnText() {
+    if (S.preview) return '';
+    if (Store.mode === 'local') return '데모 모드 · 다른 기기와 연결되어 있지 않습니다';
+    if (Store.issue === 'rules') return '서버에서 공지를 읽을 권한이 없습니다 · 관리자에게 보안 규칙 확인을 요청하세요';
+    if (!S.connected && Date.now() - S.discSince > 12000) return '서버 연결 끊김 · 마지막 동기화 ' + (S.lastSync ? hm(new Date(S.lastSync)) : '없음');
+    return '';
+  },
   renderAlerts() {
     if (S.view !== 'display') return;
+    const w = $('#dWarn'); if (w) { const t = this.warnText(); if (w.textContent !== t) w.textContent = t; w.classList.toggle('hidden', !t); }
     const now = Date.now(), act = activeAlerts();
     let urgent = 0, brk = 0;
     act.forEach(a => {
@@ -1533,6 +1698,7 @@ const Admin = {
   stop() { this.unStatus && this.unStatus(); this.unStatus = null; this.unLog && this.unLog(); this.unLog = null; clearInterval(this.statusT); },
   refresh(kind) {
     if (S.view !== 'admin') return;
+    if (kind === 'issue') { const b = $('#admBanner'); if (b) b.innerHTML = this.bannerHTML(); return; }
     const shell = !!$('.adm');
     if (!this.authed() || !shell) { if (kind === 'config' || kind === 'admins' || !shell) return this.start(); return; }
     const h = $('#admTitle'); if (h) h.textContent = S.config.title || '연수 안내';
@@ -1591,7 +1757,7 @@ const Admin = {
           }
           this.fails = 0; LS.set('tsd-who-last', v('lgName'));
         }
-      } catch (x) { console.warn(x); errEl.textContent = x && x.code === 'exists' ? '이미 관리자가 있습니다. 기존 관리자에게 추가를 요청하세요.' : fbErr(x); }
+      } catch (x) { console.warn(x); errEl.textContent = x && x.code === 'exists' ? '이미 관리자가 있습니다. 기존 관리자에게 추가를 요청하세요.' : x && x.code === 'norules' ? 'Firebase 보안 규칙이 아직 게시되지 않았습니다. Realtime Database → 규칙 탭에 database.rules.json 내용을 붙여넣고 게시한 뒤 다시 시도하세요.' : fbErr(x); }
     };
   },
   renderShell() {
@@ -1602,8 +1768,9 @@ const Admin = {
         <button class="back" data-act="back">뒤로</button>
         <div class="ttl"><h1 id="admTitle">${esc(S.config.title)}</h1><div class="mode">관리자 · ${esc(Store.label())}</div></div>
         <span class="me"><b id="meName">${esc(S.who)}</b> 님</span>
-        <div class="r"><button class="btn sm" data-act="pv-toggle" aria-pressed="${Preview.on}">미리보기</button><button class="btn sm" data-act="logout">로그아웃</button></div>
+        <div class="r"><button class="btn sm pri" data-act="qr-connect">기기 연결 QR</button><button class="btn sm" data-act="pv-toggle" aria-pressed="${Preview.on}">미리보기</button><button class="btn sm" data-act="logout">로그아웃</button></div>
       </header>
+      <div id="admBanner">${this.bannerHTML()}</div>
       <nav class="tabs" role="tablist">${tabs.map(([k, n]) => `<button role="tab" data-tab="${k}" aria-selected="${this.tab === k}">${n}</button>`).join('')}</nav>
       <div class="adm-body${Preview.on ? '' : ' nopv'}"><main class="adm-main" id="admMain"></main><aside class="pv-panel" id="pvPanel" aria-label="미리보기"></aside></div>
       <div id="savebarSlot"></div>
@@ -1633,6 +1800,7 @@ const Admin = {
     m.innerHTML = this['tab_' + this.tab]();
     $('#savebarSlot').innerHTML = this.savebar();
     if (this.tab === 'weeks') { this.renderWeekList(); this.bindDrop(); }
+    if (this.tab === 'status' && canShare()) drawQR($('#homeQr'), linkFor(''), 360);
     this.fillThumbs();
     scrollTo(0, y);
     Preview.schedule();
@@ -1642,6 +1810,12 @@ const Admin = {
     const msg = idle => `<span class="msg${this.dirty ? ' dirty' : ''}" id="sbMsg">${this.dirty ? '저장하지 않은 변경이 있습니다 · 미리보기에는 이미 반영됨' : idle}</span>`;
     if (this.tab === 'weeks' && this.draft) return `<div class="savebar">${msg('모든 변경이 저장되었습니다')}<button class="btn" data-act="wk-dup">다음 주로 복제</button><button class="btn" data-act="wk-del">주차 삭제</button><button class="btn pri" data-act="wk-save">저장하고 화면에 반영</button></div>`;
     if (this.CFG_TABS.includes(this.tab)) return `<div class="savebar">${msg('저장하면 모든 태블릿에 바로 적용됩니다')}<button class="btn" data-act="cfg-discard" ${this.dirty ? '' : 'disabled'}>되돌리기</button><button class="btn pri" data-act="cfg-save">저장하고 화면에 반영</button></div>`;
+    return '';
+  },
+  bannerHTML() {
+    if (Store.mode === 'local') return `<div class="banner-bad">데모 모드입니다. 여기서 바꾼 내용은 이 브라우저에만 저장되어 다른 노트북·태블릿에 반영되지 않습니다. <button class="btn sm" data-act="go-connect">서버 연결하기</button></div>`;
+    if (Store.issue === 'rules') return `<div class="banner-bad">태블릿이 서버에서 공지를 읽을 권한이 없습니다. Firebase 보안 규칙을 게시했는지 확인하세요. <button class="btn sm" data-act="goto" data-t="status">연결 점검</button></div>`;
+    if (Store.mode === 'claude') return `<div class="banner-bad" style="background:#8A6A00">claude.ai 게시 주소입니다. claude.ai에 로그인하지 않은 태블릿에는 반영되지 않습니다. 여러 태블릿은 GitHub Pages + Firebase 주소로 연결하세요.</div>`;
     return '';
   },
   markDirty() {
@@ -1660,22 +1834,47 @@ const Admin = {
     const all = [{ id: '__lobby', name: T('lobby') }, ...S.config.classes];
     const cells = all.map(c => {
       const ds = byClass[c.id] || [];
-      const on = ds.filter(d => now - d.lastSeen < 3 * 60000).length;
+      const live = ds.filter(d => now - d.lastSeen < 90000), on = live.length;
       const last = ds.reduce((m, d) => Math.max(m, d.lastSeen || 0), 0);
       if (c.id === '__lobby' && !ds.length) return '';
-      return `<div class="st ${on ? 'on' : last ? 'stale' : ''}"><b><span class="dot"></span>${esc(c.name)}</b><small>${on ? `태블릿 ${on}대 켜짐` : last ? `마지막 신호 ${ago(last)}` : '연결 기록 없음'}</small></div>`;
+      const tip = ds.map(d => `${d.screen || ''} · ${d.slide || ''}번째 화면 · ${ago(d.lastSeen)}`).join('\n');
+      return `<div class="st ${on ? 'on' : last ? 'stale' : ''}" title="${esc(tip)}"><b><span class="dot"></span>${esc(c.name)}</b><small>${on ? `태블릿 ${on}대 켜짐${live[0].slide ? ' · ' + esc(live[0].slide) : ''}` : last ? `마지막 신호 ${ago(last)}` : '연결 기록 없음'}</small></div>`;
     }).join('');
     const rows = wk ? (wk.timetable || []).filter(r => !r.date || r.date === ymd(new Date())) : [];
-    return `
+    return this.connCard() + `
       <section class="card"><h2>지금 화면에 나가는 내용</h2>
         <p class="desc">${wk ? `<b>${esc(wk.label)}</b> (${esc(wk.start || '')} ~ ${esc(wk.end || '')}) · ${S.config.weekMode === 'manual' ? '관리자가 고정한 주차' : '오늘 날짜로 자동 선택'}<br>오늘 시간표 ${rows.length}개 · 게시 중인 공지 ${(wk.notices || []).filter(isLive).length}개 · 이미지 ${(wk.media || []).filter(isLive).length}장` : '등록된 주차가 없습니다. 콘텐츠 탭에서 먼저 추가하세요.'}<br>진행 중인 긴급·속보·안내: <b>${act.length}건</b></p>
         <div class="inline"><button class="btn" data-act="goto" data-t="weeks">콘텐츠 편집</button><button class="btn warn" data-act="goto" data-t="alerts">긴급 공지 보내기</button><button class="btn" data-act="goto" data-t="design">화면 꾸미기</button></div>
       </section>
       <section class="card"><h2>반별 태블릿 상태</h2>
-        <p class="desc">태블릿은 1분마다 신호를 보냅니다. 초록은 3분 안에 신호가 온 기기, 노랑은 그보다 오래된 기기입니다.${Store.mode === 'local' ? '<br><b>지금은 데모 모드라 이 기기 기록만 보입니다.</b>' : ''}</p>
+        <p class="desc">태블릿은 30초마다 신호를 보냅니다. 초록은 1분 30초 안에 신호가 온 기기, 노랑은 그보다 오래된 기기입니다.${Store.mode === 'local' ? '<br><b>지금은 데모 모드라 이 기기 기록만 보입니다.</b>' : ''}</p>
         <div class="st-grid">${cells}</div>
         <div class="inline" style="margin-top:16px"><button class="btn" data-act="reload-all">모든 태블릿 새로고침</button><button class="btn" data-act="prune">하루 넘게 신호 없는 기록 정리</button></div>
       </section>`;
+  },
+
+  connCard() {
+    const d = this.diagRes, ls = S.lastSync ? new Date(S.lastSync) : null;
+    const qr = canShare()
+      ? `<div class="conn-qr"><b>기기 연결 QR</b><div class="qbox" id="homeQr" data-act="qr-connect" title="크게 보기"></div><small>태블릿·노트북 카메라로 찍으면 반 선택 화면이 열리고 서버에 자동 연결됩니다</small><button class="btn sm" data-act="qr-connect">크게 보기 · 반 지정</button></div>`
+      : `<div class="conn-qr"><b>기기 연결 QR</b><small>${Store.mode === 'firebase' ? '컴퓨터에 저장된 파일로 열어서 QR을 만들 수 없습니다. GitHub Pages 주소로 관리자 페이지를 열어 주세요.' : Store.mode === 'local' ? '데모 모드에서는 다른 기기와 연결할 수 없습니다. 먼저 서버를 연결하세요.' : 'claude.ai 게시 주소에서는 기기 연결 QR을 쓸 수 없습니다. GitHub Pages + Firebase 주소로 여세요.'}</small>${Store.mode === 'local' ? '<button class="btn sm pri" data-act="go-connect">서버 연결하기</button>' : ''}</div>`;
+    return `<section class="card"><h2>연결 상태</h2>
+      <div class="conn-grid"><div>
+      <p class="desc">저장소 <b>${esc(Store.label())}</b> · 서버 ${S.connected ? '연결됨' : '<b style="color:var(--alert)">끊김</b>'} · 마지막 동기화 ${ls ? hm(ls) + ':' + pad(ls.getSeconds()) : '없음'}</p>
+      ${d ? `<ul class="diag">${d.map(([k, t, sm]) => `<li class="${k}"><i>${k === 'ok' ? '✓' : '!'}</i><div>${t}${sm ? `<small>${sm}</small>` : ''}</div></li>`).join('')}</ul>` : ''}
+      <div class="inline"><button class="btn" data-act="diag">${d ? '다시 점검' : '연결 점검하기'}</button>${Store.mode === 'firebase' ? '<button class="btn" data-act="goto" data-t="settings">반별 주소·QR 인쇄</button>' : ''}</div>
+      </div>${qr}</div></section>`;
+  },
+  linkCard() {
+    if (Store.mode === 'claude') return `<section class="card"><h2>태블릿 연결</h2><p class="desc">claude.ai 게시 주소에서는 태블릿마다 claude.ai 로그인이 필요합니다. GitHub Pages에 올리고 Firebase를 연결하면 여기서 반별 연결 주소와 QR을 만들 수 있습니다.</p></section>`;
+    if (Store.mode === 'local') return `<section class="card"><h2>태블릿 연결</h2><p class="desc">데모 모드에서는 다른 기기와 연결할 수 없습니다.</p><button class="btn pri" data-act="go-connect">서버 연결하기</button></section>`;
+    const rows = [{ id: '', name: '반 선택 화면' }, { id: '__lobby', name: T('lobby') }, ...S.config.classes];
+    const row = (name, u) => `<tr><td>${esc(name)}</td><td class="u">${esc(u)}</td><td class="b"><button class="btn sm" data-act="link-copy" data-u="${esc(u)}">복사</button> <button class="btn sm" data-act="link-qr" data-u="${esc(u)}" data-n="${esc(name)}">QR</button></td></tr>`;
+    return `<section class="card"><h2>태블릿 연결</h2>
+      <p class="desc">각 태블릿에서 자기 반 주소를 한 번 열면 연결이 끝납니다. QR을 태블릿 카메라로 찍으면 가장 빠릅니다. 연 뒤에는 즐겨찾기나 홈 화면에 추가해 두세요.${Store.fbFrom !== 'file' ? ' 주소 끝에 서버 연결 정보가 들어 있어 따로 설정할 필요가 없습니다.' : ''}</p>
+      ${location.protocol === 'file:' ? '<div class="note" style="margin-bottom:12px">지금은 컴퓨터에 저장된 파일을 직접 열어서, 이 주소는 다른 기기에서 열리지 않습니다. GitHub Pages에 올린 주소로 관리자 페이지를 열어 주세요.</div>' : ''}
+      <table class="links">${row('관리자 페이지', linkFor('admin'))}${rows.map(r => row(r.name, linkFor(r.id ? 'class=' + encodeURIComponent(r.id) : ''))).join('')}</table>
+      <div class="inline" style="margin-top:14px"><button class="btn" data-act="link-print">반별 QR 모아서 인쇄</button></div></section>`;
   },
 
   /* ----- 콘텐츠 ----- */
@@ -2134,6 +2333,71 @@ const Admin = {
       try { const ids = await Store.olderThan('log', Date.now() - 60 * 86400000); for (const id of ids) await Store.del('log/' + id); toast(ids.length + '개를 정리했습니다'); } catch (x) { toast(saveErr(x)); }
     },
 
+    /* 연결 */
+    'qr-connect'() {
+      if (!canShare()) { this.switchTab('status'); return toast(Store.mode === 'local' ? '먼저 서버를 연결하세요' : 'GitHub Pages + Firebase 주소에서 쓸 수 있습니다', 3500); }
+      const opts = [['', '반 선택 화면 (태블릿에서 반을 고름)'], ['__lobby', T('lobby')], ...S.config.classes.map(c => [c.id, c.name + ' 화면으로 바로']), ['admin', '관리자 페이지 (다른 운영자용)']];
+      const urlOf = v => linkFor(v === '' ? '' : v === 'admin' ? 'admin' : 'class=' + encodeURIComponent(v));
+      const m = document.createElement('div'); m.className = 'modal qrmodal';
+      m.innerHTML = `<div class="box" role="dialog" aria-modal="true"><h3>기기 연결 QR</h3><p>태블릿이나 노트북 카메라로 찍으면 바로 열리고 서버에 연결됩니다. 연 뒤에는 홈 화면에 추가해 두세요.</p>
+        <select id="qrSel" aria-label="열 화면">${opts.map(([v, n]) => `<option value="${esc(v)}">${esc(n)}</option>`).join('')}</select>
+        <div class="qbig" id="qrM"></div>
+        <div class="acts" style="justify-content:center"><button class="btn" data-x="c">주소 복사</button><button class="btn pri" data-x="0">닫기</button></div></div>`;
+      document.body.appendChild(m);
+      const draw = () => drawQR($('#qrM', m), urlOf($('#qrSel', m).value), 360);
+      draw();
+      $('#qrSel', m).onchange = draw;
+      m.addEventListener('click', async e => {
+        if (e.target === m) return m.remove();
+        const x = e.target.closest('[data-x]'); if (!x) return;
+        if (x.dataset.x === 'c') toast((await copyText(urlOf($('#qrSel', m).value))) ? '주소를 복사했습니다' : '복사하지 못했습니다');
+        else m.remove();
+      });
+    },
+    'go-connect'() { LS.del('tsd-demo'); location.reload(); },
+    async 'link-copy'(b) { toast((await copyText(b.dataset.u)) ? '주소를 복사했습니다' : '복사하지 못했습니다. 주소를 길게 눌러 복사하세요'); },
+    'link-qr'(b) {
+      modal(`<h3>${esc(b.dataset.n)}</h3><p>태블릿 카메라로 찍으면 이 화면이 열립니다.</p><div class="qrbig" id="qrBig"></div><div class="acts"><button class="btn" data-x="c">주소 복사</button><button class="btn pri" data-x="0">닫기</button></div>`, (m, close) => {
+        drawQR($('#qrBig', m), b.dataset.u, 280);
+        m.addEventListener('click', async e => { const x = e.target.closest('[data-x]'); if (!x) return; if (x.dataset.x === 'c') toast((await copyText(b.dataset.u)) ? '주소를 복사했습니다' : '복사하지 못했습니다'); else close(); });
+      });
+    },
+    'link-print'() {
+      if (!hasQR()) return toast('QR 라이브러리를 불러오지 못했습니다');
+      let area = $('#printArea'); if (area) area.remove();
+      area = document.createElement('div'); area.id = 'printArea'; document.body.appendChild(area);
+      const rows = [{ id: '__lobby', name: T('lobby') }, ...S.config.classes];
+      rows.forEach(r => {
+        const u = linkFor('class=' + encodeURIComponent(r.id));
+        const c = document.createElement('div'); c.className = 'pc'; c.innerHTML = `<b>${esc(r.name)}</b><div class="q"></div><small>${esc(S.config.title || '')}</small>`;
+        area.appendChild(c); drawQR($('.q', c), u, 400);
+      });
+      setTimeout(() => { window.print(); }, 400);
+      window.addEventListener('afterprint', () => { const a = $('#printArea'); a && a.remove(); }, { once: true });
+    },
+    async diag() {
+      this.diagRes = [['warn', '점검하는 중…']]; this.renderTab();
+      const out = [], now = Date.now();
+      if (Store.mode === 'local') out.push(['bad', '데모 모드: 이 브라우저에만 저장됩니다', '위쪽 빨간 띠의 ‘서버 연결하기’로 Firebase를 연결하세요.']);
+      else if (Store.mode === 'claude') out.push(['warn', 'claude.ai 공유 저장소를 쓰는 중', 'claude.ai에 로그인한 기기끼리만 연동됩니다. 여러 태블릿에는 GitHub Pages + Firebase 주소를 쓰세요.']);
+      else {
+        out.push(S.connected ? ['ok', '서버와 실시간 연결됨'] : ['bad', '서버와 연결이 끊겨 있습니다', '인터넷 연결을 확인하세요.']);
+        const r = await checkRest(FBC.databaseURL);
+        out.push(r === 'ok' ? ['ok', '로그인하지 않은 태블릿도 공지를 읽을 수 있음']
+          : r === 'rules' ? ['bad', '태블릿이 공지를 읽을 수 없습니다 (보안 규칙 미게시)', 'Realtime Database → 규칙 탭에 database.rules.json 내용을 붙여넣고 게시하세요. 지금은 관리자 기기에서만 보입니다.']
+          : ['bad', '서버 주소 확인 실패 (' + esc(r) + ')', 'databaseURL이 Realtime Database 데이터 탭 맨 위 주소와 같은지 확인하세요.']);
+      }
+      if (Store.mode !== 'local') {
+        const id = 'status/_diag_' + S.deviceId;
+        try { await Store.set(id, { diag: true, lastSeen: now }); await Store.del(id); out.push(['ok', '관리자 저장 권한 있음 (수정한 내용이 서버에 저장됨)']); }
+        catch (x) { out.push(['bad', '서버에 저장하지 못했습니다', esc(saveErr(x))]); }
+      }
+      const recent = Object.values(S.status || {}).filter(x => x && x.classId && now - x.lastSeen < 90000);
+      out.push(recent.length ? ['ok', `태블릿 ${recent.length}대에서 신호를 받고 있음`] : ['warn', '최근 1분 30초 안에 신호를 보낸 태블릿이 없습니다', '태블릿에서 설정 → 태블릿 연결의 주소나 QR로 열었는지 확인하세요. 화면 오른쪽 아래가 빨갛게 표시되면 연결이 안 된 기기입니다.']);
+      if (Store.mode === 'firebase' && Store.fbFrom !== 'file') out.push(['warn', '연결 정보가 이 기기에 저장되어 있습니다', '다른 기기는 설정 → 태블릿 연결의 주소나 QR로 여세요. 주소에 연결 정보가 들어 있습니다. 주소 없이 쓰려면 index.html 위쪽 FIREBASE_CONFIG에 넣어 다시 올리면 됩니다.']);
+      this.diagRes = out; this.renderTab();
+    },
+
     /* 데이터 */
     async 'bk-copy'() { const t = $('#bkOut'); t.select(); try { await navigator.clipboard.writeText(t.value); toast('복사했습니다'); } catch (e) { toast('선택된 내용을 복사하세요'); } },
     async 'bk-import'() {
@@ -2149,7 +2413,7 @@ const Admin = {
         const keep = mediaRefs(S.weeks, S.config); let all = [];
         if (Store.mode === 'claude') { if (!Store.assets) return; const { assets } = await Store.assets.list(); all = assets.map(a => 'asset:' + a.id); }
         else if (Store.mode === 'local') all = LS.keys().filter(k => k.startsWith('tsd-db:media/')).map(k => 'media:' + k.slice(13));
-        else { const tok = await firebase.auth().currentUser.getIdToken(); const r = await fetch(FIREBASE_CONFIG.databaseURL.replace(/\/$/, '') + '/media.json?shallow=true&auth=' + encodeURIComponent(tok)); all = Object.keys((await r.json()) || {}).map(k => 'media:' + k); }
+        else { const tok = await firebase.auth().currentUser.getIdToken(); const r = await fetch(FBC.databaseURL.replace(/\/$/, '') + '/media.json?shallow=true&auth=' + encodeURIComponent(tok)); all = Object.keys((await r.json()) || {}).map(k => 'media:' + k); }
         const orphan = all.filter(s => !keep.has(s));
         if (!orphan.length) return toast('정리할 파일이 없습니다');
         if (!(await ask('쓰지 않는 파일 정리', `어느 주차에도 쓰이지 않는 이미지 ${orphan.length}개를 지웁니다. 변경 이력으로 되돌린 주차의 이미지는 사라질 수 있습니다.`, '정리', true))) return;
@@ -2250,7 +2514,8 @@ const Admin = {
         ${UI.row('알림음', '긴급·속보가 도착하면 소리를 냅니다 (태블릿을 한 번 터치한 뒤부터)', UI.sw('alertSound', c.alertSound, '알림음'))}
       </section>
       <section class="card" id="adminCard">${this.adminCard()}</section>
-      <section class="card"><h2>데이터</h2><p class="desc">저장소: <b>${esc(Store.label())}</b>${Store.mode === 'local' ? ' · 이 브라우저에만 저장되어 다른 태블릿에 반영되지 않습니다. 파일 맨 위 FIREBASE_CONFIG를 채워 GitHub Pages에 올리세요.' : ''}</p>
+      ${this.linkCard()}
+      <section class="card"><h2>데이터</h2><p class="desc">저장소: <b>${esc(Store.label())}</b>${Store.mode === 'local' ? ' · 이 브라우저에만 저장되어 다른 태블릿에 반영되지 않습니다.' : ''}</p>
         <div class="inline">${Store.canUpload() ? '<button class="btn" data-act="media-clean">쓰지 않는 이미지 정리</button>' : ''}</div>
         <details style="margin-top:14px"><summary>백업과 복원</summary>
           <p class="desc">콘텐츠·꾸미기·설정을 JSON으로 복사해 보관하세요. 관리자 계정과 이미지 원본은 들어가지 않습니다.</p>
