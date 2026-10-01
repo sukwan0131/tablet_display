@@ -314,11 +314,6 @@ details[open] > summary{margin-bottom:10px}
 .presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .cls-row{display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:8px;align-items:center;margin-bottom:8px}
 .cls-row code{font-size:12px;color:var(--muted)}
-.tt-ed{display:grid;grid-template-columns:120px 96px 96px minmax(0,1.4fr) minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:8px}
-.tt-ed .x{display:flex;gap:4px}
-@media (max-width:1500px){.adm-body:not(.nopv) .tt-ed{grid-template-columns:1fr 1fr 1fr}.adm-body:not(.nopv) .tt-ed .x{justify-content:flex-end}.adm-body:not(.nopv) .tt-head{display:none}}
-@media (max-width:760px){.tt-ed{grid-template-columns:1fr 1fr}.tt-ed .x{grid-column:1/-1;justify-content:flex-end}.tt-head{display:none}}
-.tt-head{font-size:12.5px;color:var(--muted);font-weight:500}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
 .media-grid .item{margin:0}
 .thumb{width:100%;aspect-ratio:16/10;object-fit:contain;background:var(--card);border:1px solid var(--line);border-radius:8px;display:block;margin-bottom:10px}
@@ -532,12 +527,6 @@ details.secbox > .in{padding:16px 22px 22px}
 .fontbtn b{display:block;font-size:20px;line-height:1.3;font-weight:700}
 .fontbtn small{color:var(--muted);font-size:12px}
 .fontbtn[aria-pressed="true"]{border-color:var(--board);box-shadow:0 0 0 2px var(--board)}
-.tt-ed{grid-template-columns:140px 150px 150px minmax(0,1.4fr) minmax(0,1fr) auto!important;align-items:end;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--paper)}
-.tt-ed label.f span{font-size:12px}
-.tt-ed input[type=time]{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;min-width:0;padding:9px 8px;background:var(--card)}
-.tt-ed input,.tt-ed select{background:var(--card)}
-@media (max-width:1500px){.adm-body:not(.nopv) .tt-ed{grid-template-columns:1fr 1fr 1fr!important}.adm-body:not(.nopv) .tt-ed .ttw{grid-column:span 2}}
-@media (max-width:760px){.tt-ed{grid-template-columns:1fr 1fr!important}.tt-ed .ttw{grid-column:1/-1}}
 .grp-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
 .grp-pick button{padding:20px 16px;font-size:18px;font-weight:700;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;text-align:left}
 .grp-pick button small{display:block;font-size:13px;font-weight:400;color:var(--muted);margin-top:4px}
@@ -742,6 +731,104 @@ details.secbox > .in{padding:16px 22px 22px}
 
 .cls .ink{display:block;line-height:1.3;white-space:nowrap}
 
+/* ===== 설정 칸 겹침 방지 · Wi-Fi 행 · 스톱워치 버튼 ===== */
+input,select,textarea,button{box-sizing:border-box}
+.row{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.row > *{min-width:0}
+details.secbox > .in{container-type:inline-size}
+.tt-ed{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px 12px;align-items:end;border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--paper);margin-bottom:10px}
+.tt-ed > *{min-width:0}
+.tt-ed > :nth-child(1),.tt-ed > :nth-child(2),.tt-ed > :nth-child(3){grid-column:span 4}
+.tt-ed > :nth-child(4){grid-column:span 6}
+.tt-ed > :nth-child(5){grid-column:span 4}
+.tt-ed > :nth-child(6){grid-column:span 2}
+.tt-ed .x{display:flex;gap:6px;justify-content:flex-end}
+.tt-ed label.f span{font-size:12px}
+.tt-ed input,.tt-ed select{background:var(--card)}
+.tt-ed input[type=time]{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.wf{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;margin-bottom:8px}
+.wf > *{min-width:0}
+.wf > :nth-child(1),.wf > :nth-child(2){grid-column:span 6}
+.wf > :nth-child(3){grid-column:span 5}
+.wf > :nth-child(4){grid-column:span 7}
+textarea.one{resize:none;overflow:hidden;min-height:42px;line-height:1.4;white-space:pre}
+@container (max-width:640px){
+  .tt-ed > :nth-child(1),.tt-ed > :nth-child(4),.tt-ed > :nth-child(5),.tt-ed > :nth-child(6){grid-column:1/-1}
+  .tt-ed > :nth-child(2),.tt-ed > :nth-child(3){grid-column:span 6}
+  .wf > *{grid-column:1/-1!important}
+}
+.rt{color:var(--board);font-size:12px;font-weight:700;margin-left:10px}
+.rt::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--board);margin-right:5px;animation:blink 1.6s ease-in-out infinite;vertical-align:1px}
+.st.off{background:transparent}
+.st.off b{color:var(--muted)}
+/* 디스플레이: 한 줄 맞춤 */
+.pb-t{flex:1}
+.pb-l{white-space:pre;overflow:hidden;font-size:calc(var(--u)*2.3*var(--s,1))}
+.pb-v{white-space:pre;overflow:hidden;word-break:normal;font-size:calc(var(--u)*4.4*var(--s,1))}
+.pb-row{padding:calc(var(--u)*1.5*var(--s,1)) 0}
+.pb-ic{width:calc(var(--u)*6.4*var(--s,1));height:calc(var(--u)*6.4*var(--s,1))}
+.ssid{white-space:pre;overflow:hidden;word-break:normal}
+.tlines{display:flex;flex-direction:column;gap:calc(var(--u)*.8)}
+/* 가로 Wi-Fi: 네트워크 수만큼 행 */
+.wl.pb{display:flex;flex-direction:column;justify-content:center;align-items:stretch;overflow:hidden}
+.wl.pb h2{margin:0 0 calc(var(--u)*2*var(--s,1))}
+.wl-card{display:block;padding:calc(var(--u)*.6) calc(var(--u)*2.4)}
+.wl-grid{display:grid;grid-template-columns:calc(var(--u)*6.4*var(--s,1)) minmax(0,1fr) minmax(0,1fr);column-gap:calc(var(--u)*2.4);align-items:center}
+.wl-grid.hasq{grid-template-columns:calc(var(--u)*6.4*var(--s,1)) minmax(0,1fr) minmax(0,1fr) calc(var(--u)*11*var(--s,1))}
+.wl-hd > span{font-size:calc(var(--u)*1.9*var(--s,1));color:color-mix(in srgb,var(--ink) 70%,var(--card));font-weight:600;padding:calc(var(--u)*1.2*var(--s,1)) 0 calc(var(--u)*.4*var(--s,1))}
+.wl-r{border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent);padding:calc(var(--u)*1.1*var(--s,1)) 0}
+.wl .pb-v{font-size:calc(var(--u)*3.6*var(--s,1))}
+.wl-q{display:flex;justify-content:flex-end}
+.wl-q .qr.sm{padding:calc(var(--u)*.5*var(--s,1));border-radius:calc(var(--u)*.6)}
+.wl-q .qr.sm .qr-code img{width:calc(var(--u)*10*var(--s,1))!important;height:calc(var(--u)*10*var(--s,1))!important}
+.wl-q .qr.sm figcaption{display:none}
+/* 스톱워치: 태블릿 버튼 */
+.swctl{display:flex;gap:calc(var(--u)*2);justify-content:center;flex-wrap:wrap;margin-top:calc(var(--u)*1.4)}
+.swbtn{font-family:var(--font);border:0;border-radius:99px;min-height:56px;padding:calc(var(--u)*1.6) calc(var(--u)*4.4);font-size:calc(var(--u)*2.8);font-weight:800;cursor:pointer;background:var(--board);color:var(--board-ink);box-shadow:0 calc(var(--u)*.5) calc(var(--u)*1.6) rgba(0,0,0,.2)}
+.swbtn.stop{background:var(--alert);color:#fff}
+.tmview .num.stopped{color:var(--ink)}
+.is-tm .hint{display:none}
+
+/* ===== Wi-Fi 한눈에 표 ===== */
+.wft{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.wft-h,.wft-r{display:grid;grid-template-columns:44px minmax(84px,.7fr) minmax(0,1.5fr) minmax(0,1.5fr) 112px 38px;gap:8px;align-items:center;padding:3px 10px}
+.wft-h{padding:7px 10px}
+.wft-h{background:var(--paper);font-size:12.5px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line)}
+.wft-h span:first-child{text-align:center}
+.wft-h span:nth-child(5){text-align:right}
+.wft-c.qrc{justify-content:flex-end;align-items:center;gap:7px;cursor:pointer}
+.wft-ql{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.wft-r{border-top:1px solid var(--line)}
+.wft-h + .wft-r{border-top:0}
+.wft-r > *{min-width:0}
+.wft-n{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wft-c{display:flex;justify-content:center;margin:0}
+.wft-c input{width:18px;height:18px;accent-color:var(--board)}
+.wft-r textarea.one{min-height:32px;padding:5px 9px;font-size:14px;width:100%}
+.wft-r.off textarea,.wft-r.off .wft-n{opacity:.5}
+.wft-r.empty .wft-n{color:var(--muted);font-weight:500}
+.wft-r.common{background:color-mix(in srgb,var(--board) 8%,var(--card))}
+.wft-g{padding:7px 12px;background:var(--paper);border-top:1px solid var(--line);font-weight:700;font-size:13px;display:flex;gap:8px;align-items:baseline}
+.wft-g small{color:var(--muted);font-weight:400}
+.wft-g .btn{margin-left:auto}
+.wft-sm{font-size:12.5px;color:var(--muted);padding:6px 12px;cursor:pointer;border-top:1px dashed var(--line);list-style:none}
+.wft-sm::-webkit-details-marker{display:none}
+.wft-det{padding:6px 12px 12px}
+.wft-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.wft-tools input[type=search]{width:210px}
+.wft-sum{font-size:13.5px;margin:0 0 10px;color:var(--muted)}
+.wft-sum b{color:var(--ink)}
+.wft-none{padding:18px;text-align:center;color:var(--muted);font-size:14px}
+@container (max-width:640px){
+  .wft-h{display:none}
+  .wft-r{grid-template-columns:40px minmax(0,1fr) auto 36px}
+  .wft-r .pubc{grid-column:1;grid-row:1}
+  .wft-r .wft-n{grid-column:2;grid-row:1}
+  .wft-r .qrc{grid-column:3;grid-row:1}
+  .wft-r .wft-x{grid-column:4;grid-row:1}
+  .wft-r textarea{grid-column:1/-1}
+}
+
 /* 미리보기 패널 */
 .pv-panel{position:sticky;top:124px}
 .pv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -891,7 +978,7 @@ const TEXT_DEFS = [
     ['minimize', '팝업에서 줄이기 안내', '누르면 작게 줄어듭니다'], ['pinOpen', '미니바 안내', '눌러서 크게 보기'],
     ['ackBtn', '확인 버튼', '👆 확인했으면 여기를 눌러 주세요'], ['acked', '확인 후 표시', '✅ 확인 완료'],
     ['cdAt', '카운트다운 끝나는 시각 뒤 문구', '에 끝납니다'],
-    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['swTitle', '스톱워치 기본 제목', '스톱워치'], ['swRun', '스톱워치 진행 중 표시', '시간을 재는 중입니다'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
+    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['swTitle', '스톱워치 기본 제목', '스톱워치'], ['swRun', '스톱워치 진행 중 표시', '시간을 재는 중입니다'], ['swStopped', '스톱워치 정지 후 문구', '정지되었습니다'], ['swPause', '스톱워치 일시정지 버튼', '⏸ 일시정지'], ['swResume', '스톱워치 계속 버튼', '▶ 계속'], ['swStopBtn', '스톱워치 정지 버튼', '■ 정지'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
   ]],
   ['반 선택 화면', '', [
     ['setupTitle', '제목', '이 태블릿이 표시할 반을 고르세요'],
@@ -1004,7 +1091,7 @@ const Store = {
         await loadFirebase();
         if (!firebase.apps.length) firebase.initializeApp(FBC);
         this.fb = firebase.database(); this.mode = 'firebase';
-        this.fb.ref('.info/connected').on('value', s => setConnected(!!s.val()));
+        this.fb.ref('.info/connected').on('value', s => { const v = !!s.val(), prev = this.conn; this.conn = v; setConnected(v); if (!v) { this.od && this.od.clear(); } else if (prev === false && S.view === 'display') setTimeout(() => Display.beat(), 300); });
         this.fb.ref('.info/serverTimeOffset').on('value', s => { S.offset = Number(s.val()) || 0; });
         return;
       } catch (e) { console.warn('Firebase 연결 실패', e); this.mode = 'error'; this.problem = 'fbload'; this.detail = String((e && e.message) || e); return; }
@@ -1077,6 +1164,22 @@ const Store = {
     if (this.mode === 'claude') return this.db.doc(path).delete();
     if (this.mode === 'firebase') return this.fb.ref(path).remove();
     LS.del('tsd-db:' + path); this.emit(path); this.bc && this.bc.postMessage(path);
+  },
+  presence(path) {
+    if (this.mode !== 'firebase' || !this.fb) return;
+    this.od = this.od || new Set(); if (this.od.has(path)) return; this.od.add(path);
+    try { const r = this.fb.ref(path); if (r.onDisconnect) r.onDisconnect().remove(); } catch (e) { this.od.delete(path); }
+  },
+  async delMany(paths) {
+    if (!paths.length) return;
+    if (this.mode === 'firebase' && this.fb.ref().update) {
+      for (let i = 0; i < paths.length; i += 100) {
+        const chunk = paths.slice(i, i + 100), u = {}; chunk.forEach(p => u[p] = null);
+        try { await this.fb.ref().update(u); } catch (e) { for (const p of chunk) await this.del(p); }
+      }
+      return;
+    }
+    for (const p of paths) await this.del(p);
   },
   async olderThan(col, cut) {
     if (this.mode === 'claude') { const qs = await this.db.collection(col).where('at', '<', cut).limit(300).get(); return qs.docs.map(d => d.id); }
@@ -1409,10 +1512,10 @@ function devKind() {
   if (/CrOS/.test(u)) return 'Chromebook'; if (/Windows/.test(u)) return 'Windows'; if (/Mac/.test(u)) return 'Mac'; return '기기';
 }
 function swElapsed(t, now = nowS()) { return !t ? 0 : t.st === 'run' ? Math.max(0, (Number(t.base) || 0) + (now - t.startAt) / 1000) : Math.max(0, Number(t.elapsed) || 0); }
-function tmShow(t, now = nowS()) { const ph = tmPhase(t, now); if (!ph) return ''; if (t.mode === 'sw') return (ph === 'pause' ? '⏸ ' : '⏱ ') + fmtClock(Math.floor(swElapsed(t, now))) + ' 스톱워치'; return ph === 'run' ? '⏳ ' + fmtClock(tmLeft(t, now)) : ph === 'pause' ? '⏸ 일시정지' : '끝남'; }
+function tmShow(t, now = nowS()) { const ph = tmPhase(t, now); if (!ph) return ''; if (t.mode === 'sw') return (ph === 'pause' ? '⏸ ' : ph === 'stop' ? '■ ' : '⏱ ') + fmtClock(Math.floor(swElapsed(t, now))) + (ph === 'stop' ? ' 정지' : ' 스톱워치'); return ph === 'run' ? '⏳ ' + fmtClock(tmLeft(t, now)) : ph === 'pause' ? '⏸ 일시정지' : '끝남'; }
 function tmPhase(t, now = nowS()) {
   if (!t || !t.st || t.st === 'off') return null;
-  if (t.mode === 'sw') return t.st === 'run' ? (swElapsed(t, now) < 12 * 3600 ? 'run' : null) : t.st === 'pause' ? 'pause' : null;
+  if (t.mode === 'sw') return t.st === 'run' ? (swElapsed(t, now) < 12 * 3600 ? 'run' : null) : t.st === 'pause' ? 'pause' : t.st === 'stop' ? 'stop' : null;
   if (t.st === 'pause') return 'pause';
   if (t.st === 'run') { if (t.endAt > now) return 'run'; if (now - t.endAt < 5 * 60000) return 'done'; }
   return null;
@@ -1695,7 +1798,7 @@ const Teacher = {
       <div class="sub" style="margin-top:12px">적용 대상: ${esc(this.groups().map(g => g.name).join(', ') || '고른 반')} <small class="muted">(${mine.length}개 반)</small></div>
       <ul class="tst" id="tStat" style="margin-top:10px"></ul>
       <div class="sub">제목 (선택)</div><input type="text" id="tTitle" value="${esc(f.title)}" placeholder="${sw ? '예: 발표 시간, 실습' : '예: 모둠 활동, 쉬는 시간'}">
-      ${sw ? `<div class="big"><button class="btn pri" data-t="swstart">▶ 처음부터 시작</button><button class="btn" data-t="swpause">⏸ 일시정지</button><button class="btn" data-t="swresume">▶ 계속</button><button class="btn warn" data-t="stop">■ 끝내기</button></div>`
+      ${sw ? `<div class="big"><button class="btn pri" data-t="swstart">▶ 처음부터 시작</button><button class="btn" data-t="swpause">⏸ 모두 일시정지</button><button class="btn" data-t="swresume">▶ 모두 계속</button><button class="btn" data-t="swstop">■ 모두 정지</button></div><div class="inline" style="margin-top:10px"><button class="btn warn" data-t="stop">× 끝내기 (화면 닫기)</button></div><small class="help" style="margin-top:8px">각 태블릿에서도 일시정지·정지를 할 수 있습니다. 위 목록에서 반별 상태와 정지 기록을 확인하세요.</small>`
       : `<div class="sub">시간</div>
       <div class="tin" style="margin-top:0"><input type="number" id="tM" min="0" max="600" value="${f.m}"><span>분</span><input type="number" id="tS" min="0" max="59" value="${f.s}"><span>초</span></div>
       <div class="quick">${[1, 3, 5, 10, 15, 20, 30, 60].map(m => `<button type="button" class="btn" data-t="preset" data-m="${m}">${m}분</button>`).join('')}</div>
@@ -1718,7 +1821,14 @@ const Teacher = {
     return ph === 'run' ? `진행 중 ${fmtClock(tmLeft(t))}` : ph === 'pause' ? `일시정지 ${fmtClock(tmLeft(t))}` : '끝남';
   },
   renderStatus() { const u = $('#tStat'); if (u) u.innerHTML = this.classes().map(id => `<li><span>${esc(className(id))}</span><b>${esc(this.statusText(this.tms[id]))}</b></li>`).join(''); },
-  tick() { if (this.open) this.renderStatus(); },
+  tick() {
+    if (this.open) this.renderStatus();
+    const f = $('#tFab'); if (!f) return;
+    let run = 0, pz = 0, st = 0;
+    this.classes().forEach(id => { const t = this.tms[id], ph = tmPhase(t); if (!ph) return; if (ph === 'pause') pz++; else if (ph === 'stop') st++; else run++; });
+    const txt = (run || pz || st) ? `⏱ 진행 ${run}${pz ? ` · 멈춤 ${pz}` : ''}${st ? ` · 정지 ${st}` : ''}` : '⏱ 타이머·스톱워치';
+    if (f.textContent !== txt) f.textContent = txt;
+  },
   async act(b) {
     const a = b.dataset.t, f = this.form;
     if (a === 'close') { this.open = false; return this.render(); }
@@ -1731,6 +1841,7 @@ const Teacher = {
       const t = this.tms[id], ph = tmPhase(t, now), isSw = t && t.mode === 'sw';
       if (a === 'swstart') return { mode: 'sw', st: 'run', startAt: now, base: 0, title, at: now };
       if (a === 'swpause') return isSw && ph === 'run' ? { mode: 'sw', st: 'pause', elapsed: swElapsed(t, now), title: t.title, at: now } : null;
+      if (a === 'swstop') return isSw && (ph === 'run' || ph === 'pause') ? { mode: 'sw', st: 'stop', elapsed: swElapsed(t, now), title: t.title || '', at: now } : null;
       if (a === 'swresume') return isSw && ph === 'pause' ? { mode: 'sw', st: 'run', startAt: now, base: Number(t.elapsed) || 0, title: t.title, at: now } : null;
       if (isSw && a !== 'stop' && a !== 'start') return null;
       if (a === 'start') return sec > 0 ? { st: 'run', endAt: now + sec * 1000, total: sec, title, at: now } : null;
@@ -1789,7 +1900,7 @@ const Display = {
     this.refresh();
     this.clockT = setInterval(() => this.tick(), 1000);
     this.alertT = setInterval(() => this.renderAlerts(), 1000);
-    if (!S.preview) { this.beat(); this.hbT = setInterval(() => this.beat(), 30000); }
+    if (!S.preview) { this.beat(); this.hbT = setInterval(() => this.beat(), 20000); }
     this.lockScreen();
     this.onResize = () => { clearTimeout(this.resizeT); this.resizeT = setTimeout(() => { this.orient(); this.show(this.idx, false, true); this.tickerSig = ''; this.renderTicker(); this.alertSig = ''; this.renderAlerts(); }, 250); };
     window.addEventListener('resize', this.onResize);
@@ -1816,6 +1927,8 @@ const Display = {
     unlockAudio(); this.lockScreen();
     if (e.target.closest('.tpanel,.tfab')) return;
     const h = $('#hint'); if (h) h.style.opacity = 0;
+    const sw = e.target.closest('[data-sw]');
+    if (sw) { e.stopPropagation(); this.swAct(sw.dataset.sw); return; }
     const c = e.target.closest('[data-c]');
     if (c) { this.control(c.dataset.c); return; }
     if (e.target.closest('#dCls')) { if (!S.preview) this.askClass(); return; }
@@ -1831,6 +1944,18 @@ const Display = {
     }
     if (!S.preview) this.fullscreen();
     this.showCtrl();
+  },
+  async swAct(a) {
+    if (S.preview) return toast('미리보기에서는 쓸 수 없습니다');
+    const t = this.tm, cid = S.classId, now = nowS(), ph = tmPhase(t, now);
+    if (!t || t.mode !== 'sw' || !cid || cid === '__lobby') return;
+    let v = null;
+    if (a === 'pause' && ph === 'run') v = { mode: 'sw', st: 'pause', elapsed: swElapsed(t, now), title: t.title || '', at: now };
+    if (a === 'resume' && ph === 'pause') v = { mode: 'sw', st: 'run', startAt: now, base: Number(t.elapsed) || 0, title: t.title || '', at: now };
+    if (a === 'stop' && (ph === 'run' || ph === 'pause')) v = { mode: 'sw', st: 'stop', elapsed: swElapsed(t, now), title: t.title || '', at: now };
+    if (!v) return;
+    this.tm = v; this.renderTimer();
+    try { await Store.set('timers/' + cid, v); } catch (e) { toast('저장하지 못했습니다. 다시 눌러 주세요'); }
   },
   async sendAck(aid) {
     if (S.preview) return toast('미리보기에서는 확인이 기록되지 않습니다');
@@ -1980,7 +2105,7 @@ const Display = {
     if (wk) {
       const rows = todayRows();
       if (cfg.timetable.on && rows.length) { const st = ttState(rows); out.push({ key: 'tt', type: 'tt', data: { rows, st, m: st.now, sec: cfg.timetable.sec } }); }
-      const ws = (wk.wifi || []).filter(w => w.ssid && showable(w) && matchTarget(w.target));
+      const ws = (wk.wifi || []).filter(w => w.ssid && showable(w) && matchTarget(w.target)).sort((a, b) => (Array.isArray(b.target) ? 1 : 0) - (Array.isArray(a.target) ? 1 : 0));
       if (ws.length && (wk.wifiLayout || 'together') === 'together') out.push({ key: 'wifi', type: 'wifi', data: { list: ws, sec: ws.length > 1 ? Math.max(Number(cfg.slideSec) || 12, 15) : '' } });
       else ws.forEach(w => out.push({ key: 'wifi:' + w.id, type: 'wifi', data: { list: [w] } }));
       const ns = (wk.notices || []).filter(n => (n.title || n.body) && showable(n) && matchTarget(n.target));
@@ -2080,7 +2205,8 @@ const Display = {
       else rows.push(['link', w.ssid, isOpen(w) ? T('wifiNoPass') : w.password, isOpen(w)]);
     });
     const qrs = hasQR() ? list.filter(w => w.qr !== false) : [];
-    const card = `<div class="pb-card"><div class="pb-rows">${rows.map(([ic, l, v, open]) => `<div class="pb-row"><span class="pb-ic">${ICON[ic]}</span><div class="pb-t"><span class="pb-l">${esc(l)}</span><span class="pb-v${open ? ' open' : ''}">${esc(v)}</span></div></div>`).join('')}</div>${qrs.length ? `<div class="pb-qr">${qrs.map(w => this.qrFig(w, true)).join('')}</div>` : ''}</div>`;
+    const ps = Math.max(.5, Math.min(1, 4.2 / (list.length + 1)));
+    const card = `<div class="pb-card" style="--s:${ps.toFixed(3)}"><div class="pb-rows">${rows.map(([ic, l, v, open]) => `<div class="pb-row"><span class="pb-ic">${ICON[ic]}</span><div class="pb-t"><span class="pb-l" data-fit>${esc(l)}</span><span class="pb-v${open ? ' open' : ''}" data-fit>${esc(v)}</span></div></div>`).join('')}</div>${qrs.length ? `<div class="pb-qr">${qrs.map(w => this.qrFig(w, true)).join('')}</div>` : ''}</div>`;
     if (this.portraitNow()) {
       const cid = viewerClass(), grp = cid && cid !== '__lobby' ? this.groupOf(cid) : '', cls = cid ? className(cid) : '';
       return `<div class="wposter pb">${grp ? `<div class="pb-band"><div class="pb-bt">${T('wpGrp') ? `<span class="pb-lab">${esc(T('wpGrp'))}</span>` : ''}<span class="pb-grp">${esc(grp)}</span></div><svg class="pb-ppl" viewBox="0 0 120 80" aria-hidden="true"><circle cx="60" cy="18" r="13"/><circle cx="22" cy="28" r="9.5"/><circle cx="98" cy="28" r="9.5"/><path d="M36 78c0-17 10.7-30 24-30s24 13 24 30z"/><path d="M4 78c0-13 7.6-22.5 18-22.5 5 0 9.4 2.2 12.6 6-2.8 4.8-4.4 10.4-4.6 16.5z"/><path d="M116 78c0-13-7.6-22.5-18-22.5-5 0-9.4 2.2-12.6 6 2.8 4.8 4.4 10.4 4.6 16.5z"/></svg></div>` : ''}
@@ -2088,20 +2214,24 @@ const Display = {
         ${card}</div>`;
     }
     if (list.length > 1) {
-      return `<div class="wl pb"><div style="min-width:0;width:100%"><h2>${esc(T('wifiKicker'))}</h2>${card}</div></div>`;
+      const n = list.length, anyQ = qrs.length > 0, hq = anyQ ? ' hasq' : '';
+      const sc = Math.max(.4, Math.min(1, 27 / (n * (anyQ ? 12.6 : 9))));
+      const rowsHTML = list.map(w => `<div class="wl-grid wl-r${hq}"><span class="pb-ic">${ICON.wifi}</span><span class="pb-v" data-fit>${esc(w.ssid)}</span><span class="pb-v${isOpen(w) ? ' open' : ''}" data-fit>${esc(isOpen(w) ? T('wifiNoPass') : w.password)}</span>${anyQ ? `<div class="wl-q">${w.qr !== false && hasQR() ? this.qrFig(w, true) : ''}</div>` : ''}</div>`).join('');
+      return `<div class="wl pb" style="--s:${sc.toFixed(3)}"><h2>${esc(T('wifiKicker'))}</h2><div class="pb-card wl-card"><div class="wl-grid wl-hd${hq}"><span></span><span>${esc(T('wpNet'))}</span><span>${esc(T('wpPw'))}</span>${anyQ ? '<span></span>' : ''}</div>${rowsHTML}</div></div>`;
     }
     const w = list[0], pw = String(w.password || ''), sec = w.security || 'WPA';
     const amb = { '0': T('hDigit'), 'O': T('hUpper'), 'o': T('hLower'), '1': T('hDigit'), 'l': T('hLower') + ' L', 'I': T('hUpper') + ' i' };
     const hasAmb = [...pw].some(ch => amb[ch]);
-    const tiles = [...pw].map(ch => `<span class="tile${/\d/.test(ch) ? ' dg' : ''}">${ch === ' ' ? '␣' : esc(ch)}${hasAmb && amb[ch] ? `<i>${esc(amb[ch])}</i>` : ''}</span>`).join('');
+    const tilesOf = line => [...line].map(ch => `<span class="tile${/\d/.test(ch) ? ' dg' : ''}">${ch === ' ' ? '␣' : esc(ch)}${hasAmb && amb[ch] ? `<i>${esc(amb[ch])}</i>` : ''}</span>`).join('');
+    const pwLines = pw.split('\n');
     return `<div class="wifi"><div class="wifi-main">
       <h2>${esc(T('wifiKicker'))}${w.note ? `<small>${esc(w.note)}</small>` : ''}</h2>
-      <div><span class="lab">${esc(T('wifiSsid'))}</span><div class="ssid">${esc(w.ssid)}</div></div>
-      <div><span class="lab">${esc(T('wifiPw'))}</span>${sec === 'nopass' || !pw ? `<div class="nopass">${esc(T('wifiNoPass'))}</div>` : `<div class="tiles" data-n="${pw.length}">${tiles}</div>`}</div>
+      <div><span class="lab">${esc(T('wifiSsid'))}</span><div class="ssid" data-fit>${esc(w.ssid)}</div></div>
+      <div><span class="lab">${esc(T('wifiPw'))}</span>${sec === 'nopass' || !pw ? `<div class="nopass">${esc(T('wifiNoPass'))}</div>` : `<div class="tlines">${pwLines.map(line => `<div class="tiles" data-n="${[...line].length || 1}">${tilesOf(line)}</div>`).join('')}</div>`}</div>
     </div>${this.qrFig(w, false)}</div>`;
   },
   wifiString(w) {
-    const e = s => String(s || '').replace(/([\\;,:"])/g, '\\$1');
+    const e = s => String(s || '').replace(/[\r\n]+/g, '').replace(/([\\;,:"])/g, '\\$1');
     const sec = w.security || 'WPA';
     return `WIFI:T:${sec};S:${e(w.ssid)};${sec !== 'nopass' ? `P:${e(w.password)};` : ''};`;
   },
@@ -2109,12 +2239,15 @@ const Display = {
     u = u || uPx();
     $$('.qr-code', el).forEach(qr => { if (!drawQR(qr, qr.dataset.qr, 512, 'M')) qr.closest('.qr').remove(); });
     const wc = $('.wp-cls', el); if (wc) { let lo = 6 * u, hi = 34 * u, best = lo; for (let k = 0; k < 14; k++) { const mid = (lo + hi) / 2; wc.style.fontSize = mid + 'px'; if (wc.scrollWidth <= wc.clientWidth + 1 && wc.scrollHeight <= wc.clientHeight + 1) { best = mid; lo = mid; } else hi = mid; } wc.style.fontSize = best + 'px'; }
-    const tiles = $('.tiles', el);
-    if (tiles) {
-      const n = Number(tiles.dataset.n) || 1, gap = 0.6 * u, avail = tiles.getBoundingClientRect().width / (this.scaleOf(tiles) || 1);
-      tiles.style.setProperty('--t', Math.max(3.2 * u, Math.min(7.2 * u, (avail - gap * (n - 1)) / n)) + 'px');
+    const tl2 = $$('.tiles', el);
+    if (tl2.length) {
+      const n = Math.max(...tl2.map(t => Number(t.dataset.n) || 1)), gap = 0.6 * u, avail = tl2[0].getBoundingClientRect().width / (this.scaleOf(tl2[0]) || 1);
+      const tt = Math.max(3.2 * u, Math.min(7.2 * u, (avail - gap * (n - 1)) / n)) + 'px'; tl2.forEach(x => x.style.setProperty('--t', tt));
     }
     this.centerInk($('.pb-grp', el));
+    const wl = $('.wl', el);
+    if (wl) { let k = parseFloat(wl.style.getPropertyValue('--s')) || 1; for (let i = 0; i < 8 && wl.scrollHeight > wl.clientHeight + 2 && k > .3; i++) { k *= .9; wl.style.setProperty('--s', k.toFixed(3)); } }
+    this.fitAll(el);
     const body = $('.n-body', el); if (body) fitText(body, 4 * u, 1.6 * u);
     const tl = $('.tt-list', el); if (tl) fitText(tl, 3 * u, 1.3 * u);
     const img = $('img[data-src]', el);
@@ -2125,6 +2258,16 @@ const Display = {
     const cap = $('figcaption', fig), gap = cap ? cap.offsetHeight + parseFloat(getComputedStyle(fig).rowGap || 0) : 0;
     const W = el.clientWidth, H = el.clientHeight - gap, k = Math.max(0.01, Math.min(W / img.naturalWidth, H / img.naturalHeight));
     img.style.width = Math.floor(img.naturalWidth * k) + 'px'; img.style.height = Math.floor(img.naturalHeight * k) + 'px';
+  },
+  /* 칸보다 긴 글자는 줄바꿈 대신 글자 크기를 줄여 한 줄로 */
+  fitOne(n) {
+    n.style.fontSize = ''; if (!n.clientWidth) return;
+    const base = parseFloat(getComputedStyle(n).fontSize); let f = base;
+    for (let i = 0; i < 4 && n.scrollWidth > n.clientWidth + 1; i++) { f = Math.max(Math.min(base, 9), base * .1, f * (n.clientWidth / n.scrollWidth) * .98); n.style.fontSize = f + 'px'; }
+  },
+  fitAll(el) {
+    const run = () => $$('[data-fit]', el).forEach(n => this.fitOne(n));
+    run(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(run); setTimeout(run, 1500);
   },
   /* 폰트마다 글자가 줄 안에서 위/아래로 치우치는 것을 실제 글자 모양 기준으로 보정 */
   centerInk(node) {
@@ -2220,13 +2363,18 @@ const Display = {
     const v = $('#tmView'); if (!v) return false;
     const t = this.tm, now = nowS(), ph = tmPhase(t, now);
     $('#disp').classList.toggle('is-tm', !!ph);
-    if (!ph) { if (!v.classList.contains('hidden')) { v.classList.add('hidden'); v.innerHTML = ''; } return false; }
+    if (!ph) { if (!v.classList.contains('hidden')) { v.classList.add('hidden'); v.innerHTML = ''; v.dataset.key = ''; } return false; }
     v.classList.remove('hidden');
     if (t.mode === 'sw') {
-      const e = Math.floor(swElapsed(t, now));
-      v.innerHTML = `<h2>${esc(t.title || T('swTitle'))}</h2><div class="num${ph === 'pause' ? ' pz' : ''}">${fmtClock(e)}</div><p>${ph === 'pause' ? esc(T('tmPaused')) : esc(T('swRun'))}</p>`;
+      const e = Math.floor(swElapsed(t, now)), key = ['sw', ph, t.title || '', t.at || ''].join('|');
+      if (v.dataset.key !== key) {
+        v.dataset.key = key;
+        const btns = S.preview ? '' : ph === 'run' ? `<button class="swbtn" type="button" data-sw="pause">${esc(T('swPause'))}</button><button class="swbtn stop" type="button" data-sw="stop">${esc(T('swStopBtn'))}</button>` : ph === 'pause' ? `<button class="swbtn" type="button" data-sw="resume">${esc(T('swResume'))}</button><button class="swbtn stop" type="button" data-sw="stop">${esc(T('swStopBtn'))}</button>` : '';
+        v.innerHTML = `<h2>${esc(t.title || T('swTitle'))}</h2><div class="num${ph === 'pause' ? ' pz' : ph === 'stop' ? ' stopped' : ''}" id="swNum">${fmtClock(e)}</div><p>${ph === 'pause' ? esc(T('tmPaused')) : ph === 'stop' ? esc(T('swStopped')) : esc(T('swRun'))}</p>${btns ? `<div class="swctl">${btns}</div>` : ''}`;
+      } else { const n = $('#swNum', v); if (n) n.textContent = fmtClock(e); }
       return true;
     }
+    v.dataset.key = '';
     const left = tmLeft(t, now), total = Math.max(1, Number(t.total) || left || 1), title = t.title || T('tmTitle');
     if (ph === 'done') {
       if (this.tmDoneId !== t.endAt) { this.tmDoneId = t.endAt; if (now - t.endAt < 5000) chime(true); }
@@ -2269,11 +2417,12 @@ const Display = {
     if (S.preview || !S.classId) return;
     this.initBattery();
     const s = this.slides.length ? (this.idx + 1) + '/' + this.slides.length : '-', b = this.bat;
-    Store.set('status/' + (S.classId + '__' + S.deviceId).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_'), {
+    const path = 'status/' + (S.classId + '__' + S.deviceId).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
+    Store.set(path, {
       classId: S.classId, device: S.deviceId, lastSeen: Date.now(), week: (currentWeek() || {}).label || '',
       screen: innerWidth + '×' + innerHeight, slide: s, kind: devKind(), role: S.teacher ? 'teacher' : '',
       bat: b ? { lv: Math.round(b.level * 100), ch: !!b.charging } : null
-    }).catch(() => {});
+    }).then(() => Store.presence(path)).catch(() => {});
   }
 };
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.view === 'display') { Display.lockScreen(); Display.beat(); } });
@@ -2439,6 +2588,7 @@ const UI = {
 
 /* ================= 관리자 ================= */
 const Admin = {
+  wfF: { grp: '', q: '', empty: false },
   tab: 'status', draft: null, draftId: null, dirty: false, cfgDraft: null,
   alertDraft: null, editingTpl: null, unTpl: null,
   unStatus: null, unLog: null, fails: 0, lockUntil: 0, statusT: null, logFilter: '', busy: false, fbMode: 'login', loginErr: '',
@@ -2463,18 +2613,18 @@ const Admin = {
     if (!S.loaded.config || !S.loaded.admins) { $('#app').innerHTML = '<main class="login"><button class="back" data-b>뒤로</button><h1>관리자</h1><p>불러오는 중입니다…</p></main>'; $('[data-b]').onclick = goBack; return; }
     if (!this.authed()) return this.renderLogin();
     this.renderShell();
-    if (!this.unStatus) this.unStatus = Store.watchCol('status', o => { S.status = o; if (S.view === 'admin' && this.tab === 'status') this.renderTab(); });
+    if (!this.unStatus) this.unStatus = Store.watchCol('status', o => { S.status = o; if (S.view === 'admin' && this.tab === 'status') this.refreshStatus(); });
     if (!this.unAck) this.unAck = Store.watchCol('acks', o => { S.acks = Object.values(o).filter(Boolean); if (S.view === 'admin' && this.tab === 'alerts') this.renderAlertLists(); });
-    if (!this.unTimers) this.unTimers = Store.watchCol('timers', o => { S.timers = o; });
+    if (!this.unTimers) this.unTimers = Store.watchCol('timers', o => { S.timers = o; if (S.view === 'admin' && this.tab === 'status') this.refreshStatus(); });
     if (!this.unTpl) this.unTpl = Store.watch('app/templates', v => { S.templates = (v && Array.isArray(v.list)) ? v.list : []; if (S.view === 'admin' && this.tab === 'alerts') this.renderTplArea(); });
     if (!this.unLog) this.unLog = Store.watchCol('log', o => { S.log = Object.values(o).filter(Boolean).sort((a, b) => b.t - a.t); if (S.view === 'admin' && this.tab === 'settings' && this.sub === 'log') this.renderTab(); }, 200);
-    clearInterval(this.statusT); this.statusT = setInterval(() => { if (S.view !== 'admin') return; if (this.tab === 'status') this.renderTab(); if (this.tab === 'alerts') this.renderAlertLists(); }, 15000);
+    clearInterval(this.statusT); this.statusT = setInterval(() => { if (S.view !== 'admin') return; this.tn = (this.tn || 0) + 1; if (this.tab === 'status') this.refreshStatus(); if (this.tn % 3 === 0 && this.tab === 'alerts') this.renderAlertLists(); if (this.tn % 12 === 0) this.pruneStatus(); }, 5000);
   },
   stop() { this.unTimers && this.unTimers(); this.unTimers = null; this.unAck && this.unAck(); this.unAck = null; this.unTpl && this.unTpl(); this.unTpl = null; this.unStatus && this.unStatus(); this.unStatus = null; this.unLog && this.unLog(); this.unLog = null; clearInterval(this.statusT); },
   refresh(kind) {
     if (S.view !== 'admin') return;
     if (kind === 'issue') { const b = $('#admBanner'); if (b) b.innerHTML = this.bannerHTML(); return; }
-    if (kind === 'control') { const c = $('#ctlCard'); if (c) c.innerHTML = this.ctlInner(); return; }
+    if (kind === 'control') { const c = $('#ctlCard'); if (c) c.innerHTML = this.ctlInner(); this.refreshStatus(); return; }
     const shell = !!$('.adm');
     if (!this.authed() || !shell) { if (kind === 'config' || kind === 'admins' || !shell) return this.start(); return; }
     const h = $('#admTitle'); if (h) h.textContent = S.config.title || '연수 안내';
@@ -2565,7 +2715,10 @@ const Admin = {
     app.onclick = e => { if (Preview.handle(e)) return; this.onClick(e); };
     app.oninput = e => this.onInput(e);
     app.onchange = e => { if (Preview.change(e.target)) return; this.onChange(e); };
-    $('#admMain').addEventListener('focusin', e => { const p = e.target.closest('[data-pk]'); if (p && Preview.key !== p.dataset.pk) { Preview.key = p.dataset.pk; Preview.schedule(); } });
+    app.onkeydown = e => this.onKey(e);
+    $('#admMain').addEventListener('focusin', e => {
+      const wr = e.target.closest && e.target.closest('.wft-r[data-key^="c:"]');
+      if (wr) { const cid = wr.dataset.key.slice(2); if (Preview.cls !== cid) { Preview.cls = cid; const sel = $('#pvCls'); if (sel) sel.value = cid; Preview.key = 'wifi'; Preview.schedule(); } } const p = e.target.closest('[data-pk]'); if (p && Preview.key !== p.dataset.pk) { Preview.key = p.dataset.pk; Preview.schedule(); } });
     $('#mediaFile').onchange = e => { const f = Array.from(e.target.files || []); e.target.value = ''; this.addFiles(f); };
     $('#bgFile').onchange = e => { const f = (e.target.files || [])[0]; e.target.value = ''; if (f) this.setBgImage(f); };
     this.renderTab();
@@ -2589,7 +2742,7 @@ const Admin = {
     if (this.tab === 'weeks') { this.renderWeekList(); this.bindDrop(); }
     if (this.tab === 'alerts') this.bindAdv();
     if (this.tab === 'status' && canShare()) drawQR($('#homeQr'), linkFor(''), 360);
-    this.fillThumbs();
+    this.fillThumbs(); this.autoSizeAll();
     scrollTo(0, y);
     Preview.schedule();
   },
@@ -2614,43 +2767,51 @@ const Admin = {
   ensureCfg() { if (!this.cfgDraft) { const c = clone(S.config); delete c.adminHash; delete c.teacherHash; delete c.reloadToken; this.cfgDraft = c; } return this.cfgDraft; },
 
   /* ----- 홈 ----- */
-  tab_status() {
-    const wk = currentWeek(), now = Date.now();
-    const act = alertOcc(now);
-    const byClass = {};
-    Object.values(S.status || {}).forEach(s => { if (s && s.classId) (byClass[s.classId] = byClass[s.classId] || []).push(s); });
+  refreshStatus() {
+    const a = $('#stCard'); if (a) a.innerHTML = this.statusCardHTML();
+    const c = $('#connWrap'); if (c) c.innerHTML = this.connCard();
+  },
+  pruneStatus() {
+    const now = Date.now();
+    Object.values(S.status || {}).filter(d => d && d._id && now - (d.lastSeen || 0) > 300000).forEach(d => Store.del('status/' + d._id).catch(() => {}));
+  },
+  statusCardHTML() {
+    const now = Date.now(), LIVE = 60000, byClass = {};
+    Object.values(S.status || {}).forEach(d => { if (d && d.classId && now - (d.lastSeen || 0) < LIVE) (byClass[d.classId] = byClass[d.classId] || []).push(d); });
+    Object.values(byClass).forEach(a => a.sort((x, y) => String(x.device).localeCompare(String(y.device))));
     const devLine = d => {
-      const live = now - d.lastSeen < 90000, b = d.bat, low = b && b.lv < 20 && !b.ch;
+      const b = d.bat, low = b && b.lv < 20 && !b.ch;
       const bat = b ? `<span class="batt${low ? ' low' : ''}"><i style="width:${Math.max(4, Math.min(100, b.lv)) * 0.22}px"></i></span><b${low ? ' class="lowtxt"' : ''}>${b.lv}%</b>${b.ch ? ' ⚡충전 중' : low ? ' 충전 필요' : ''}` : '<span title="iPad·iPhone 등은 브라우저가 배터리 정보를 알려주지 않습니다">배터리 정보 없음</span>';
-      return `<li>${bat} · ${d.role === 'teacher' ? '<b>강사</b> · ' : ''}${esc(d.kind || '기기')} · ${live ? '켜짐' : ago(d.lastSeen)}</li>`;
+      return `<li>${bat} · ${d.role === 'teacher' ? '<b>강사</b> · ' : ''}${esc(d.kind || '기기')}</li>`;
     };
     const cell = c => {
-      const ds = (byClass[c.id] || []).filter(d => now - d.lastSeen < 86400000).sort((a, b) => b.lastSeen - a.lastSeen);
-      const live = ds.filter(d => now - d.lastSeen < 90000), on = live.length, last = ds.reduce((m, d) => Math.max(m, d.lastSeen || 0), 0);
-      const low = live.some(d => d.bat && d.bat.lv < 20 && !d.bat.ch);
+      const ds = byClass[c.id] || [], on = ds.length, low = ds.some(d => d.bat && d.bat.lv < 20 && !d.bat.ch);
       const tm = (S.timers || {})[c.id], ph = tmPhase(tm), pz = (S.control || {}).pause || {};
       const tags = (ph ? ` <span class="state live">${esc(tmShow(tm))}</span>` : '') + (pz.all || pz[c.id] ? ' <span class="state">⏸ 멈춤</span>' : '');
-      return `<div class="st ${on ? 'on' : last ? 'stale' : ''}${low ? ' low' : ''}"><b><span class="dot"></span>${esc(c.name)}${tags}${ds.length > 1 ? ` <small style="display:inline;font-weight:400">${on}/${ds.length}대</small>` : ''}</b>${ds.length ? `<ul class="devs">${ds.slice(0, 6).map(devLine).join('')}</ul>` : '<small>연결 기록 없음</small>'}</div>`;
+      return `<div class="st ${on ? 'on' : 'off'}${low ? ' low' : ''}"><b><span class="dot"></span>${esc(c.name)}${tags}${on > 1 ? ` <small style="display:inline;font-weight:400">${on}대</small>` : ''}</b>${on ? `<ul class="devs">${ds.slice(0, 6).map(devLine).join('')}</ul>` : '<small>꺼짐</small>'}</div>`;
     };
-    const summary = cls => { const ids = new Set(cls.map(c => c.id)); const ds = Object.values(S.status || {}).filter(d => d && ids.has(d.classId) && now - d.lastSeen < 90000); const low = ds.filter(d => d.bat && d.bat.lv < 20 && !d.bat.ch).length; return `켜진 기기 ${ds.length}대${low ? ` · <span style="color:var(--alert);font-weight:600">배터리 부족 ${low}대</span>` : ''}`; };
+    const summary = cls => { const ids = new Set(cls.map(c => c.id)); const ds = Object.values(S.status || {}).filter(d => d && ids.has(d.classId) && now - (d.lastSeen || 0) < LIVE); const low = ds.filter(d => d.bat && d.bat.lv < 20 && !d.bat.ch).length; return `켜진 기기 ${ds.length}대${low ? ` · <span style="color:var(--alert);font-weight:600">배터리 부족 ${low}대</span>` : ''}`; };
     const groups = (S.config.groups || []).filter(g => g.classes.length), inGroup = new Set(groups.flatMap(g => g.classes));
-    const lobbyHas = (byClass.__lobby || []).length;
     const clsOf = ids => ids.map(id => S.config.classes.find(c => c.id === id)).filter(Boolean);
-    const cells = (lobbyHas ? `<div class="grp"><h3>${esc(T('lobby'))}</h3><div class="st-grid">${cell({ id: '__lobby', name: T('lobby') })}</div></div>` : '')
+    const cells = ((byClass.__lobby || []).length ? `<div class="grp"><h3>${esc(T('lobby'))}</h3><div class="st-grid">${cell({ id: '__lobby', name: T('lobby') })}</div></div>` : '')
       + (groups.length ? groups.map(g => `<div class="grp"><h3>${esc(g.name)} <small>${summary(clsOf(g.classes))}</small></h3><div class="st-grid">${clsOf(g.classes).map(cell).join('')}</div></div>`).join('')
         + (S.config.classes.some(c => !inGroup.has(c.id)) ? `<div class="grp"><h3>묶음 없음</h3><div class="st-grid">${S.config.classes.filter(c => !inGroup.has(c.id)).map(cell).join('')}</div></div>` : '')
         : `<div class="st-grid">${S.config.classes.map(cell).join('')}</div>`);
+    return `<h2>반별 태블릿 상태 <small style="font-weight:400;color:var(--muted);font-size:13px">${summary(S.config.classes.concat([{ id: '__lobby' }]))}</small><span class="rt">실시간</span></h2>
+      <p class="desc">지금 켜져 있는 기기만 실시간으로 보여줍니다. 화면을 닫거나 전원이 꺼지면 바로 사라집니다. 빨간 테두리는 배터리가 20% 미만인데 충전 중이 아닌 기기입니다. 안드로이드·윈도우·크롬북은 배터리가 보이고, iPad·iPhone은 브라우저 제한으로 보이지 않습니다.${Store.mode === 'local' ? '<br><b>지금은 데모 모드라 이 기기 기록만 보입니다.</b>' : ''}</p>
+      ${cells}
+      <div class="inline" style="margin-top:16px"><button class="btn" data-act="reload-all">모든 태블릿 새로고침</button></div>`;
+  },
+  tab_status() {
+    const wk = currentWeek(), now = Date.now();
+    const act = alertOcc(now);
     const rows = wk ? (wk.timetable || []).filter(r => !r.date || r.date === ymd(new Date())) : [];
     const quick = `<div class="quickbar"><button class="hot" data-act="goto" data-t="alerts">공지 보내기<small>긴급 알림, 안내, 카운트다운</small></button><button data-act="goto" data-t="weeks">콘텐츠 고치기<small>Wi-Fi, 공지, 시간표, 이미지</small></button><button data-act="goto" data-t="design">화면 꾸미기<small>색, 글꼴, 로고</small></button><button data-act="goto" data-t="devices">기기 연결<small>반별 주소와 QR 인쇄</small></button></div>`;
-    return quick + this.connCard() + `<section class="card" id="ctlCard" data-ctx="ctl">${this.ctlInner()}</section>` + `
+    return quick + `<div id="connWrap">${this.connCard()}</div>` + `<section class="card" id="ctlCard" data-ctx="ctl">${this.ctlInner()}</section>` + `
       <section class="card"><h2>지금 화면에 나가는 내용</h2>
         <p class="desc">${wk ? `<b>${esc(wk.label)}</b> (${esc(wk.start || '')} ~ ${esc(wk.end || '')}) · ${S.config.weekMode === 'manual' ? '관리자가 고정한 프로젝트' : '오늘 날짜로 자동 선택'}<br>오늘 시간표 ${rows.length}개 · 게시 중인 공지 ${(wk.notices || []).filter(isLive).length}개 · 이미지 ${(wk.media || []).filter(isLive).length}장` : '등록된 프로젝트가 없습니다. 콘텐츠 탭에서 먼저 추가하세요.'}<br>진행 중인 긴급·공지·안내: <b>${act.length}건</b></p>
       </section>
-      <section class="card"><h2>반별 태블릿 상태 <small style="font-weight:400;color:var(--muted);font-size:13px">${summary(S.config.classes.concat([{ id: '__lobby' }]))}</small></h2>
-        <p class="desc">태블릿은 30초마다(배터리가 바뀌면 바로) 신호를 보냅니다. 초록은 1분 30초 안에 신호가 온 기기, 노랑은 그보다 오래된 기기, 빨간 테두리는 배터리 20% 미만인데 충전 중이 아닌 기기입니다. 안드로이드·윈도우·크롬북은 배터리가 보이고, iPad·iPhone은 브라우저 제한으로 보이지 않습니다.${Store.mode === 'local' ? '<br><b>지금은 데모 모드라 이 기기 기록만 보입니다.</b>' : ''}</p>
-        ${cells}
-        <div class="inline" style="margin-top:16px"><button class="btn" data-act="reload-all">모든 태블릿 새로고침</button><button class="btn" data-act="prune">하루 넘게 신호 없는 기록 정리</button></div>
-      </section>`;
+      <section class="card" id="stCard">${this.statusCardHTML()}</section>`;
   },
 
   ctlInner() {
@@ -2735,13 +2896,6 @@ const Admin = {
       </div>${Array.isArray(r.target) ? `<div style="margin:-2px 0 12px">${this.targetPicker(`timetable.${i}.target`, r.target)}</div>` : ''}`).join('');
     const bulk = list => `<div class="inline bulk"><button type="button" class="btn sm" data-act="pub-all" data-list="${list}" data-v="1">모두 게시</button><button type="button" class="btn sm" data-act="pub-all" data-list="${list}" data-v="0">모두 해제</button><small>‘게시’에 체크한 항목만 태블릿에 나옵니다. 미리 여러 개를 써 두고 필요한 것만 체크하세요.</small></div>`;
     const pubCnt = arr => `${arr.length}개 · 게시 ${arr.filter(x => !x.hidden).length}`;
-    const wifi = d.wifi.map((w, i) => `<div class="item${w.hidden ? ' off' : ''}" data-pk="wifi:${esc(w.id)}">${this.itemHead('wifi', i, d.wifi.length, 'Wi-Fi ' + (i + 1), w)}
-      <div class="row"><label class="f"><span>네트워크 이름 (SSID)</span><input type="text" data-k="wifi.${i}.ssid" value="${esc(w.ssid)}"></label>
-      <label class="f"><span>비밀번호</span><input type="text" data-k="wifi.${i}.password" value="${esc(w.password)}" autocomplete="off" spellcheck="false"></label>
-      <label class="f"><span>보안 방식</span><select data-k="wifi.${i}.security">${[['WPA', 'WPA/WPA2 (일반)'], ['WEP', 'WEP'], ['nopass', '비밀번호 없음']].map(([v, n]) => `<option value="${v}"${(w.security || 'WPA') === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-      <label class="f"><span>메모 (선택)</span><input type="text" data-k="wifi.${i}.note" value="${esc(w.note)}" placeholder="예: 3층 강의실 전용"></label></div>
-      <label class="check" style="margin-bottom:10px"><input type="checkbox" data-k="wifi.${i}.qr" ${w.qr !== false ? 'checked' : ''}>QR 코드 함께 표시 <small class="muted">(휴대폰 카메라로 찍으면 바로 연결)</small></label>
-      ${this.scopeBox('wifi.' + i, w)}</div>`).join('');
     const notices = d.notices.map((n, i) => `<div class="item${n.hidden ? ' off' : ''}" data-pk="n:${esc(n.id)}">${this.itemHead('notices', i, d.notices.length, '공지 ' + (i + 1), n)}
       <div class="row" style="grid-template-columns:1fr"><label class="f"><span>제목</span><input type="text" data-k="notices.${i}.title" value="${esc(n.title)}"></label>
       <label class="f"><span>내용 · 줄바꿈 그대로 표시, **굵게** 로 강조</span><textarea rows="4" data-k="notices.${i}.body">${esc(n.body)}</textarea></label></div>
@@ -2763,18 +2917,149 @@ const Admin = {
       ${sec('tt', '시간표', d.timetable.length + '개', `<p class="desc">‘매일’은 이 프로젝트 기간의 모든 날에 나옵니다. 날짜를 고르면 그날만 나옵니다. 태블릿에는 오늘 것만, 지금 진행 중인 교시를 강조해 보여줍니다.</p>
 ${tt}
         <div class="inline" style="margin-top:6px"><button class="btn" data-act="add-tt">+ 한 줄 추가</button><button class="btn" data-act="tt-sort">시간순 정렬</button><button class="btn" data-act="tt-paste">여러 줄 붙여넣기</button></div>`, 'data-pk="tt"')}
-      ${sec('wifi', 'Wi-Fi', pubCnt(d.wifi), `<p class="desc">반마다 공유기가 다르면 대상을 ‘특정 반만’으로 나눠 넣으세요. 세로로 세운 태블릿에서는 반 묶음 이름·반 이름과 함께 표로 보여줍니다.</p>
-        ${UI.row('여러 개일 때', '', UI.seg('wifiLayout', [['together', '한 화면에 모아서'], ['each', '하나씩 차례로']], d.wifiLayout || 'together'))}${bulk('wifi')}${wifi}<button class="btn" data-act="add-wifi">+ Wi-Fi 추가</button>`)}
+      ${sec('wifi', 'Wi-Fi', this.wifiCountText(), this.wifiSectionHTML())}
       ${sec('notice', '공지사항', pubCnt(d.notices), `<p class="desc">위에서부터 순서대로 돌아갑니다. 게시 기간을 정하면 그 시각에 자동으로 켜지고 꺼집니다.</p>${bulk('notices')}${notices}<button class="btn" data-act="add-notice">+ 공지 추가</button>`)}
       ${sec('media', '이미지·PDF', pubCnt(d.media), `${bulk('media')}<p class="desc">이미지는 한 장씩, PDF는 쪽마다 한 장씩 슬라이드가 됩니다(최대 40쪽). 화면 해상도에 맞춰 줄여서 저장합니다.</p>
         ${Store.canUpload() ? `<div class="drop" id="drop" data-act="pick-file">여기로 파일을 끌어오거나 눌러서 고르세요 · JPG, PNG, PDF</div>` : `<div class="note">이 계정은 파일을 올릴 권한이 없습니다. 페이지 소유자에게 편집 권한을 요청하세요.</div>`}
         <div class="media-grid">${media}</div>`)}
       ${sec('ticker', '흐르는 문구', (d.ticker || '').split('\n').filter(x => x.trim()).length + '줄', `<p class="desc">화면 아래 띠에 흐릅니다. 한 줄에 하나씩 쓰세요.</p><textarea rows="3" data-k="ticker" placeholder="예: 점심은 12:00~13:00, 2층 연회장에서 제공됩니다">${esc(d.ticker)}</textarea>`)}`;
   },
+  onKey(e) { const el = e.target; if (el && el.matches && el.matches('textarea[data-oneline]') && e.key === 'Enter' && !e.shiftKey && !e.isComposing) e.preventDefault(); },
+  autoSize(t) { t.style.height = 'auto'; t.style.height = Math.max(t.classList.contains('tbl') ? 32 : 42, t.scrollHeight + 2) + 'px'; },
+  autoSizeAll() { $$('textarea[data-auto]').forEach(t => this.autoSize(t)); },
+  /* ----- Wi-Fi: 공통 1개 + 반별 1개씩, 한 표에서 확인·수정 ----- */
+  wfMap() {
+    const d = this.draft, ids = new Set((S.config.classes || []).map(c => c.id)), m = { common: [], cls: {}, legacy: [] };
+    d.wifi.forEach((w, i) => {
+      if (!Array.isArray(w.target)) m.common.push(i);
+      else if (w.target.length === 1 && ids.has(w.target[0]) && m.cls[w.target[0]] === undefined) m.cls[w.target[0]] = i;
+      else m.legacy.push(i);
+    });
+    return m;
+  },
+  wfFind(key) {
+    const d = this.draft; if (!d) return null;
+    if (key[0] === 'a') return d.wifi.find(w => w.id === key.slice(2)) || null;
+    const cid = key.slice(2);
+    return d.wifi.find(w => Array.isArray(w.target) && w.target.length === 1 && w.target[0] === cid) || null;
+  },
+  wfStats(m) {
+    m = m || this.wfMap(); const d = this.draft, cls = S.config.classes || [];
+    const filled = cls.filter(c => m.cls[c.id] !== undefined && String(d.wifi[m.cls[c.id]].ssid || '').trim()).length;
+    return { common: m.common.length, filled, total: cls.length, missing: cls.length - filled };
+  },
+  wifiCountText() { const st = this.wfStats(); return `공통 ${st.common} · 반별 ${st.filled}/${st.total}`; },
+  wfSumHTML() {
+    const st = this.wfStats();
+    return `공통 Wi-Fi <b>${st.common}</b>개 · 반별 Wi-Fi 입력 <b>${st.filled}</b> / ${st.total}개 반${st.missing && st.total ? ` · <span style="color:var(--alert);font-weight:600">비어 있는 반 ${st.missing}개</span>` : ''}`;
+  },
+  wfUpdateSum() {
+    const s1 = $('#wfSum'); if (s1) s1.innerHTML = this.wfSumHTML();
+    const c = $('#sec-wifi .cnt'); if (c) c.textContent = this.wifiCountText();
+  },
+  wfSyncRow(row) {
+    if (!row) return; const it = this.wfFind(row.dataset.key);
+    const pub = $('[data-wf$="|pub"]', row), qr = $('[data-wf$="|qr"]', row);
+    if (pub) { pub.disabled = !it; pub.checked = !!it && !it.hidden; }
+    if (qr) { qr.disabled = !it; qr.checked = !!it && it.qr !== false; }
+    row.classList.toggle('off', !!it && !!it.hidden);
+    row.classList.toggle('empty', !it || !(String(it.ssid || '').trim() || String(it.password || '').trim()));
+  },
+  wfInput(el) {
+    const d = this.draft; if (!d) return;
+    const [key, field] = el.dataset.wf.split('|'), isChk = el.type === 'checkbox', val = isChk ? el.checked : el.value;
+    let it = this.wfFind(key);
+    if (!it) {
+      if (key[0] !== 'c' || (field !== 'ssid' && field !== 'pw') || !String(val).trim()) return;
+      it = { id: uid(), ssid: '', password: '', security: 'nopass', note: '', target: [key.slice(2)], qr: true, hidden: false, from: '', to: '' }; d.wifi.push(it);
+    }
+    if (field === 'ssid') it.ssid = val;
+    else if (field === 'pw') { it.password = val; it.security = String(val).trim() ? (it.security === 'WEP' ? 'WEP' : 'WPA') : 'nopass'; }
+    else if (field === 'qr') it.qr = val;
+    else if (field === 'pub') it.hidden = !val;
+    if (key[0] === 'c' && !String(it.ssid || '').trim() && !String(it.password || '').trim()) d.wifi.splice(d.wifi.indexOf(it), 1);
+    if (el.matches('textarea')) this.autoSize(el);
+    this.wfSyncRow(el.closest('.wft-r')); this.wfUpdateSum(); this.markDirty(); Preview.schedule();
+  },
+  wfSet(cid, ssid, pw) {
+    const d = this.draft; let it = this.wfFind('c:' + cid); ssid = String(ssid || '').trim(); pw = String(pw || '').trim();
+    if (!ssid && !pw) { if (it) d.wifi.splice(d.wifi.indexOf(it), 1); return; }
+    if (!it) { it = { id: uid(), ssid: '', password: '', security: 'nopass', note: '', target: [cid], qr: true, hidden: false, from: '', to: '' }; d.wifi.push(it); }
+    it.ssid = ssid; it.password = pw; it.security = pw ? (it.security === 'WEP' ? 'WEP' : 'WPA') : 'nopass';
+  },
+  wfOrder() {
+    const classes = S.config.classes || [], by = Object.fromEntries(classes.map(c => [c.id, c])), groups = (S.config.groups || []).filter(g => g.classes.length);
+    const seen = new Set(), out = [];
+    const take = ids => ids.filter(id => by[id] && !seen.has(id) && (seen.add(id), true));
+    if (groups.length) { groups.forEach(g => out.push({ g, ids: take(g.classes) })); const rest = take(classes.map(c => c.id)); if (rest.length) out.push({ g: { id: '_none', name: '묶음 없음' }, ids: rest }); }
+    else out.push({ g: null, ids: take(classes.map(c => c.id)) });
+    return out.filter(x => x.ids.length);
+  },
+  wifiRowHTML(key, label, it, common, idx) {
+    const k = esc(key), empty = !it || !(String(it.ssid || '').trim() || String(it.password || '').trim());
+    return `<div class="wft-r${common ? ' common' : ''}${it && it.hidden ? ' off' : ''}${empty ? ' empty' : ''}" data-key="${k}">
+      <label class="wft-c pubc" title="체크한 것만 태블릿에 나옵니다"><input type="checkbox" data-wf="${k}|pub" ${it && !it.hidden ? 'checked' : ''} ${it ? '' : 'disabled'} aria-label="게시"></label>
+      <span class="wft-n" title="${esc(label)}">${esc(label)}</span>
+      <textarea class="one tbl" rows="1" data-auto="1" data-oneline="1" data-wf="${k}|ssid" placeholder="네트워크명" spellcheck="false" autocomplete="off" aria-label="${esc(label)} 네트워크명">${esc(it ? it.ssid : '')}</textarea>
+      <textarea class="one tbl" rows="1" data-auto="1" data-oneline="1" data-wf="${k}|pw" placeholder="비우면 개방형" spellcheck="false" autocomplete="off" aria-label="${esc(label)} 비밀번호">${esc(it ? it.password : '')}</textarea>
+      <label class="wft-c qrc" title="휴대폰 카메라로 찍으면 바로 연결"><span class="wft-ql">QR코드 표시</span><input type="checkbox" data-wf="${k}|qr" ${it && it.qr !== false ? 'checked' : ''} ${it ? '' : 'disabled'} aria-label="QR 코드"></label>
+      <span class="wft-x">${common ? `<button type="button" class="btn sm ghost" data-act="del" data-list="wifi" data-i="${idx}" aria-label="삭제" title="삭제">✕</button>` : ''}</span></div>`;
+  },
+  wifiTableHTML() {
+    const d = this.draft, m = this.wfMap(), f = this.wfF, q = (f.q || '').trim().toLowerCase();
+    let html = `<div class="wft-h"><span>게시</span><span>대상</span><span>네트워크명</span><span>비밀번호</span><span>QR코드 표시</span><span></span></div>`;
+    if (!m.common.length) html += `<div class="wft-g" style="border-top:0">공통 Wi-Fi 없음<small>모든 반에 똑같이 나올 Wi-Fi가 있으면 추가하세요</small><button type="button" class="btn sm" data-act="add-wifi">+ 공통 Wi-Fi 추가</button></div>`;
+    m.common.forEach(i => {
+      const w = d.wifi[i];
+      html += this.wifiRowHTML('a:' + w.id, '공통 (모든 반)', w, true, i);
+      html += `<details class="wft-dw"><summary class="wft-sm">상세 설정 · 메모, 보안 방식, 게시 기간</summary><div class="wft-det"><div class="row"><label class="f"><span>메모 (선택)</span><input type="text" data-k="wifi.${i}.note" value="${esc(w.note)}" placeholder="예: 로비·복도 공용"></label>
+        <label class="f"><span>보안 방식</span><select data-k="wifi.${i}.security">${[['WPA', 'WPA/WPA2 (일반)'], ['WEP', 'WEP'], ['nopass', '비밀번호 없음']].map(([v, n]) => `<option value="${v}"${(w.security || 'WPA') === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label></div>${this.period('wifi.' + i, w)}</div></details>`;
+    });
+    const clsBy = Object.fromEntries((S.config.classes || []).map(c => [c.id, c]));
+    let shown = 0;
+    this.wfOrder().forEach(({ g, ids }) => {
+      if (f.grp && (g ? g.id : '') !== f.grp) return;
+      let rows = '', cnt = 0, fill = 0;
+      ids.forEach(cid => {
+        const it = m.cls[cid] !== undefined ? d.wifi[m.cls[cid]] : null, has = !!(it && String(it.ssid || '').trim());
+        if (has) fill++;
+        if (f.empty && has) return;
+        if (q && !(String(clsBy[cid].name).toLowerCase().includes(q) || (it && String(it.ssid || '').toLowerCase().includes(q)))) return;
+        rows += this.wifiRowHTML('c:' + cid, clsBy[cid].name, it, false); cnt++;
+      });
+      if (!cnt) return; shown += cnt;
+      if (g) html += `<div class="wft-g">${esc(g.name)}<small>${ids.length}개 반 · 입력 ${fill}</small></div>`;
+      html += rows;
+    });
+    if (!shown) html += `<div class="wft-none">${(S.config.classes || []).length ? '조건에 맞는 반이 없습니다.' : '반이 없습니다. 설정 → 반·묶음에서 먼저 반을 만드세요.'}</div>`;
+    return html;
+  },
+  renderWifiTable() { const w = $('#wfWrap'); if (!w) return; w.innerHTML = this.wifiTableHTML(); this.autoSizeAll(); this.wfUpdateSum(); },
+  wifiLegacyItem(w, i) {
+    return `<div class="item${w.hidden ? ' off' : ''}" data-pk="wifi:${esc(w.id)}">${this.itemHead('wifi', i, this.draft.wifi.length, 'Wi-Fi ' + (i + 1), w)}
+      <div class="wf"><label class="f"><span>네트워크 이름 (SSID)</span><textarea class="one" rows="1" data-auto="1" data-oneline="1" data-k="wifi.${i}.ssid" spellcheck="false" autocomplete="off">${esc(w.ssid)}</textarea></label>
+      <label class="f"><span>비밀번호</span><textarea class="one" rows="1" data-auto="1" data-oneline="1" data-k="wifi.${i}.password" spellcheck="false" autocomplete="off">${esc(w.password)}</textarea></label>
+      <label class="f"><span>보안 방식</span><select data-k="wifi.${i}.security">${[['WPA', 'WPA/WPA2 (일반)'], ['WEP', 'WEP'], ['nopass', '비밀번호 없음']].map(([v, n]) => `<option value="${v}"${(w.security || 'WPA') === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+      <label class="f"><span>메모 (선택)</span><input type="text" data-k="wifi.${i}.note" value="${esc(w.note)}" placeholder="예: 3층 강의실 전용"></label></div>
+      <label class="check" style="margin-bottom:10px"><input type="checkbox" data-k="wifi.${i}.qr" ${w.qr !== false ? 'checked' : ''}>QR 코드 함께 표시</label>
+      ${this.scopeBox('wifi.' + i, w)}</div>`;
+  },
+  wifiSectionHTML() {
+    const d = this.draft, m = this.wfMap(), f = this.wfF, groups = (S.config.groups || []).filter(g => g.classes.length);
+    const chips = groups.length ? `<span class="gchips" style="margin:0">묶음 <button type="button" class="btn sm${f.grp ? '' : ' pri'}" data-act="wf-grp" data-g="">전체</button>${groups.map(g => `<button type="button" class="btn sm${f.grp === g.id ? ' pri' : ''}" data-act="wf-grp" data-g="${esc(g.id)}">${esc(g.name)}</button>`).join('')}</span>` : '';
+    const legacy = m.legacy.length ? `<details class="adv" open style="margin-top:14px"><summary>여러 반을 한꺼번에 지정한 Wi-Fi ${m.legacy.length}개 <small>(이전 방식으로 만든 항목 · 위 표에 맞지 않아 따로 모아 둡니다)</small></summary><div class="in">${m.legacy.map(i => this.wifiLegacyItem(d.wifi[i], i)).join('')}</div></details>` : '';
+    return `<p class="desc">공통 Wi-Fi 한 줄과 반별 Wi-Fi를 <b>한 표에서 한눈에 보고 바로 고칩니다.</b> 반별 Wi-Fi는 그 반 태블릿에만 나오고, 공통 Wi-Fi 앞에 표시됩니다. 비밀번호를 비우면 <b>개방형 WIFI</b>로 나오고, 칸보다 길면 한 줄로 글자가 줄어듭니다. 2줄로 보이려면 <b>Shift+Enter</b>로 줄을 바꾸세요.</p>
+      <div class="wft-tools"><button type="button" class="btn sm pri" data-act="wf-paste">엑셀에서 붙여넣기</button><button type="button" class="btn sm" data-act="wf-fill">규칙으로 자동 채우기</button><button type="button" class="btn sm" data-act="wf-clear">반별 Wi-Fi 모두 비우기</button><button type="button" class="btn sm" data-act="add-wifi">+ 공통 Wi-Fi 추가</button></div>
+      <div class="wft-tools"><input type="search" id="wfQ" placeholder="반 이름·네트워크명 검색" value="${esc(f.q)}" aria-label="검색"><label class="check"><input type="checkbox" id="wfEmpty" ${f.empty ? 'checked' : ''}>비어 있는 반만 보기</label>${chips}</div>
+      <p class="wft-sum" id="wfSum">${this.wfSumHTML()}</p>
+      <div class="wft" id="wfWrap" data-pk="wifi">${this.wifiTableHTML()}</div>
+      ${legacy}
+      ${UI.row('여러 개일 때', '한 반에 Wi-Fi가 2개 이상 나올 때의 표시 방식', UI.seg('wifiLayout', [['together', '한 화면에 모아서'], ['each', '하나씩 차례로']], d.wifiLayout || 'together'))}`;
+  },
   bindAdv() { const d = $('#alAdv'); if (d) d.addEventListener('toggle', () => { this.advOpen = d.open; }); },
   bindDrop() {
     $$('details[data-scope]').forEach(dt => dt.addEventListener('toggle', () => { (this.scopeOpen = this.scopeOpen || {})[dt.dataset.scope] = dt.open; }));
-    $$('details[data-sec]').forEach(dt => dt.addEventListener('toggle', () => { this.secOpen = this.secOpen || {}; this.secOpen[dt.dataset.sec] = dt.open; }));
+    $$('details[data-sec]').forEach(dt => dt.addEventListener('toggle', () => { this.secOpen = this.secOpen || {}; this.secOpen[dt.dataset.sec] = dt.open; if (dt.open) this.autoSizeAll(); }));
     const dz = $('#drop'); if (!dz) return;
     dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
     dz.ondragleave = () => dz.classList.remove('over');
@@ -2834,6 +3119,8 @@ ${tt}
   quiet(el) { return !!el.closest('[data-ctx="alert"],[data-ctx="ctl"]'); },
   onInput(e) {
     const el = e.target;
+    if (el.id === 'wfQ') { this.wfF.q = el.value; this.renderWifiTable(); return; }
+    if (el.dataset.wf) { this.wfInput(el); return; }
     if (el.id === 'logQ') { this.logFilter = el.value; const pos = el.selectionStart; this.renderTab(); const q = $('#logQ'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } return; }
     if (!el.dataset.k) return;
     const obj = this.ctxObj(el); if (!obj) return;
@@ -2841,6 +3128,7 @@ ${tt}
     let v = el.type === 'checkbox' ? el.checked : el.value;
     if (el.type === 'number' || el.type === 'range') v = el.value === '' ? '' : Number(el.value);
     this.setPath(obj, el.dataset.k, v);
+    if (el.matches && el.matches('textarea[data-auto]')) this.autoSize(el);
     if (el.type === 'range') { const o = el.parentElement.querySelector('output'); if (o) o.textContent = el.value + (o.dataset.unit || ''); }
     if (el.type === 'color') { const c = el.parentElement.querySelector('code'); if (c) c.textContent = el.value.toUpperCase(); const r = el.parentElement.querySelector('[data-act="clr-reset"]'); if (r) r.disabled = false; this.markPresets(); }
     if (!this.quiet(el)) this.markDirty();
@@ -2849,7 +3137,11 @@ ${tt}
   },
   onChange(e) {
     const el = e.target;
+    if (el.dataset.wf && el.type === 'checkbox') { this.wfInput(el); return; }
+    if (el.id === 'wfEmpty') { this.wfF.empty = el.checked; this.renderWifiTable(); return; }
     if (el.id === 'logProj') { this.logProj = el.value; this.renderTab(); return; }
+    if (el.dataset.lsel) { this.logSel = this.logSel || new Set(); el.checked ? this.logSel.add(el.dataset.lsel) : this.logSel.delete(el.dataset.lsel); this.renderTab(); return; }
+    if (el.dataset.lselAll) { this.logSel = el.checked ? new Set(S.log.map(e => e._id)) : new Set(); this.renderTab(); return; }
     if (el.dataset.hsel) { this.histSel = this.histSel || new Set(); el.checked ? this.histSel.add(el.dataset.hsel) : this.histSel.delete(el.dataset.hsel); this.renderAlertLists(); return; }
     if (el.dataset.hselAll) { const past = S.alerts.filter(a => isPast(a)); this.histSel = new Set(el.checked ? past.map(a => a.id) : []); this.renderAlertLists(); return; }
     if (el.dataset.pub) { const [l, i] = el.dataset.pub.split('.'); const it = this.draft && this.draft[l] && this.draft[l][+i]; if (it) { it.hidden = !el.checked; this.markDirty(); this.rerenderKeep(); } return; }
@@ -2885,7 +3177,7 @@ ${tt}
   },
   rerenderKeep() {
     const y = scrollY;
-    if (this.tab === 'weeks' && $('#wkEd')) { $('#wkEd').innerHTML = this.weekEditor(); this.bindDrop(); this.fillThumbs(); Preview.schedule(); }
+    if (this.tab === 'weeks' && $('#wkEd')) { $('#wkEd').innerHTML = this.weekEditor(); this.bindDrop(); this.fillThumbs(); this.autoSizeAll(); Preview.schedule(); }
     else this.renderTab();
     scrollTo(0, y);
   },
@@ -3012,6 +3304,62 @@ ${tt}
           close(); if (n) { this.markDirty(); Preview.key = 'tt'; this.rerenderKeep(); toast(n + '줄을 추가했습니다'); } else toast('시간 형식(09:00-09:50)을 찾지 못했습니다');
         });
       });
+    },
+    'wf-grp'(b) { this.wfF.grp = b.dataset.g || ''; this.rerenderKeep(); },
+    'wf-paste'() {
+      const cls = S.config.classes || [];
+      if (!cls.length) return toast('먼저 반을 만드세요');
+      const ex = cls.slice(0, 2).map((c, i) => `${c.name}\tnepes${i + 1}\t0112${i + 3}`).join('\n');
+      modal(`<h3>엑셀에서 붙여넣기</h3><p>엑셀·한글 표에서 <b>반 이름 · 네트워크명 · 비밀번호</b> 세 칸을 복사해 붙여넣으세요. 반 이름이 같은 반에 들어갑니다. 비밀번호 칸이 비어 있으면 개방형으로 처리합니다.\n예) ${ex.replace(/\t/g, '  |  ').replace(/\n/g, '\n      ')}</p>
+        <textarea id="wfPaste" rows="9" spellcheck="false" style="font-family:var(--mono);font-size:13px" placeholder="여기에 붙여넣기 (Ctrl+V)"></textarea><p class="err" id="wfPErr" style="margin:8px 0 0"></p>
+        <div class="acts" style="margin-top:12px"><button class="btn" data-x="0">취소</button><button class="btn pri" data-x="1">적용</button></div>`, (m, close) => {
+        setTimeout(() => $('#wfPaste', m).focus(), 30);
+        m.addEventListener('click', e => {
+          const b = e.target.closest('[data-x]'); if (!b) return; if (b.dataset.x !== '1') return close();
+          const norm = x => String(x || '').replace(/\s+/g, '').toLowerCase(), byName = new Map(cls.map(c => [norm(c.name), c.id]));
+          const rows = $('#wfPaste', m).value.split(/\r?\n/).map(l => (l.includes('\t') ? l.split('\t') : l.split(/\s{2,}|,/)).map(x => x.trim())).filter(r => r.some(Boolean));
+          if (!rows.length) { $('#wfPErr', m).textContent = '붙여넣은 내용이 없습니다.'; return; }
+          const named = rows.filter(r => byName.has(norm(r[0]))).length; let n = 0; const miss = [];
+          if (named) rows.forEach(r => { const cid = byName.get(norm(r[0])); if (cid) { this.wfSet(cid, r[1], r[2]); n++; } else if (!/네트워크|ssid|비밀번호/i.test(r.join(' '))) miss.push(r[0]); });
+          else { const ids = this.wfOrder().flatMap(x => x.ids); rows.filter(r => !/네트워크|ssid|비밀번호/i.test(r.join(' '))).slice(0, ids.length).forEach((r, i) => { this.wfSet(ids[i], r[0], r[1]); n++; }); }
+          close(); this.markDirty(); this.rerenderKeep();
+          toast(`${n}개 반에 입력했습니다${named ? '' : ' (반 이름이 없어 표 순서대로 넣었습니다)'}${miss.length ? ' · 못 찾은 반: ' + miss.slice(0, 5).join(', ') + (miss.length > 5 ? ` 외 ${miss.length - 5}` : '') : ''}`, 6000);
+        });
+      });
+    },
+    'wf-fill'() {
+      const groups = (S.config.groups || []).filter(g => g.classes.length);
+      if (!(S.config.classes || []).length) return toast('먼저 반을 만드세요');
+      modal(`<h3>규칙으로 자동 채우기</h3><p>반마다 다른 번호를 넣어 한꺼번에 만듭니다. <b>{n}</b>은 반 번호(1조 → 1), <b>{반}</b>은 반 이름입니다.\n예) 네트워크명 nepes{n} → nepes1, nepes2 …</p>
+        <div class="stack"><label class="f"><span>네트워크명 규칙</span><input type="text" id="wfFS" placeholder="nepes{n}" autocomplete="off"></label>
+        <label class="f"><span>비밀번호 규칙 (비우면 개방형)</span><input type="text" id="wfFP" placeholder="예: 0112{n}" autocomplete="off"></label>
+        <label class="f"><span>적용할 반</span><select id="wfFG"><option value="">모든 반</option>${groups.map(g => `<option value="${esc(g.id)}">${esc(g.name)}만</option>`).join('')}</select></label>
+        <label class="f"><span>이미 입력된 반은</span><select id="wfFW"><option value="empty">그대로 두기 (빈 반만 채움)</option><option value="all">덮어쓰기</option></select></label></div>
+        <p class="err" id="wfFErr" style="margin:8px 0 0"></p><div class="acts" style="margin-top:12px"><button class="btn" data-x="0">취소</button><button class="btn pri" data-x="1">채우기</button></div>`, (m, close) => {
+        setTimeout(() => $('#wfFS', m).focus(), 30);
+        m.addEventListener('click', e => {
+          const b = e.target.closest('[data-x]'); if (!b) return; if (b.dataset.x !== '1') return close();
+          const ps = $('#wfFS', m).value.trim(), pp = $('#wfFP', m).value, gid = $('#wfFG', m).value, over = $('#wfFW', m).value === 'all';
+          if (!ps) { $('#wfFErr', m).textContent = '네트워크명 규칙을 입력하세요. 예: nepes{n}'; return; }
+          const classes = S.config.classes, by = Object.fromEntries(classes.map(c => [c.id, c]));
+          const targets = gid ? groups.find(g => g.id === gid).classes.filter(id => by[id]) : classes.map(c => c.id);
+          const m0 = this.wfMap(); let n = 0;
+          targets.forEach((cid, i) => {
+            const has = m0.cls[cid] !== undefined && String(this.draft.wifi[m0.cls[cid]].ssid || '').trim();
+            if (has && !over) return;
+            const name = by[cid].name, dg = (name.match(/\d+/) || [i + 1])[0], fill = t => String(t).replace(/\{n\}/g, dg).replace(/\{반\}/g, name);
+            this.wfSet(cid, fill(ps), fill(pp)); n++;
+          });
+          close(); this.markDirty(); this.rerenderKeep(); toast(`${n}개 반을 채웠습니다`);
+        });
+      });
+    },
+    async 'wf-clear'() {
+      const ids = new Set((S.config.classes || []).map(c => c.id)), n = this.draft.wifi.filter(w => Array.isArray(w.target) && w.target.length === 1 && ids.has(w.target[0])).length;
+      if (!n) return toast('비울 반별 Wi-Fi가 없습니다');
+      if (!(await ask('반별 Wi-Fi 모두 비우기', `반별로 입력한 Wi-Fi ${n}개를 모두 지웁니다. 공통 Wi-Fi는 그대로 둡니다. 저장하기 전에는 되돌릴 수 있습니다.`, '모두 비우기', true))) return;
+      this.draft.wifi = this.draft.wifi.filter(w => !(Array.isArray(w.target) && w.target.length === 1 && ids.has(w.target[0])));
+      this.markDirty(); this.rerenderKeep();
     },
     'pub-all'(b) { (this.draft[b.dataset.list] || []).forEach(x => x.hidden = b.dataset.v !== '1'); this.markDirty(); this.rerenderKeep(); },
     async 'add-wifi'() { const id = uid(); this.draft.wifi.push({ id, ssid: '', password: '', security: 'WPA', note: '', target: 'all', from: '', to: '', qr: true, hidden: false }); this.markDirty(); Preview.key = 'wifi:' + id; this.rerenderKeep(); },
@@ -3268,7 +3616,19 @@ ${tt}
       if (!can('editLog')) return toast('Lv.3만 할 수 있습니다');
       const days = Number(b.dataset.d) || 30;
       if (!(await ask('오래된 이력 정리', `${days}일이 지난 변경 이력을 지웁니다. 되돌릴 수 없습니다.`, '정리', true))) return;
-      try { let total = 0, ids; do { ids = await Store.olderThan('log', Date.now() - days * 86400000); for (const id of ids) await Store.del('log/' + id); total += ids.length; } while (ids.length >= 300); writeLog('변경 이력 정리', [`${days}일 지난 ${total}건`]); toast(total + '건을 정리했습니다'); } catch (x) { toast(saveErr(x)); }
+      try { let total = 0, ids; do { ids = await Store.olderThan('log', Date.now() - days * 86400000); await Store.delMany(ids.map(id => 'log/' + id)); total += ids.length; } while (ids.length >= 300); writeLog('변경 이력 정리', [`${days}일 지난 ${total}건`]); toast(total + '건을 정리했습니다'); } catch (x) { toast(saveErr(x)); }
+    },
+    async 'log-del-sel'() {
+      if (!can('editLog')) return toast('Lv.3만 할 수 있습니다');
+      const ids = [...(this.logSel || [])].filter(id => S.log.some(e => e._id === id));
+      if (!ids.length) return toast('지울 이력을 먼저 고르세요');
+      if (!(await ask('이력 삭제', `선택한 이력 ${ids.length}건을 지웁니다. 되돌릴 수 없습니다.`, '삭제', true))) return;
+      try { await Store.delMany(ids.map(id => 'log/' + id)); this.logSel = new Set(); writeLog('변경 이력 삭제', [`${ids.length}건 (선택 삭제)`]); toast(`${ids.length}건을 지웠습니다`); } catch (x) { toast(saveErr(x)); }
+    },
+    async 'log-del-all'() {
+      if (!can('editLog')) return toast('Lv.3만 할 수 있습니다');
+      if (!(await ask('이력 전체 삭제', '프로젝트·검색 조건과 상관없이 모든 변경 이력을 지웁니다. 되돌릴 수 없습니다.', '전체 삭제', true))) return;
+      try { let total = 0, ids; do { ids = await Store.olderThan('log', Date.now() + 3600000); await Store.delMany(ids.map(id => 'log/' + id)); total += ids.length; } while (ids.length >= 300); this.logSel = new Set(); writeLog('변경 이력 전체 삭제', [`${total}건`]); toast(`${total}건을 지웠습니다`); } catch (x) { toast(saveErr(x)); }
     },
     async 'log-del'(b) {
       if (!can('editLog')) return toast('Lv.3만 할 수 있습니다');
@@ -3700,9 +4060,9 @@ ${tt}
     return `<section class="card"><h2>변경 이력</h2><p class="desc">최근 200건입니다. ${ed ? '되돌리기·삭제·정리는 Lv.3만 할 수 있습니다.' : '되돌리기·삭제는 Lv.3 관리자만 할 수 있어 지금은 보기만 가능합니다.'}</p>
       <div class="row"><label class="f"><span>프로젝트</span><select id="logProj">${projOpts.map(([v, n]) => `<option value="${esc(v)}"${pf === v ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       <label class="f"><span>검색 (이름·내용)</span><input type="search" id="logQ" value="${esc(q)}" placeholder="예: ${esc(S.who || '홍길동')}, 공지, Wi-Fi"></label></div>
-      ${ed ? `<div class="inline" style="margin-bottom:6px"><button class="btn sm" data-act="log-prune" data-d="7">7일 지난 이력 정리</button><button class="btn sm" data-act="log-prune" data-d="30">30일 지난 이력 정리</button></div>` : ''}
+      ${ed ? (() => { this.logSel = this.logSel || new Set(); const n = list.filter(e => this.logSel.has(e._id)).length; return `<div class="inline" style="margin-bottom:6px"><label class="check"><input type="checkbox" data-lsel-all="1" ${list.length && n === list.length ? 'checked' : ''}>전체 선택</label><button class="btn sm warn" data-act="log-del-sel" ${n ? '' : 'disabled'}>선택 삭제 (${n})</button><button class="btn sm" data-act="log-prune" data-d="7">7일 지난 이력 정리</button><button class="btn sm" data-act="log-prune" data-d="30">30일 지난 이력 정리</button><button class="btn sm warn" data-act="log-del-all">이력 전체 삭제</button></div>`; })() : ''}
       <p class="desc" style="margin:4px 0 0">${list.length}건</p>
-      ${list.length ? list.map(e => { const w = S.weeks.find(x => x.id === pidOf(e)); return `<div class="list-row"><div class="m"><small>${stamp(e.t)} · <b style="display:inline;color:var(--ink)">${esc(e.who)}</b>${w ? ` · ${esc(w.label)}` : ''}</small><b>${esc(e.action)}</b>${(e.detail || []).length ? `<ul>${e.detail.slice(0, 12).map(d => `<li>${esc(d)}</li>`).join('')}${e.detail.length > 12 ? `<li>외 ${e.detail.length - 12}건</li>` : ''}</ul>` : ''}</div>
+      ${list.length ? list.map(e => { const w = S.weeks.find(x => x.id === pidOf(e)); return `<div class="list-row">${ed ? `<label class="check" style="align-self:center"><input type="checkbox" data-lsel="${esc(e._id)}" ${this.logSel.has(e._id) ? 'checked' : ''} aria-label="선택"></label>` : ''}<div class="m"><small>${stamp(e.t)} · <b style="display:inline;color:var(--ink)">${esc(e.who)}</b>${w ? ` · ${esc(w.label)}` : ''}</small><b>${esc(e.action)}</b>${(e.detail || []).length ? `<ul>${e.detail.slice(0, 12).map(d => `<li>${esc(d)}</li>`).join('')}${e.detail.length > 12 ? `<li>외 ${e.detail.length - 12}건</li>` : ''}</ul>` : ''}</div>
         <div class="r">${ed && e.undo ? `<button class="btn sm" data-act="log-undo" data-id="${esc(e._id)}">되돌리기</button>` : ''}${ed ? `<button class="btn sm" data-act="log-del" data-id="${esc(e._id)}">삭제</button>` : ''}</div></div>`; }).join('') : '<p class="desc" style="margin:0">기록이 없습니다.</p>'}</section>`;
   }
 };
