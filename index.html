@@ -1116,7 +1116,7 @@ const Store = {
         if (!firebase.apps.length) firebase.initializeApp(FBC);
         this.fb = firebase.database(); this.mode = 'firebase';
         this.fb.ref('.info/connected').on('value', s => { const v = !!s.val(), prev = this.conn; this.conn = v; setConnected(v); if (!v) { this.od && this.od.clear(); } else if (prev === false && S.view === 'display') setTimeout(() => Display.beat(), 300); });
-        this.fb.ref('.info/serverTimeOffset').on('value', s => { S.offset = Number(s.val()) || 0; });
+        this.fb.ref('.info/serverTimeOffset').on('value', s => { S.offset = Number(s.val()) || 0; if (S.view === 'display' && typeof Display !== 'undefined' && Display.slides && Display.slides.length) Display.tickSync(); });
         return;
       } catch (e) { console.warn('Firebase 연결 실패', e); this.mode = 'error'; this.problem = 'fbload'; this.detail = String((e && e.message) || e); return; }
     }
@@ -1641,6 +1641,9 @@ function show(v) {
   else if (v === 'teacher') Teacher.start();
   else Setup.render();
 }
+function setClassUrl(cid) {
+  try { const u = new URL(location.href); if (cid) u.searchParams.set('class', cid); else u.searchParams.delete('class'); history.replaceState(history.state, '', u.pathname + u.search + u.hash); } catch (e) {}
+}
 function home() { return S.teacherMode ? 'teacher' : S.classId ? 'display' : 'setup'; }
 function goBack() { if (S.depth > 0) history.back(); else { S.preview = false; show(S.view === 'display' ? 'setup' : home()); } }
 window.addEventListener('popstate', e => {
@@ -1731,6 +1734,7 @@ const Setup = {
   grp: null,
   render() {
     applyTheme('auto');
+    setClassUrl(null);
     const cls = S.config.classes, groups = (S.config.groups || []).filter(g => g.classes.length);
     const g = this.grp && this.grp !== '_all' ? groups.find(x => x.id === this.grp) : null;
     const showGroups = groups.length && !this.grp;
@@ -1749,7 +1753,7 @@ const Setup = {
     $('#app').onclick = e => {
       const gb = e.target.closest('[data-grp]'); if (gb) { this.grp = gb.dataset.grp; this.render(); return; }
       const b = e.target.closest('[data-cls]');
-      if (b) { this.grp = null; S.classId = b.dataset.cls; LS.set('tsd-class', S.classId); S.preview = false; route('display'); return; }
+      if (b) { this.grp = null; S.classId = b.dataset.cls; LS.set('tsd-class', S.classId); S.preview = false; route('display'); setClassUrl(S.classId); return; }
       if (e.target.closest('[data-go="groups"]')) { this.grp = null; this.render(); return; }
       if (e.target.closest('[data-go="admin"]')) route('admin');
       if (e.target.closest('[data-go="back"]')) goBack();
@@ -1890,7 +1894,7 @@ const Teacher = {
 const Display = {
   slides: [], idx: 0, timer: null, clockT: null, hbT: null, alertT: null, sig: '', textSig: '', tickerSig: '', tickerAnim: null, tickerT: null,
   seen: {}, fullUntil: {}, alertSig: '', alertListSig: '', wl: null, taps: [], hintT: null, resizeT: null, ctrlT: null,
-  paused: false, pauseT: null, dir: 1, progAnim: null, bgSrc: null,
+  paused: false, pauseT: null, dir: 1, progAnim: null, bgSrc: null, hold: null, shown: false, shownOnce: false, forceProg: false, lay: '', HOLD: 15000,
   start() {
     applyTheme(S.config.theme);
     $('#app').innerHTML = `<div class="display" id="disp">
@@ -1917,7 +1921,7 @@ const Display = {
     $('#disp').addEventListener('click', e => this.onTap(e));
     $('#pvExit') && $('#pvExit').addEventListener('click', e => { e.stopPropagation(); goBack(); });
     this.hintT = setTimeout(() => { const h = $('#hint'); if (h) h.style.opacity = 0; }, 15000);
-    this.slides = []; this.idx = 0; this.sig = ''; this.tickerSig = ''; this.alertSig = ''; this.alertListSig = ''; this.paused = this.remotePaused(); this.bgSrc = null; this.cmdSeen = {}; ((S.control || {}).cmds || []).forEach(c => { if (nowS() - c.at > 20000) this.cmdSeen[c.id] = 1; });
+    this.slides = []; this.idx = 0; this.sig = ''; this.tickerSig = ''; this.alertSig = ''; this.alertListSig = ''; this.paused = this.remotePaused(); this.bgSrc = null; this.hold = null; this.shown = false; this.shownOnce = false; this.forceProg = false; this.lay = ''; this.cmdSeen = {}; ((S.control || {}).cmds || []).forEach(c => { if (nowS() - c.at > 20000) this.cmdSeen[c.id] = 1; });
     this.tm = null; this.unTm && this.unTm(); const tcid = viewerClass(); this.unTm = tcid && tcid !== '__lobby' ? Store.watch('timers/' + tcid, v => { this.tm = v; this.tmSig = ''; this.alertSig = ''; if (S.view === 'display') this.renderAlerts(); }) : null;
     if (S.teacher) Teacher.mount();
     this.orient();
@@ -2010,8 +2014,8 @@ const Display = {
     const paused = this.remotePaused();
     if (paused !== this.paused) {
       this.paused = paused;
-      if (paused) { clearTimeout(this.timer); this.progAnim && this.progAnim.pause(); }
-      else { const s = this.slides[this.idx]; clearTimeout(this.timer); if (s) this.timer = setTimeout(() => this.go(1), this.dur(s) * 1000); this.drawProgress(true); }
+      if (paused) { this.progAnim && this.progAnim.pause(); }
+      else { this.hold = null; this.forceProg = true; this.tickSync(); }
     }
     const dp = $('#dPause'); if (dp) { dp.textContent = T('dPaused'); dp.classList.toggle('hidden', !paused); }
     this.cmdSeen = this.cmdSeen || {};
@@ -2024,7 +2028,8 @@ const Display = {
   },
   go(d) {
     const len = this.slides.length; if (!len) return;
-    this.dir = d; this.idx = (this.idx + d + len) % len; this.show(this.idx, len > 1);
+    this.hold = { until: Date.now() + this.HOLD }; this.dir = d; this.idx = (this.idx + d + len) % len;
+    this.show(this.idx, len > 1, true); this.drawProgress(true, 0, this.HOLD); this.tickSync();
   },
   menu() {
     modal(`<h3>화면 메뉴</h3><p>${esc(className(S.classId))} · 저장소: ${esc(Store.label())}\n서버 연결: ${S.connected ? '연결됨' : '끊김'} · 마지막 동기화 ${S.lastSync ? hm(new Date(S.lastSync)) : '없음'}</p>
@@ -2145,14 +2150,43 @@ const Display = {
     const tsig = JSON.stringify(S.config.texts);
     const sig = JSON.stringify(next) + '|' + (innerHeight > innerWidth) + '|' + S.config.slideSec + '|' + JSON.stringify(S.config.groups) + '|' + tsig;
     if (sig === this.sig) return;
-    const cur = this.slides[this.idx], curKey = cur && cur.key, curSig = cur ? JSON.stringify(cur) : '';
+    const cur = this.slides[this.idx], curSig = cur ? JSON.stringify(cur) : '';
     const textsChanged = !!this.sig && this.textSig !== tsig;
-    this.sig = sig; this.textSig = tsig; this.slides = next;
-    const ni = next.findIndex(s => s.key === curKey);
-    if (ni >= 0) {
-      this.idx = ni;
-      if (JSON.stringify(next[ni]) !== curSig || textsChanged) this.show(ni, false, true); else this.drawProgress(false);
-    } else { this.idx = Math.min(this.idx, next.length - 1); this.show(this.idx, true); }
+    const lay = this.layoutSig(next), layChanged = lay !== this.lay;
+    this.sig = sig; this.textSig = tsig; this.slides = next; this.lay = lay;
+    if (!layChanged && cur) {
+      const ns = next[this.idx];
+      if (ns && (JSON.stringify(ns) !== curSig || textsChanged)) this.show(this.idx, false, true);
+      return;
+    }
+    this.hold = null; this.shown = false; this.forceProg = true; this.tickSync();
+  },
+  /* ----- 모든 태블릿 동시에 넘기기: 서버 시간 기준으로 같은 순간에 같은 칸으로 ----- */
+  G() { return Math.max(3, Number(S.config.slideSec) || 12); },
+  slotsOf(s) { return Math.max(1, Math.round(this.dur(s) / this.G())); },
+  layoutSig(list) { return this.G() + '|' + list.map(s => s.key + ':' + this.slotsOf(s)).join(','); },
+  syncPos() {
+    const n = this.slides.length, G = this.G(), slots = this.slides.map(s => this.slotsOf(s)), total = slots.reduce((a, b) => a + b, 0) || 1;
+    const step = Math.floor(nowS() / (G * 1000)); let p = ((step % total) + total) % total, idx = 0;
+    while (idx < n - 1 && p >= slots[idx]) { p -= slots[idx]; idx++; }
+    return { idx, startMs: (step - p) * G * 1000, durMs: slots[idx] * G * 1000, nextMs: (step + 1) * G * 1000 };
+  },
+  tickSync() {
+    clearTimeout(this.timer);
+    if (S.view !== 'display') return;
+    const n = this.slides.length; let wait = 1000;
+    if (n) {
+      const pos = this.syncPos(), now = Date.now();
+      let held = !!(this.hold && now < this.hold.until);
+      if (this.hold && !held) { this.hold = null; this.forceProg = true; }
+      if (!held && !this.remotePaused()) {
+        const changed = pos.idx !== this.idx || !this.shown;
+        if (changed) { this.dir = 1; this.idx = pos.idx; this.show(pos.idx, n > 1 && this.shownOnce, true); this.shown = true; this.shownOnce = true; }
+        if (changed || this.forceProg) { this.forceProg = false; this.drawProgress(true, nowS() - pos.startMs, pos.durMs); }
+      }
+      wait = pos.nextMs - nowS(); if (held) wait = Math.min(wait, this.hold.until - now);
+    }
+    this.timer = setTimeout(() => this.tickSync(), Math.max(30, wait) + 15);
   },
   dur(s) {
     if (s.type === 'tt') return Math.max(3, Number(s.data.sec) || 15);
@@ -2170,15 +2204,11 @@ const Display = {
     $('#disp').classList.toggle('is-media', s.type === 'media' && !s.data.frame);
     this.post(el, s);
     this.dir = 1;
-    if (!keepTimer) {
-      clearTimeout(this.timer);
-      if (!this.paused) this.timer = setTimeout(() => this.go(1), this.dur(s) * 1000);
-      this.drawProgress(true);
-    }
+    if (!keepTimer) this.drawProgress(true);
     this.preload(i + 1);
   },
   preload(i) { const s = this.slides[i % this.slides.length]; if (s && s.type === 'media') resolveSrc(s.data.src).then(u => { if (u) { const im = new Image(); im.src = u; } }); },
-  drawProgress(restart) {
+  drawProgress(restart, elapsedMs, durMs) {
     const p = $('#prog'); if (!p) return;
     const len = this.slides.length;
     if (len <= 1) { p.innerHTML = ''; p.style.visibility = 'hidden'; return; }
@@ -2186,7 +2216,8 @@ const Display = {
     if (restart || p.children.length !== len) {
       p.innerHTML = this.slides.map((_, i) => `<i class="${i < this.idx ? 'done' : ''}"><b></b></i>`).join('');
       const bar = p.children[this.idx] && p.children[this.idx].firstChild;
-      this.progAnim = bar && bar.animate ? bar.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: this.dur(this.slides[this.idx]) * 1000, easing: 'linear', fill: 'forwards' }) : null;
+      const dur = durMs != null ? durMs : this.slotsOf(this.slides[this.idx]) * this.G() * 1000;
+      this.progAnim = bar && bar.animate ? bar.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: dur, delay: -Math.min(Math.max(0, elapsedMs || 0), dur - 1), easing: 'linear', fill: 'forwards' }) : null;
       if (this.paused && this.progAnim) this.progAnim.pause();
     }
   },
@@ -4133,7 +4164,7 @@ const Admin = {
         ${UI.row('전체 크기', '멀리서 보이게 하려면 키우세요', UI.range('style.scale', st.scale || 100, 80, 130, 5, '%'))}
       </section>
       <section class="card"><h2>화면 넘기기</h2>
-        ${UI.row('한 화면 보여주는 시간', '공지·이미지마다 따로 정할 수도 있습니다', UI.range('slideSec', c.slideSec, 5, 60, 1, '초'))}
+        ${UI.row('한 화면 보여주는 시간', '모든 태블릿이 같은 순간에 함께 넘어갑니다. 공지·이미지마다 따로 정한 시간은 이 시간의 배수로 맞춰집니다', UI.range('slideSec', c.slideSec, 5, 60, 1, '초'))}
         ${UI.row('넘어가는 모양', '', UI.seg('transition', [['fade', '서서히'], ['slide', '옆으로'], ['none', '바로']], c.transition))}
       </section>
       <section class="card"><h2>화면에 넣을 것</h2>
@@ -4269,8 +4300,8 @@ window.addEventListener('resize', () => { if (S.view === 'admin') Preview.schedu
 /* ================= 시작 ================= */
 async function main() {
   const p = new URLSearchParams(location.search);
-  if (p.get('class')) LS.set('tsd-class', p.get('class'));
-  S.classId = LS.get('tsd-class', null);
+  S.classId = p.get('class') || null;
+  if (S.classId) LS.set('tsd-class', S.classId);
   const wantAdmin = p.has('admin') || location.hash === '#admin';
   S.teacherMode = p.has('teacher');
   $('#app').innerHTML = '<main class="setup"><p>불러오는 중…</p></main>';
