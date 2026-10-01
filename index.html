@@ -6,17 +6,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0D1316">
+<meta name="theme-color" content="#1F2A30">
 <title>연수 안내 디스플레이</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Gothic+A1:wght@500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <style>
 :root{
-  --paper:#F3F5F4; --card:#FFFFFF; --ink:#13202A; --muted:#5D6D74; --line:#DCE2E0;
-  --board:#16735B; --board-ink:#FFFFFF; --signal:#F0B90B; --signal-ink:#1D1A0C; --alert:#D0192F;
+  --paper:#F4F4F2; --card:#FFFFFF; --ink:#1E2327; --muted:#5F6468; --line:#DFE0DC;
+  --board:#B85C00; --board-ink:#FFFFFF; --signal:#F0B90B; --signal-ink:#1D1A0C; --alert:#D0192F;
   --font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  --hfont:"Gothic A1","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -24,13 +25,13 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#0D1316; --card:#151D21; --ink:#E8EEEB; --muted:#8B9B98; --line:#233033;
-    --board:#3DB38E; --board-ink:#05120E;
+    --paper:#1B2126; --card:#232B31; --ink:#EEEDEA; --muted:#9AA2A6; --line:#333C42;
+    --board:#F29A1F; --board-ink:#1C1200;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#0D1316; --card:#151D21; --ink:#E8EEEB; --muted:#8B9B98; --line:#233033;
-  --board:#3DB38E; --board-ink:#05120E;
+  --paper:#1B2126; --card:#232B31; --ink:#EEEDEA; --muted:#9AA2A6; --line:#333C42;
+  --board:#F29A1F; --board-ink:#1C1200;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -595,6 +596,152 @@ details.secbox > .in{padding:16px 22px 22px}
 .is-media .d-head,.is-media .progress,.is-media .ticker{display:none!important}
 .is-media .stage{margin:calc(var(--u)*1.2) calc(var(--u)*1.2) calc(var(--u)*1.2)}
 
+/* 확인 버튼 강조 · 포스터 · 로고 · 캡션 */
+@keyframes ackPulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(var(--ring),.75)}70%{transform:scale(1.05);box-shadow:0 0 0 calc(var(--u)*1.8) rgba(var(--ring),0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(var(--ring),0)}}
+.ackbtn{--ring:255,255,255;font-family:var(--font);border:0;border-radius:99px;font-weight:800;cursor:pointer;background:#fff;color:#111;align-self:flex-start;font-size:calc(var(--u)*3);padding:calc(var(--u)*1.5) calc(var(--u)*4.2);margin-top:calc(var(--u)*1.4);min-height:56px;box-shadow:0 calc(var(--u)*.6) calc(var(--u)*2) rgba(0,0,0,.25)}
+.ackbtn:not(.done){animation:ackPulse 1.6s ease-out infinite}
+.ackbtn.done{background:transparent;color:inherit;border:3px solid currentColor;cursor:default;box-shadow:none}
+.pin .ackbtn{--ring:240,185,11;font-size:calc(var(--u)*1.7);padding:calc(var(--u)*.8) calc(var(--u)*2.2);margin:0;align-self:center;background:var(--signal);color:var(--signal-ink);min-height:44px}
+.pin .ackbtn.done{background:transparent;color:var(--board);border-color:var(--board)}
+@media (prefers-reduced-motion:reduce){.ackbtn:not(.done){animation:none}}
+.wposter{flex:1;display:flex;flex-direction:column;min-height:0;gap:calc(var(--u)*2.4);background:radial-gradient(ellipse 70% 45% at 50% 38%,color-mix(in srgb,var(--board) 14%,transparent),transparent 70%)}
+.wp-top{display:flex;align-items:center;gap:calc(var(--u)*1.4)}
+.wp-grp{display:inline-flex;align-items:center;gap:calc(var(--u)*1);font-family:var(--hfont,var(--font));font-size:calc(var(--u)*5);font-weight:800;line-height:1.1;color:var(--board);background:color-mix(in srgb,var(--board) 14%,transparent);border:1px solid color-mix(in srgb,var(--board) 35%,transparent);border-radius:99px;padding:calc(var(--u)*.7) calc(var(--u)*2.4)}
+.wp-mid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*1.2)}
+.wp-cls{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;font-family:var(--hfont,var(--font));font-weight:900;line-height:1.05;font-size:calc(var(--u)*30);letter-spacing:-.02em}
+.wp-line{display:block;width:calc(var(--u)*14);height:calc(var(--u)*.8);border-radius:99px;background:var(--board)}
+.wp-card{border-radius:calc(var(--u)*1.8);overflow:hidden;background:var(--card);border:1px solid var(--line);box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) rgba(0,0,0,.18)}
+.wp-row{display:grid;grid-template-columns:1fr 1fr}
+.wp-row > span{padding:calc(var(--u)*2.2) calc(var(--u)*1.4);text-align:center;font-size:calc(var(--u)*3.4);font-weight:700;word-break:break-all;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*.8)}
+.wp-row + .wp-row{border-top:1px solid var(--line)}
+.wp-row > span + span{border-left:1px solid var(--line)}
+.wp-row.h > span{background:var(--board);color:var(--board-ink);font-family:var(--hfont,var(--font));font-size:calc(var(--u)*3);padding:calc(var(--u)*1.5) calc(var(--u)*1.2)}
+.wp-row.h > span + span{border-left-color:color-mix(in srgb,var(--board-ink) 25%,transparent)}
+.wp-row .pw{font-family:var(--mono);letter-spacing:.03em}
+.wp-row .open{font-family:var(--font);color:var(--board)}
+.brand-logo{height:calc(var(--u)*3.2);width:auto;opacity:var(--logo-op,.7);flex:none;display:block}
+.logo-corner{position:absolute;right:calc(var(--u)*2.4);bottom:calc(var(--u)*1.8);height:calc(var(--u)*2.8);width:auto;opacity:var(--logo-op,.7);z-index:6;pointer-events:none;display:none}
+.has-ticker .logo-corner{bottom:calc(var(--u)*(5 * var(--ts,1) + 1.8))}
+.logo-c .logo-corner,.logo-h.is-tm .logo-corner,.logo-h.is-media .logo-corner{display:block}
+.is-tm .logo-corner,.is-media .logo-corner{bottom:calc(var(--u)*1.8)!important}
+.media{justify-content:center;align-items:center}
+.mwrap{flex:none;display:block;overflow:visible;border-radius:0}
+.media figcaption{font-size:calc(var(--u)*2*var(--cap,1));font-weight:600;text-align:center;max-width:100%;line-height:1.35;word-break:keep-all}
+.tmode{margin:12px 0 4px}
+
+/* 관리자 화면 다듬기 */
+.adm-top h1,.card > h2,.login h1,.setup h1{font-family:var(--hfont);font-weight:800;letter-spacing:-.015em}
+.card{border-radius:10px;box-shadow:none}
+.btn{border-radius:8px}
+.tabs button[aria-selected="true"]{background:none;box-shadow:inset 0 -3px 0 var(--board);border-radius:0}
+.tabs{gap:6px}
+.quickbar button{border-radius:10px;border-left:4px solid var(--line)}
+.quickbar button.hot{border-color:var(--line);border-left-color:var(--board);color:var(--ink)}
+.quickbar button:hover{border-left-color:var(--board)}
+.item{border-radius:8px}
+.swatch,.fontbtn,.lv-card{border-radius:8px}
+.grid-cls button,.grp-pick button{border-radius:8px;font-family:var(--hfont);font-weight:800}
+.subnav button[aria-current="true"]{background:none;box-shadow:inset 3px 0 0 var(--board)}
+
+/* ===== 디자인 다듬기: 사인물(웨이파인딩) 톤 ===== */
+.display{letter-spacing:-.005em}
+.d-head{border-bottom:0;padding-bottom:calc(var(--u)*1.4)}
+.brand .t{font-family:var(--hfont);font-weight:800;letter-spacing:-.01em}
+.cls{background:var(--board);color:var(--board-ink);border:0;border-radius:calc(var(--u)*.4);font-family:var(--hfont);font-weight:800;padding:calc(var(--u)*.45) calc(var(--u)*1.4)}
+.wk{font-weight:500}
+.clock .hm{font-family:var(--hfont);font-weight:700;letter-spacing:-.02em}
+.n-head::before{display:none}
+.n-title{font-family:var(--hfont);font-weight:800;letter-spacing:-.02em;line-height:1.18}
+.eyebrow{font-weight:600;color:var(--board)}
+.n-body{color:color-mix(in srgb,var(--ink) 88%,var(--paper))}
+.ticker .tag{background:var(--board);color:var(--board-ink);border-radius:calc(var(--u)*.3)}
+.progress i b{background:var(--ink)}
+.progress i{height:2px}
+.tt-h h2{font-family:var(--hfont);font-weight:800}
+.wifi-main h2{font-family:var(--hfont);font-weight:800;color:var(--ink)}
+.tile{border-radius:calc(var(--t)*.08);border-color:color-mix(in srgb,var(--ink) 18%,transparent)}
+
+/* 세로 Wi-Fi: 교실 문패 */
+.wposter{background:none;gap:0;position:relative}
+.wp-band{display:flex;align-items:center;min-height:calc(var(--u)*9);padding:0 calc(var(--u)*2.4);background:var(--board);color:var(--board-ink);margin:0}
+.wp-band .wp-grp{color:inherit;background:none;border:0;border-radius:0;padding:0;font-family:var(--hfont);font-size:calc(var(--u)*5);font-weight:800;line-height:1;letter-spacing:-.02em;margin-left:calc(var(--u)*1.2)}
+.wp-cls{flex:1;min-height:0;justify-content:flex-start;padding:0 calc(var(--u)*.4);font-weight:900;letter-spacing:-.045em;line-height:1}
+.wp-net{border-top:calc(var(--u)*.5) solid var(--ink);padding-top:calc(var(--u)*1.2)}
+.wp-labs,.wp-r{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:calc(var(--u)*2.4)}
+.wp-labs span{font-size:calc(var(--u)*3);font-weight:700;color:var(--muted);padding:calc(var(--u)*.6) 0 calc(var(--u)*1)}
+.wp-r{border-top:1px solid color-mix(in srgb,var(--ink) 16%,transparent)}
+.wp-r span{font-size:calc(var(--u)*3.4);font-weight:800;padding:calc(var(--u)*1.8) 0;word-break:break-all;line-height:1.2}
+.wp-r .pw{font-family:var(--mono);font-weight:600;letter-spacing:.02em}
+.wp-r .open{color:var(--board)}
+.wp-foot{display:flex;justify-content:flex-end;gap:calc(var(--u)*1.6);padding-top:calc(var(--u)*1.6)}
+.wp-foot .qr{background:#fff;border-radius:calc(var(--u)*.6);box-shadow:none}
+.wp-foot .qr figcaption{color:#333}
+
+/* 가로 Wi-Fi 여러 개: 같은 표 언어 */
+.wl{flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:calc(var(--u)*4);align-items:center;min-height:0}
+.wl h2{margin:0 0 calc(var(--u)*2.4);font-family:var(--hfont);font-weight:800;font-size:calc(var(--u)*3.2);letter-spacing:-.02em}
+.wl .wp-net{border-top-width:calc(var(--u)*.4)}
+.wl .wp-labs span{font-size:calc(var(--u)*1.8)}
+.wl .wp-r span{font-size:calc(var(--u)*3.4)}
+.wl .qrs{display:flex;gap:calc(var(--u)*1.6)}
+.wl .qr{border-radius:calc(var(--u)*.6)}
+.wl .qr figcaption{color:#333}
+
+/* ===== 레퍼런스 반영: 밝고 따뜻한 안내판 ===== */
+.d-head{padding:calc(var(--u)*2.4) calc(var(--u)*3.2) calc(var(--u)*1.6);gap:calc(var(--u)*1.6)}
+.hdiv{width:1px;align-self:stretch;margin:calc(var(--u)*.6) calc(var(--u)*.4);background:color-mix(in srgb,var(--ink) 16%,transparent);flex:none}
+.brand-logo{height:calc(var(--u)*3.4);opacity:var(--logo-op,1)}
+.brand .t{font-size:calc(var(--u)*2.2);font-weight:800}
+.clslab{font-size:calc(var(--u)*1.35);color:var(--muted);white-space:nowrap}
+.cls{border-radius:calc(var(--u)*.9);padding:calc(var(--u)*.55) calc(var(--u)*1.5);font-size:calc(var(--u)*2);background:color-mix(in srgb,var(--board) 88%,#fff)}
+.clock .hm{font-size:calc(var(--u)*3.2);font-weight:800}
+.ticker{margin:0 calc(var(--u)*2.4) calc(var(--u)*1.8);border:0;border-radius:calc(var(--u)*1.4);background:color-mix(in srgb,var(--board) 11%,var(--card));padding-left:calc(var(--u)*1.8);height:calc(var(--u)*5.2*var(--ts,1))}
+.ticker .tag{background:none;color:var(--board);display:flex;align-items:center;gap:calc(var(--u)*.8);font-size:calc(var(--u)*1.9*var(--ts,1));font-weight:800;padding:0}
+.ticker .tag::before{content:"!";width:calc(var(--u)*2.8*var(--ts,1));height:calc(var(--u)*2.8*var(--ts,1));border-radius:50%;background:var(--board);color:var(--board-ink);display:grid;place-items:center;font-size:calc(var(--u)*1.8*var(--ts,1));font-weight:900;flex:none}
+.ticker .run{color:var(--ink)}
+.has-ticker .logo-corner{bottom:calc(var(--u)*(5.2 * var(--ts,1) + 3.6))}
+/* 세로 Wi-Fi */
+.wposter.pb{gap:calc(var(--u)*2);isolation:isolate}
+.wposter.pb::before,.wposter.pb::after{content:"";position:absolute;z-index:-1;border-radius:50%;pointer-events:none}
+.wposter.pb::before{width:160%;height:70%;left:-30%;top:34%;background:radial-gradient(closest-side,color-mix(in srgb,var(--board) 9%,transparent),transparent)}
+.wposter.pb::after{width:130%;height:60%;left:10%;top:52%;background:radial-gradient(closest-side,color-mix(in srgb,var(--board) 8%,transparent),transparent)}
+.pb-band{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*2);padding:calc(var(--u)*.45) calc(var(--u)*3);border-radius:calc(var(--u)*1.8);color:var(--board-ink);background:linear-gradient(120deg,color-mix(in srgb,var(--board) 78%,#fff) 0%,var(--board) 100%)}
+.pb-band::before{content:"";position:absolute;right:-12%;top:-60%;width:70%;height:180%;border-radius:50%;background:rgba(255,255,255,.14)}
+.pb-band::after{content:"";position:absolute;left:25%;bottom:-120%;width:80%;height:160%;border-radius:50%;background:rgba(255,255,255,.08)}
+.pb-bt{position:relative;display:flex;flex-direction:column;gap:calc(var(--u)*.6);min-width:0}
+.pb-lab{font-size:calc(var(--u)*2.4);font-weight:700;opacity:.9}
+.pb-grp{font-family:var(--hfont);font-size:calc(var(--u)*7);font-weight:900;line-height:1.25;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-ppl{position:relative;height:calc(var(--u)*6.2);width:auto;flex:none;fill:rgba(255,255,255,.45)}
+.pb-mid{flex:1;min-height:0;display:flex}
+.pb-cls{flex:1;height:100%;justify-content:center;padding:0;font-weight:900;letter-spacing:-.04em;color:var(--ink)}
+.pb-name{position:relative;display:inline-block}
+.pb-spark{position:absolute;right:-.28em;top:-.12em;width:.3em;height:.3em;fill:none;stroke:var(--board);stroke-width:5.5;stroke-linecap:round}
+.pb-card{display:flex;gap:calc(var(--u)*2);align-items:center;background:var(--card);border-radius:calc(var(--u)*2.2);padding:calc(var(--u)*.6) calc(var(--u)*3);box-shadow:0 calc(var(--u)*.8) calc(var(--u)*3) color-mix(in srgb,var(--ink) 8%,transparent)}
+.pb-rows{flex:1;min-width:0}
+.pb-row{display:flex;align-items:center;gap:calc(var(--u)*2.4);padding:calc(var(--u)*1.5) 0}
+.pb-row + .pb-row{border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.pb-ic{flex:none;width:calc(var(--u)*6.4);height:calc(var(--u)*6.4);border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--board) 12%,var(--card))}
+.pb-ic svg{width:48%;height:48%;fill:none;stroke:var(--board);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pb-ic svg .f{fill:var(--board);stroke:none}
+.pb-t{display:flex;flex-direction:column;gap:calc(var(--u)*.3);min-width:0}
+.pb-l{font-size:calc(var(--u)*2.3);color:color-mix(in srgb,var(--ink) 75%,var(--card));font-weight:500}
+.pb-v{font-family:var(--hfont);font-size:calc(var(--u)*4.4);font-weight:800;line-height:1.15;letter-spacing:-.01em;word-break:break-all;color:var(--ink)}
+.pb-v.open{color:var(--board)}
+.pb-qr{display:flex;flex-direction:column;gap:calc(var(--u)*1)}
+.pb-qr .qr{border-radius:calc(var(--u)*.8);border:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.pb-qr .qr figcaption{color:#333}
+.wl.pb{display:flex;align-items:center}
+.portrait .wk,.portrait .d-head .net{display:none}
+.wl.pb h2{margin:0 0 calc(var(--u)*2)}
+.wl.pb .pb-card{padding:calc(var(--u)*1.2) calc(var(--u)*2)}
+.wl.pb .pb-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(var(--u)*26),1fr))}
+.wl.pb .pb-row{padding:calc(var(--u)*1.4) calc(var(--u)*1.4);border-top:0}
+.wl.pb .pb-row + .pb-row{border-left:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.wl.pb .pb-v{font-size:calc(var(--u)*3.6)}
+.wl.pb .pb-ic{width:calc(var(--u)*6);height:calc(var(--u)*6)}
+
+.cls .ink{display:block;line-height:1.3;white-space:nowrap}
+
 /* 미리보기 패널 */
 .pv-panel{position:sticky;top:124px}
 .pv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -730,8 +877,8 @@ const TEXT_DEFS = [
   ]],
   ['Wi-Fi', 'wifi', [
     ['wifiKicker', 'Wi-Fi 화면 제목', 'Wi-Fi 접속 안내'], ['wifiSsid', '네트워크 이름 라벨', '네트워크 이름'], ['wifiPw', '비밀번호 라벨', '비밀번호'],
-    ['wifiNoPass', '비밀번호가 없을 때', '비밀번호 없이 접속합니다'], ['wifiQr', 'QR 코드 설명', '휴대폰 카메라로 찍으면 바로 연결됩니다'],
-    ['wpNet', '세로 화면 표: 네트워크 칸', '네트워크명'], ['wpPw', '세로 화면 표: 비밀번호 칸', '비밀번호'],
+    ['wifiNoPass', '비밀번호가 없을 때', '개방형 WIFI'], ['wifiQr', 'QR 코드 설명', '휴대폰 카메라로 찍으면 바로 연결됩니다'],
+    ['wpNet', '세로 화면: 네트워크 라벨', '네트워크명'], ['wpPw', '세로 화면: 비밀번호 라벨', '비밀번호'], ['wpGrp', '세로 화면: 반 묶음 위 작은 글씨 (비우면 숨김)', ''], ['clsLabel', '머리글: 반 이름 앞 작은 글씨', '교육실'],
     ['hDigit', '글자 구분: 숫자', '숫자'], ['hUpper', '글자 구분: 대문자', '대문자'], ['hLower', '글자 구분: 소문자', '소문자']
   ]],
   ['시간표', 'tt', [
@@ -742,9 +889,9 @@ const TEXT_DEFS = [
     ['emTag', '긴급 표시', '긴급 공지'], ['brTag', '공지 표시', '공지'], ['infoTag', '안내 표시', '안내'],
     ['sent', '발송 시각 뒤 문구', '발송'], ['until', '종료 시각 뒤 문구', '까지'], ['untilManual', '직접 내릴 때까지인 공지', '해제 시까지'],
     ['minimize', '팝업에서 줄이기 안내', '누르면 작게 줄어듭니다'], ['pinOpen', '미니바 안내', '눌러서 크게 보기'],
-    ['ackBtn', '확인 버튼', '확인했습니다'], ['acked', '확인 후 표시', '확인 완료 ✓'],
+    ['ackBtn', '확인 버튼', '👆 확인했으면 여기를 눌러 주세요'], ['acked', '확인 후 표시', '✅ 확인 완료'],
     ['cdAt', '카운트다운 끝나는 시각 뒤 문구', '에 끝납니다'],
-    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
+    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['swTitle', '스톱워치 기본 제목', '스톱워치'], ['swRun', '스톱워치 진행 중 표시', '시간을 재는 중입니다'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
   ]],
   ['반 선택 화면', '', [
     ['setupTitle', '제목', '이 태블릿이 표시할 반을 고르세요'],
@@ -756,12 +903,13 @@ const TEXT_DEFS = [
 const TEXT_DEFAULT = {}; TEXT_DEFS.forEach(([, , list]) => list.forEach(([k, , d]) => TEXT_DEFAULT[k] = d));
 const T = k => { const v = S.config.texts && S.config.texts[k]; return (v != null && v !== '') ? v : (TEXT_DEFAULT[k] || ''); };
 
+const LOGO_SRC = 'data:image/png;base64,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';
 const FONTS = [
-  ['IBM Plex Sans KR', '기본 고딕', '400;500;600;700'], ['Noto Sans KR', '본고딕', '400;500;700;900'], ['Gothic A1', '고딕 A1', '400;500;700;900'],
+  ['IBM Plex Sans KR', '기본 고딕', '400;500;600;700'], ['Noto Sans KR', '본고딕', '400;500;700;900'], ['Gothic A1', '고딕 A1 (제목 기본)', '400;500;700;800;900'],
   ['Nanum Gothic', '나눔고딕', '400;700;800'], ['Nanum Myeongjo', '나눔명조', '400;700;800'], ['Gowun Dodum', '고운돋움', ''],
   ['Sunflower', '해바라기', '300;500;700'], ['Black Han Sans', '검은고딕 (제목용)', ''], ['Do Hyeon', '도현 (제목용)', ''], ['Jua', '주아 (제목용)', ''], ['Nanum Pen Script', '나눔손글씨 펜', '']
 ];
-const loadedFonts = new Set(['IBM Plex Sans KR']);
+const loadedFonts = new Set(['IBM Plex Sans KR', 'Gothic A1']);
 function ensureFont(name) {
   const f = FONTS.find(x => x[0] === name); if (!f || loadedFonts.has(name)) return; loadedFonts.add(name);
   const l = document.createElement('link'); l.rel = 'stylesheet';
@@ -769,24 +917,24 @@ function ensureFont(name) {
   document.head.appendChild(l);
 }
 const fontStack = n => `"${n}","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif`;
-const PAL = { dark: { bg: '#0D1316', ink: '#E8EEEB', accent: '#3DB38E' }, light: { bg: '#F3F5F4', ink: '#13202A', accent: '#16735B' } };
+const PAL = { dark: { bg: '#1F2A30', ink: '#F2F1EE', accent: '#F29A1F' }, light: { bg: '#F8F7F4', ink: '#1B2A41', accent: '#F7931E' } };
 const STYLE_PRESETS = [
-  ['기본 어둡게', { theme: 'dark', bg: '', ink: '', accent: '' }],
-  ['기본 밝게', { theme: 'light', bg: '', ink: '', accent: '' }],
-  ['밤하늘', { theme: 'dark', bg: '#0F1B33', ink: '#EEF2FA', accent: '#6AA8FF' }],
-  ['숲', { theme: 'dark', bg: '#102419', ink: '#EAF3EE', accent: '#7FD48F' }],
-  ['먹과 노랑', { theme: 'dark', bg: '#161616', ink: '#F4F4EE', accent: '#F2C230' }],
-  ['하늘', { theme: 'light', bg: '#EAF3FB', ink: '#10263D', accent: '#1F6FD1' }],
-  ['분홍', { theme: 'light', bg: '#FDF0F3', ink: '#3A1223', accent: '#C9315F' }],
-  ['흰 바탕', { theme: 'light', bg: '#FFFFFF', ink: '#111111', accent: '#1B64DA' }]
+  ['라이트 (기본)', { theme: 'light', bg: '', ink: '', accent: '' }],
+  ['슬레이트', { theme: 'dark', bg: '', ink: '', accent: '' }],
+  ['네이비', { theme: 'dark', bg: '#15233B', ink: '#F4F2EC', accent: '#F29A1F' }],
+  ['차콜', { theme: 'dark', bg: '#2B2B2A', ink: '#F3F2EF', accent: '#F0A43A' }],
+  ['포레스트', { theme: 'dark', bg: '#1E3A2F', ink: '#F1EFE6', accent: '#E8B74A' }],
+  ['스카이', { theme: 'light', bg: '#E6EEF5', ink: '#12263A', accent: '#1F5FA8' }],
+  ['웜 그레이', { theme: 'light', bg: '#E9E7E3', ink: '#2B2A28', accent: '#B85C00' }],
+  ['순백', { theme: 'light', bg: '#FFFFFF', ink: '#141414', accent: '#D9730D' }]
 ];
 
 const DEFAULT_CONFIG = {
   title: '연수 안내', subtitle: '',
   slideSec: 12, transition: 'fade',
   ticker: { on: true, mode: 'marquee', speed: 5, size: 100, label: '안내' },
-  theme: 'dark', showQR: true, showClock: true, alertSound: true,
-  style: { bg: '', ink: '', accent: '', bgImage: '', bgDim: 45, scale: 100, font: '', hfont: '' },
+  theme: 'light', showQR: true, showClock: true, alertSound: true,
+  style: { bg: '', ink: '', accent: '', bgImage: '', bgDim: 45, scale: 100, font: '', hfont: '', logoOn: true, logoPos: 'head', logoOp: 70 },
   hours: { on: false, start: '08:00', end: '19:00' },
   weekMode: 'auto', manualWeek: '',
   alertFull: { emergency: 20, breaking: 20 },
@@ -818,9 +966,9 @@ function look(cfg) {
   return { bg: hex(st.bg) || base.bg, ink: hex(st.ink) || base.ink, accent: hex(st.accent) || base.accent, img: st.bgImage || '', dim: Math.min(95, Math.max(0, Number(st.bgDim ?? 45))), scale: (Number(st.scale) || 100) / 100 };
 }
 function themeVars(cfg) {
-  const L = look(cfg), p = L.bg, k = L.ink, card = `color-mix(in srgb,${k} 7%,${p})`;
+  const L = look(cfg), p = L.bg, k = L.ink, lightBg = onColor(p) !== '#FFFFFF', card = lightBg ? `color-mix(in srgb,#ffffff 82%,${p})` : `color-mix(in srgb,${k} 7%,${p})`;
   const st = cfg.style || {}; if (st.font) ensureFont(st.font); if (st.hfont) ensureFont(st.hfont);
-  return `${st.font ? `--font:${fontStack(st.font)};` : ''}${st.hfont ? `--hfont:${fontStack(st.hfont)};` : ''}--paper:${p};--ink:${k};--board:${L.accent};--board-ink:${onColor(L.accent)};--muted:color-mix(in srgb,${k} 62%,${p});--line:color-mix(in srgb,${k} 16%,${p});--card:${L.img ? `color-mix(in srgb,${card} 78%,transparent)` : card};--scale:${L.scale}`;
+  return `--logo-op:${Math.min(1, Math.max(.1, (Number(st.logoOp) || 70) / 100))};${st.font ? `--font:${fontStack(st.font)};` : ''}${st.hfont ? `--hfont:${fontStack(st.hfont)};` : ''}--paper:${p};--ink:${k};--board:${L.accent};--board-ink:${onColor(L.accent)};--muted:color-mix(in srgb,${k} 62%,${p});--line:color-mix(in srgb,${k} 16%,${p});--card:${L.img ? `color-mix(in srgb,${card} 78%,transparent)` : card};--scale:${L.scale}`;
 }
 
 const S = {
@@ -1260,8 +1408,11 @@ function devKind() {
   if (/Android/.test(u)) { const m = /Android[^;)]*;\s*([^;)]+?)(?:\sBuild|\))/.exec(u); const md = m && m[1] && m[1].trim(); return 'Android' + (md && md !== 'K' && !/wv/.test(md) ? ' ' + md : ''); }
   if (/CrOS/.test(u)) return 'Chromebook'; if (/Windows/.test(u)) return 'Windows'; if (/Mac/.test(u)) return 'Mac'; return '기기';
 }
+function swElapsed(t, now = nowS()) { return !t ? 0 : t.st === 'run' ? Math.max(0, (Number(t.base) || 0) + (now - t.startAt) / 1000) : Math.max(0, Number(t.elapsed) || 0); }
+function tmShow(t, now = nowS()) { const ph = tmPhase(t, now); if (!ph) return ''; if (t.mode === 'sw') return (ph === 'pause' ? '⏸ ' : '⏱ ') + fmtClock(Math.floor(swElapsed(t, now))) + ' 스톱워치'; return ph === 'run' ? '⏳ ' + fmtClock(tmLeft(t, now)) : ph === 'pause' ? '⏸ 일시정지' : '끝남'; }
 function tmPhase(t, now = nowS()) {
   if (!t || !t.st || t.st === 'off') return null;
+  if (t.mode === 'sw') return t.st === 'run' ? (swElapsed(t, now) < 12 * 3600 ? 'run' : null) : t.st === 'pause' ? 'pause' : null;
   if (t.st === 'pause') return 'pause';
   if (t.st === 'run') { if (t.endAt > now) return 'run'; if (now - t.endAt < 5 * 60000) return 'done'; }
   return null;
@@ -1524,7 +1675,7 @@ const Teacher = {
       }
     };
   },
-  shellHTML() { return `<button class="tfab" id="tFab" type="button">⏱ 타이머</button><aside class="tpanel hidden" id="tPanel" aria-label="타이머 조작"></aside>`; },
+  shellHTML() { return `<button class="tfab" id="tFab" type="button">⏱ 타이머·스톱워치</button><aside class="tpanel hidden" id="tPanel" aria-label="타이머 조작"></aside>`; },
   mount() {
     this.unmount();
     this.classes().forEach(cid => this.un.push(Store.watch('timers/' + cid, v => { this.tms[cid] = v; this.renderStatus(); })));
@@ -1537,15 +1688,18 @@ const Teacher = {
     p.classList.toggle('hidden', !this.open);
     if (!this.open) return;
     const mine = this.classes(), f = this.form = this.form || { m: 10, s: 0, title: '' };
-    p.innerHTML = `<h3>타이머 <button class="btn sm" data-t="close">닫기</button></h3>
-      <small class="help">시작하면 아래 모든 반의 태블릿에 똑같은 타이머가 전체 화면으로 나옵니다. 그동안은 긴급·공지만 함께 뜹니다.</small>
+    this.pmode = this.pmode || 'timer'; const sw = this.pmode === 'sw';
+    p.innerHTML = `<h3>${sw ? '스톱워치' : '타이머'} <button class="btn sm" data-t="close">닫기</button></h3>
+      <div class="segb tmode"><label><input type="radio" name="tpm" data-tpm="timer" ${sw ? '' : 'checked'}><span>⏳ 타이머 (거꾸로)</span></label><label><input type="radio" name="tpm" data-tpm="sw" ${sw ? 'checked' : ''}><span>⏱ 스톱워치 (앞으로)</span></label></div>
+      <small class="help">시작하면 아래 모든 반의 태블릿에 똑같은 화면이 전체 화면으로 나옵니다. 그동안은 긴급·공지만 함께 뜹니다.</small>
       <div class="sub" style="margin-top:12px">적용 대상: ${esc(this.groups().map(g => g.name).join(', ') || '고른 반')} <small class="muted">(${mine.length}개 반)</small></div>
       <ul class="tst" id="tStat" style="margin-top:10px"></ul>
-      <div class="sub">제목 (선택)</div><input type="text" id="tTitle" value="${esc(f.title)}" placeholder="예: 모둠 활동, 쉬는 시간">
-      <div class="sub">시간</div>
+      <div class="sub">제목 (선택)</div><input type="text" id="tTitle" value="${esc(f.title)}" placeholder="${sw ? '예: 발표 시간, 실습' : '예: 모둠 활동, 쉬는 시간'}">
+      ${sw ? `<div class="big"><button class="btn pri" data-t="swstart">▶ 처음부터 시작</button><button class="btn" data-t="swpause">⏸ 일시정지</button><button class="btn" data-t="swresume">▶ 계속</button><button class="btn warn" data-t="stop">■ 끝내기</button></div>`
+      : `<div class="sub">시간</div>
       <div class="tin" style="margin-top:0"><input type="number" id="tM" min="0" max="600" value="${f.m}"><span>분</span><input type="number" id="tS" min="0" max="59" value="${f.s}"><span>초</span></div>
       <div class="quick">${[1, 3, 5, 10, 15, 20, 30, 60].map(m => `<button type="button" class="btn" data-t="preset" data-m="${m}">${m}분</button>`).join('')}</div>
-      <div class="big"><button class="btn pri" data-t="start">▶ 시작</button><button class="btn" data-t="pause">⏸ 일시정지</button><button class="btn" data-t="resume">▶ 계속</button><button class="btn warn" data-t="stop">■ 끝내기</button><button class="btn" data-t="add" data-v="60">+1분</button><button class="btn" data-t="add" data-v="-60">−1분</button></div>
+      <div class="big"><button class="btn pri" data-t="start">▶ 시작</button><button class="btn" data-t="pause">⏸ 일시정지</button><button class="btn" data-t="resume">▶ 계속</button><button class="btn warn" data-t="stop">■ 끝내기</button><button class="btn" data-t="add" data-v="60">+1분</button><button class="btn" data-t="add" data-v="-60">−1분</button></div>`}
       <div class="sub">이 기기 화면에 보일 반</div><select id="tView">${mine.map(id => `<option value="${esc(id)}"${S.classId === id ? ' selected' : ''}>${esc(className(id))}</option>`).join('')}</select>
       <div class="inline" style="margin-top:16px"><button class="btn sm" data-t="repick">맡은 묶음 다시 고르기</button><button class="btn sm ghost" data-t="lock">강사 코드 잠그기</button></div>`;
     this.renderStatus();
@@ -1554,11 +1708,13 @@ const Teacher = {
       const el = e.target;
       if (el.dataset.tsel) { el.checked ? this.sel.add(el.dataset.tsel) : this.sel.delete(el.dataset.tsel); }
       if (el.id === 'tView') { LS.set('tsd-tview', el.value); Display.stop(); this.start(); }
+      if (el.dataset.tpm) { this.pmode = el.dataset.tpm; this.render(); }
     };
     p.oninput = e => { const el = e.target; if (el.id === 'tM') f.m = Number(el.value) || 0; if (el.id === 'tS') f.s = Number(el.value) || 0; if (el.id === 'tTitle') f.title = el.value; };
   },
   statusText(t) {
     const ph = tmPhase(t); if (!ph) return '꺼짐';
+    if (t.mode === 'sw') return tmShow(t);
     return ph === 'run' ? `진행 중 ${fmtClock(tmLeft(t))}` : ph === 'pause' ? `일시정지 ${fmtClock(tmLeft(t))}` : '끝남';
   },
   renderStatus() { const u = $('#tStat'); if (u) u.innerHTML = this.classes().map(id => `<li><span>${esc(className(id))}</span><b>${esc(this.statusText(this.tms[id]))}</b></li>`).join(''); },
@@ -1572,7 +1728,11 @@ const Teacher = {
     const ids = this.classes(); if (!ids.length) return toast('맡은 반이 없습니다. ‘맡은 반 다시 고르기’를 눌러 주세요');
     const now = nowS(), sec = Math.max(0, (Number(f.m) || 0) * 60 + (Number(f.s) || 0)), title = (f.title || '').trim();
     const next = id => {
-      const t = this.tms[id], ph = tmPhase(t, now);
+      const t = this.tms[id], ph = tmPhase(t, now), isSw = t && t.mode === 'sw';
+      if (a === 'swstart') return { mode: 'sw', st: 'run', startAt: now, base: 0, title, at: now };
+      if (a === 'swpause') return isSw && ph === 'run' ? { mode: 'sw', st: 'pause', elapsed: swElapsed(t, now), title: t.title, at: now } : null;
+      if (a === 'swresume') return isSw && ph === 'pause' ? { mode: 'sw', st: 'run', startAt: now, base: Number(t.elapsed) || 0, title: t.title, at: now } : null;
+      if (isSw && a !== 'stop' && a !== 'start') return null;
       if (a === 'start') return sec > 0 ? { st: 'run', endAt: now + sec * 1000, total: sec, title, at: now } : null;
       if (a === 'stop') return { st: 'off', at: now };
       if (a === 'pause') return ph === 'run' ? { st: 'pause', left: tmLeft(t, now), total: t.total, title: t.title, at: now } : null;
@@ -1610,6 +1770,7 @@ const Display = {
       <div class="ticker hidden" id="ticker"><span class="tag" id="tTag"></span><div class="rail" id="rail"></div></div>
       <div id="dOverlay"></div>
       <div class="tmview hidden" id="tmView"></div>
+      <img class="logo-corner" src="${LOGO_SRC}" alt="">
       <div class="ctrl off" id="ctrl"><button data-c="prev" id="cPrev"></button><button data-c="next" id="cNext"></button></div>
       <div class="dpause hidden" id="dPause"></div>
       ${S.teacher ? Teacher.shellHTML() : ''}
@@ -1736,14 +1897,17 @@ const Display = {
     });
   },
   /* ----- 공용 마크업 (실제 화면과 관리자 미리보기가 함께 씀) ----- */
+  fixHead() { const n = $('#dCls .ink'); if (n) this.centerInk(n); },
   headHTML(cfg) {
     const d = new Date(), wk = currentWeek(), now = this.nowHTML(cfg);
-    return `<div class="brand" id="brand"><div class="t">${esc(cfg.title || '연수 안내')}</div>${cfg.subtitle ? `<div class="s">${esc(cfg.subtitle)}</div>` : ''}</div>
+    const st = cfg.style || {};
+    const logo = st.logoOn !== false && (st.logoPos || 'head') === 'head';
+    return `${logo ? `<img class="brand-logo" src="${LOGO_SRC}" alt="(주)네패스 코코아팹"><i class="hdiv"></i>` : ''}<div class="brand" id="brand"><div class="t">${esc(cfg.title || '연수 안내')}</div>${cfg.subtitle ? `<div class="s">${esc(cfg.subtitle)}</div>` : ''}</div>
       <div class="now-chip${now ? '' : ' hidden'}" id="dNow">${now}</div>
       ${wk ? `<div class="wk">${esc(wk.label)}</div>` : ''}
-      <button class="cls" id="dCls" type="button">${esc(className(viewerClass()))}</button>
+      ${T('clsLabel') ? `<span class="clslab">${esc(T('clsLabel'))}</span>` : ''}<button class="cls" id="dCls" type="button"><span class="ink">${esc(className(viewerClass()))}</span></button>
       <span class="net${S.connected ? '' : ' off'}" id="net"></span>
-      ${cfg.showClock ? `<div class="clock" id="dClock"><div class="hm">${hm(d)}</div><div class="dt">${esc(md(d))}</div></div>` : ''}`;
+      ${cfg.showClock ? `<i class="hdiv"></i><div class="clock" id="dClock"><div class="hm">${hm(d)}</div><div class="dt">${esc(md(d))}</div></div>` : ''}`;
   },
   nowHTML(cfg) {
     if (!(cfg.timetable.on && cfg.timetable.header)) return '';
@@ -1785,6 +1949,7 @@ const Display = {
     const L = look(cfg);
     root.setAttribute('style', themeVars(cfg) + (extra || ''));
     root.classList.toggle('has-bg', !!L.img);
+    const st = cfg.style || {}; root.classList.toggle('logo-h', st.logoOn !== false && (st.logoPos || 'head') === 'head'); root.classList.toggle('logo-c', st.logoOn !== false && st.logoPos === 'corner');
     const bgd = $('.bgd', root); if (bgd) bgd.style.opacity = L.img ? L.dim / 100 : 0;
     const bgi = $('.bgi', root);
     if (bgi) { if (!L.img) bgi.style.backgroundImage = ''; else resolveSrc(L.img).then(u => { if (u) bgi.style.backgroundImage = `url("${u}")`; }); }
@@ -1795,7 +1960,7 @@ const Display = {
     applyTheme(cfg.theme);
     this.applyLook($('#disp'), cfg);
     this.orient();
-    $('#dHead').innerHTML = this.headHTML(cfg);
+    $('#dHead').innerHTML = this.headHTML(cfg); this.fixHead();
     $('#stage').className = 'stage fx-' + (cfg.transition || 'fade');
     $('#sleepMsg').textContent = T('sleepMsg') + (cfg.hours.on ? ` (${cfg.hours.start}~${cfg.hours.end})` : '');
     this.rebuild();
@@ -1883,7 +2048,7 @@ const Display = {
     }
     if (s.type === 'media') {
       const m = s.data;
-      return `<figure class="media"><div class="mwrap"><img alt="${esc(m.title || '')}" data-src="${esc(m.src)}"></div>${m.caption ? `<figcaption>${esc(m.caption)}</figcaption>` : ''}</figure>`;
+      return `<figure class="media" style="--cap:${(Number(m.capSize) || 100) / 100}"><div class="mwrap"><img alt="${esc(m.title || '')}" data-src="${esc(m.src)}"></div>${m.caption ? `<figcaption>${esc(m.caption)}</figcaption>` : ''}</figure>`;
     }
     if (s.type === 'tt') return this.ttHTML(s.data);
     return `<div class="empty"><h2>${esc(T('emptyTitle'))}</h2><p>${esc(T('emptyBody'))}</p></div>`;
@@ -1907,15 +2072,23 @@ const Display = {
   qrFig(w, small) { return w.qr !== false && hasQR() ? `<figure class="qr${small ? ' sm' : ''}"><div class="qr-code" data-qr="${esc(this.wifiString(w))}"></div><figcaption>${esc(small ? w.ssid : T('wifiQr'))}</figcaption></figure>` : ''; },
   pwText(w) { const pw = String(w.password || ''); return (w.security || 'WPA') === 'nopass' || !pw ? esc(T('wifiNoPass')) : esc(pw); },
   wifiHTML(list) {
+    const isOpen = w => (w.security || 'WPA') === 'nopass' || !w.password;
+    const ICON = { wifi: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.2a14 14 0 0 1 19 0" /><path d="M5.8 12.6a9.2 9.2 0 0 1 12.4 0" /><path d="M9.1 16a4.4 4.4 0 0 1 5.8 0" /><circle cx="12" cy="19.3" r="1.4" class="f"/></svg>', lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.2" class="f"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/></svg>', link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 4.5h6v6"/><path d="M19.5 4.5 11 13"/><path d="M17 13.5v4.2a1.8 1.8 0 0 1-1.8 1.8H6.3a1.8 1.8 0 0 1-1.8-1.8V8.8A1.8 1.8 0 0 1 6.3 7h4.2"/></svg>' };
+    const rows = [];
+    list.forEach((w, i) => {
+      if (i === 0) { rows.push(['wifi', T('wpNet'), w.ssid, false]); rows.push(['lock', T('wpPw'), isOpen(w) ? T('wifiNoPass') : w.password, isOpen(w)]); }
+      else rows.push(['link', w.ssid, isOpen(w) ? T('wifiNoPass') : w.password, isOpen(w)]);
+    });
+    const qrs = hasQR() ? list.filter(w => w.qr !== false) : [];
+    const card = `<div class="pb-card"><div class="pb-rows">${rows.map(([ic, l, v, open]) => `<div class="pb-row"><span class="pb-ic">${ICON[ic]}</span><div class="pb-t"><span class="pb-l">${esc(l)}</span><span class="pb-v${open ? ' open' : ''}">${esc(v)}</span></div></div>`).join('')}</div>${qrs.length ? `<div class="pb-qr">${qrs.map(w => this.qrFig(w, true)).join('')}</div>` : ''}</div>`;
     if (this.portraitNow()) {
       const cid = viewerClass(), grp = cid && cid !== '__lobby' ? this.groupOf(cid) : '', cls = cid ? className(cid) : '';
-      const qrs = list.filter(w => w.qr !== false);
-      return `<div class="wposter">${grp ? `<div class="wp-grp">${esc(grp)}</div>` : ''}${cls ? `<div class="wp-cls">${esc(cls)}</div>` : ''}
-        <table class="wp-tbl"><thead><tr><th>${esc(T('wpNet'))}</th><th>${esc(T('wpPw'))}</th></tr></thead><tbody>${list.map(w => `<tr><td>${esc(w.ssid)}</td><td class="pw">${this.pwText(w)}</td></tr>`).join('')}</tbody></table>
-        ${qrs.length && hasQR() ? `<div class="wp-qrs">${qrs.map(w => this.qrFig(w, true)).join('')}</div>` : ''}</div>`;
+      return `<div class="wposter pb">${grp ? `<div class="pb-band"><div class="pb-bt">${T('wpGrp') ? `<span class="pb-lab">${esc(T('wpGrp'))}</span>` : ''}<span class="pb-grp">${esc(grp)}</span></div><svg class="pb-ppl" viewBox="0 0 120 80" aria-hidden="true"><circle cx="60" cy="18" r="13"/><circle cx="22" cy="28" r="9.5"/><circle cx="98" cy="28" r="9.5"/><path d="M36 78c0-17 10.7-30 24-30s24 13 24 30z"/><path d="M4 78c0-13 7.6-22.5 18-22.5 5 0 9.4 2.2 12.6 6-2.8 4.8-4.4 10.4-4.6 16.5z"/><path d="M116 78c0-13-7.6-22.5-18-22.5-5 0-9.4 2.2-12.6 6 2.8 4.8 4.4 10.4 4.6 16.5z"/></svg></div>` : ''}
+        <div class="pb-mid">${cls ? `<div class="wp-cls pb-cls"><span class="pb-name">${esc(cls)}<svg class="pb-spark" viewBox="0 0 60 60" aria-hidden="true"><path d="M22 6 16 26"/><path d="M52 20 34 34"/></svg></span></div>` : ''}</div>
+        ${card}</div>`;
     }
     if (list.length > 1) {
-      return `<div class="wifi-multi"><h2 class="wm-h">${esc(T('wifiKicker'))}</h2><div class="wm-grid">${list.map(w => `<div class="wm-card"><div class="wm-txt"><span class="lab">${esc(T('wifiSsid'))}</span><div class="wm-ssid">${esc(w.ssid)}</div><span class="lab">${esc(T('wifiPw'))}</span><div class="wm-pw">${this.pwText(w)}</div>${w.note ? `<div class="wm-note">${esc(w.note)}</div>` : ''}</div>${this.qrFig(w, true)}</div>`).join('')}</div></div>`;
+      return `<div class="wl pb"><div style="min-width:0;width:100%"><h2>${esc(T('wifiKicker'))}</h2>${card}</div></div>`;
     }
     const w = list[0], pw = String(w.password || ''), sec = w.security || 'WPA';
     const amb = { '0': T('hDigit'), 'O': T('hUpper'), 'o': T('hLower'), '1': T('hDigit'), 'l': T('hLower') + ' L', 'I': T('hUpper') + ' i' };
@@ -1941,10 +2114,36 @@ const Display = {
       const n = Number(tiles.dataset.n) || 1, gap = 0.6 * u, avail = tiles.getBoundingClientRect().width / (this.scaleOf(tiles) || 1);
       tiles.style.setProperty('--t', Math.max(3.2 * u, Math.min(7.2 * u, (avail - gap * (n - 1)) / n)) + 'px');
     }
+    this.centerInk($('.pb-grp', el));
     const body = $('.n-body', el); if (body) fitText(body, 4 * u, 1.6 * u);
     const tl = $('.tt-list', el); if (tl) fitText(tl, 3 * u, 1.3 * u);
     const img = $('img[data-src]', el);
-    if (img) resolveSrc(img.dataset.src).then(url => { if (!url) return; img.onload = () => img.classList.add('ok'); img.src = url; });
+    if (img) resolveSrc(img.dataset.src).then(url => { if (!url) return; img.onload = () => { this.fitMedia(el, img); img.classList.add('ok'); }; img.src = url; });
+  },
+  fitMedia(el, img) {
+    const fig = img.closest('.media'); if (!fig || !img.naturalWidth) return;
+    const cap = $('figcaption', fig), gap = cap ? cap.offsetHeight + parseFloat(getComputedStyle(fig).rowGap || 0) : 0;
+    const W = el.clientWidth, H = el.clientHeight - gap, k = Math.max(0.01, Math.min(W / img.naturalWidth, H / img.naturalHeight));
+    img.style.width = Math.floor(img.naturalWidth * k) + 'px'; img.style.height = Math.floor(img.naturalHeight * k) + 'px';
+  },
+  /* 폰트마다 글자가 줄 안에서 위/아래로 치우치는 것을 실제 글자 모양 기준으로 보정 */
+  centerInk(node) {
+    if (!node) return;
+    const run = () => {
+      try {
+        const cs = getComputedStyle(node), fs = parseFloat(cs.fontSize), lh = node.offsetHeight, txt = node.textContent;
+        if (!fs || !lh || !txt) return;
+        const ctx = document.createElement('canvas').getContext('2d'); ctx.font = `${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
+        const m = ctx.measureText(txt);
+        if (m.fontBoundingBoxAscent == null || m.actualBoundingBoxAscent == null) return;
+        const base = (lh - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent;
+        const top = base - m.actualBoundingBoxAscent, bot = lh - (base + m.actualBoundingBoxDescent);
+        node.style.transform = `translateY(${((bot - top) / 2).toFixed(2)}px)`;
+      } catch (e) {}
+    };
+    run();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    setTimeout(run, 1500);
   },
   scaleOf(node) { const r = node.closest('.pv-box > .display'); return r ? Number(r.dataset.scale) || 1 : 1; },
   renderTicker() {
@@ -1955,8 +2154,8 @@ const Display = {
     const sig = JSON.stringify([lines, cfg, mode, innerWidth, innerHeight, S.config.style.scale]);
     if (sig === this.tickerSig) return; this.tickerSig = sig;
     this.tickerAnim && this.tickerAnim.cancel(); this.tickerAnim = null; clearInterval(this.tickerT);
-    if (!cfg.on || !lines.length) { tk.classList.add('hidden'); return; }
-    tk.classList.remove('hidden');
+    if (!cfg.on || !lines.length) { tk.classList.add('hidden'); $('#disp').classList.remove('has-ticker'); return; }
+    tk.classList.remove('hidden'); $('#disp').classList.add('has-ticker'); $('#disp').style.setProperty('--ts', (Number(cfg.size) || 100) / 100);
     tk.style.setProperty('--ts', (Number(cfg.size) || 100) / 100);
     $('#tTag').textContent = cfg.label || ''; $('#tTag').classList.toggle('hidden', !cfg.label);
     const rail = $('#rail');
@@ -2023,6 +2222,11 @@ const Display = {
     $('#disp').classList.toggle('is-tm', !!ph);
     if (!ph) { if (!v.classList.contains('hidden')) { v.classList.add('hidden'); v.innerHTML = ''; } return false; }
     v.classList.remove('hidden');
+    if (t.mode === 'sw') {
+      const e = Math.floor(swElapsed(t, now));
+      v.innerHTML = `<h2>${esc(t.title || T('swTitle'))}</h2><div class="num${ph === 'pause' ? ' pz' : ''}">${fmtClock(e)}</div><p>${ph === 'pause' ? esc(T('tmPaused')) : esc(T('swRun'))}</p>`;
+      return true;
+    }
     const left = tmLeft(t, now), total = Math.max(1, Number(t.total) || left || 1), title = t.title || T('tmTitle');
     if (ph === 'done') {
       if (this.tmDoneId !== t.endAt) { this.tmDoneId = t.endAt; if (now - t.endAt < 5000) chime(true); }
@@ -2055,7 +2259,7 @@ const Display = {
     const d = new Date(), c = $('#dClock');
     if (c) { c.firstElementChild.textContent = hm(d); c.lastElementChild.textContent = md(d); }
     const sc = $('#sleepClock'); if (sc) sc.textContent = hm(d);
-    if (d.getSeconds() === 0) { this.rebuild(); const h = $('#dHead'); if (h) h.innerHTML = this.headHTML(S.config); }
+    if (d.getSeconds() === 0) { this.rebuild(); const h = $('#dHead'); if (h) { h.innerHTML = this.headHTML(S.config); this.fixHead(); } }
   },
   initBattery() {
     if (this.batInit || !navigator.getBattery) return; this.batInit = true;
@@ -2138,6 +2342,7 @@ const Preview = {
         ${cdA ? `<div class="cdview">${Display.cdHTML(cdA, now)}</div>` : ''}
         <div class="progress">${slides.length > 1 ? slides.map((_, j) => `<i class="${j < i ? 'done' : ''}">${j === i ? '<b style="transform:scaleX(.5)"></b>' : ''}</i>`).join('') : ''}</div>
         ${tk.on && lines.length ? `<div class="ticker" style="--ts:${(Number(tk.size) || 100) / 100}">${tk.label ? `<span class="tag">${esc(tk.label)}</span>` : ''}<div class="rail"><div class="run">${lines.map(esc).join('<span class="sep"></span>')}</div></div></div>` : ''}
+        <img class="logo-corner" src="${LOGO_SRC}" alt="">
         ${full ? Display.overlayHTML(full, 1) : ''}</div>`;
       return { html, s, u, cfg, n: slides.length, i, full };
     });
@@ -2148,6 +2353,7 @@ const Preview = {
     const root = box.firstElementChild;
     Display.applyLook(root, out.cfg, `;--u:${out.u}px;width:${W}px;height:${H}px;transform:scale(${scale})`);
     root.dataset.scale = scale;
+    Display.centerInk($('#dCls .ink', root));
     const slideEl = $('.slide', root);
     this.ctx(() => Display.post(slideEl, out.s, out.u));
     const ob = $('.ob', root); if (ob) fitText(ob, 3.4 * out.u, 1.8 * out.u);
@@ -2241,7 +2447,7 @@ const Admin = {
   defFull(level) { if (level === 'info' || level === 'countdown') return 0; const f = S.config.alertFull || {}; return Number(f[level] ?? 20) || 0; },
   newAlert(level = 'breaking', target = 'all') {
     const f = this.defFull(level);
-    return { level, title: '', body: '', target, fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: false, dur: { mode: 'for', h: 0, m: level === 'countdown' ? 10 : 30, s: 0, until: '' }, sound: true, ack: level === 'emergency' || level === 'breaking', after: '', afterM: 1, afterS: 0, when: { mode: 'now', at: '', time: '', from: '', until: '' } };
+    return { level, title: '', body: '', target, fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: false, dur: { mode: 'for', h: 0, m: level === 'countdown' ? 10 : 1, s: 0, until: '' }, sound: true, ack: level === 'emergency' || level === 'breaking', after: '', afterM: 1, afterS: 0, when: { mode: 'now', at: '', time: '', from: '', until: '' } };
   },
   fullSecOf(a) { return !a || a.level === 'info' || a.level === 'countdown' ? 0 : Math.min(3600, Math.max(0, (Number(a.fullM) || 0) * 60 + (Number(a.fullS) || 0))); },
   afterSecOf(a) { return Math.min(3600, Math.max(0, (Number(a.afterM) || 0) * 60 + (Number(a.afterS) || 0))); },
@@ -2423,7 +2629,7 @@ const Admin = {
       const live = ds.filter(d => now - d.lastSeen < 90000), on = live.length, last = ds.reduce((m, d) => Math.max(m, d.lastSeen || 0), 0);
       const low = live.some(d => d.bat && d.bat.lv < 20 && !d.bat.ch);
       const tm = (S.timers || {})[c.id], ph = tmPhase(tm), pz = (S.control || {}).pause || {};
-      const tags = (ph ? ` <span class="state live">⏱ ${ph === 'run' ? fmtClock(tmLeft(tm)) : ph === 'pause' ? '일시정지' : '끝남'}</span>` : '') + (pz.all || pz[c.id] ? ' <span class="state">⏸ 멈춤</span>' : '');
+      const tags = (ph ? ` <span class="state live">${esc(tmShow(tm))}</span>` : '') + (pz.all || pz[c.id] ? ' <span class="state">⏸ 멈춤</span>' : '');
       return `<div class="st ${on ? 'on' : last ? 'stale' : ''}${low ? ' low' : ''}"><b><span class="dot"></span>${esc(c.name)}${tags}${ds.length > 1 ? ` <small style="display:inline;font-weight:400">${on}/${ds.length}대</small>` : ''}</b>${ds.length ? `<ul class="devs">${ds.slice(0, 6).map(devLine).join('')}</ul>` : '<small>연결 기록 없음</small>'}</div>`;
     };
     const summary = cls => { const ids = new Set(cls.map(c => c.id)); const ds = Object.values(S.status || {}).filter(d => d && ids.has(d.classId) && now - d.lastSeen < 90000); const low = ds.filter(d => d.bat && d.bat.lv < 20 && !d.bat.ch).length; return `켜진 기기 ${ds.length}대${low ? ` · <span style="color:var(--alert);font-weight:600">배터리 부족 ${low}대</span>` : ''}`; };
@@ -2435,7 +2641,7 @@ const Admin = {
         + (S.config.classes.some(c => !inGroup.has(c.id)) ? `<div class="grp"><h3>묶음 없음</h3><div class="st-grid">${S.config.classes.filter(c => !inGroup.has(c.id)).map(cell).join('')}</div></div>` : '')
         : `<div class="st-grid">${S.config.classes.map(cell).join('')}</div>`);
     const rows = wk ? (wk.timetable || []).filter(r => !r.date || r.date === ymd(new Date())) : [];
-    const quick = `<div class="quickbar"><button class="hot" data-act="goto" data-t="alerts">📢 공지 보내기<small>긴급·공지·안내·카운트다운</small></button><button data-act="goto" data-t="weeks">✏️ 콘텐츠 고치기<small>Wi-Fi·공지·시간표·이미지</small></button><button data-act="goto" data-t="design">🎨 화면 꾸미기<small>색·글꼴·배경</small></button><button data-act="goto" data-t="devices">📱 기기 연결<small>반별 주소·QR 인쇄</small></button></div>`;
+    const quick = `<div class="quickbar"><button class="hot" data-act="goto" data-t="alerts">공지 보내기<small>긴급 알림, 안내, 카운트다운</small></button><button data-act="goto" data-t="weeks">콘텐츠 고치기<small>Wi-Fi, 공지, 시간표, 이미지</small></button><button data-act="goto" data-t="design">화면 꾸미기<small>색, 글꼴, 로고</small></button><button data-act="goto" data-t="devices">기기 연결<small>반별 주소와 QR 인쇄</small></button></div>`;
     return quick + this.connCard() + `<section class="card" id="ctlCard" data-ctx="ctl">${this.ctlInner()}</section>` + `
       <section class="card"><h2>지금 화면에 나가는 내용</h2>
         <p class="desc">${wk ? `<b>${esc(wk.label)}</b> (${esc(wk.start || '')} ~ ${esc(wk.end || '')}) · ${S.config.weekMode === 'manual' ? '관리자가 고정한 프로젝트' : '오늘 날짜로 자동 선택'}<br>오늘 시간표 ${rows.length}개 · 게시 중인 공지 ${(wk.notices || []).filter(isLive).length}개 · 이미지 ${(wk.media || []).filter(isLive).length}장` : '등록된 프로젝트가 없습니다. 콘텐츠 탭에서 먼저 추가하세요.'}<br>진행 중인 긴급·공지·안내: <b>${act.length}건</b></p>
@@ -2452,7 +2658,7 @@ const Admin = {
     const p = (S.control || {}).pause || {}, pausedList = p.all ? '전체 반' : Object.keys(p).filter(k => p[k]).map(className).join(', ');
     return `<h2>화면 제어</h2><p class="desc">태블릿 화면을 멀리서 멈추거나 넘깁니다. 태블릿에는 멈춤 버튼이 없고 관리자만 제어할 수 있습니다. 멈춘 화면 구석에는 ‘${esc(T('dPaused'))}’ 표시가 나옵니다.</p>
       ${this.targetPicker('target', this.ctlDraft.target)}
-      <div class="ctlbtns"><button class="btn" data-act="ctl" data-v="pause">⏸ 멈춤</button><button class="btn pri" data-act="ctl" data-v="play">▶ 재생</button><button class="btn" data-act="ctl" data-v="prev">‹ 이전 화면</button><button class="btn" data-act="ctl" data-v="next">다음 화면 ›</button><button class="btn" data-act="ctl" data-v="tmoff" title="강사가 켜 둔 타이머를 끕니다">⏱ 타이머 끄기</button></div>
+      <div class="ctlbtns"><button class="btn" data-act="ctl" data-v="pause">⏸ 멈춤</button><button class="btn pri" data-act="ctl" data-v="play">▶ 재생</button><button class="btn" data-act="ctl" data-v="prev">‹ 이전 화면</button><button class="btn" data-act="ctl" data-v="next">다음 화면 ›</button><button class="btn" data-act="ctl" data-v="tmoff" title="강사가 켜 둔 타이머·스톱워치를 끕니다">⏱ 타이머·스톱워치 끄기</button></div>
       <p class="desc" style="margin:12px 0 0">지금 멈춘 반: <b>${esc(pausedList || '없음')}</b></p>`;
   },
   connCard() {
@@ -2543,7 +2749,8 @@ const Admin = {
         <label class="f"><span>강조 색</span><select data-k="notices.${i}.tone">${Object.entries(TONES).map(([v, t]) => `<option value="${v}"${(n.tone || 'base') === v ? ' selected' : ''}>${t}</option>`).join('')}</select></label></div>`)}</div>`).join('');
     const media = d.media.map((m, i) => `<div class="item${m.hidden ? ' off' : ''}" data-pk="m:${esc(m.id)}">${this.itemHead('media', i, d.media.length, esc(m.title || '이미지 ' + (i + 1)), m)}
       <img class="thumb" data-src="${esc(m.src)}" alt="">
-      <div class="row" style="grid-template-columns:1fr"><label class="f"><span>화면 아래 설명 (선택)</span><input type="text" data-k="media.${i}.caption" value="${esc(m.caption)}"></label></div>
+      <div class="row"><label class="f" style="grid-column:span 2"><span>이미지 바로 아래 설명 (선택)</span><input type="text" data-k="media.${i}.caption" value="${esc(m.caption)}"></label>
+      <label class="f"><span>설명 글자 크기</span><select data-k="media.${i}.capSize">${[[70, '작게'], [100, '보통'], [140, '크게'], [200, '아주 크게'], [280, '최대']].map(([v, n]) => `<option value="${v}"${(Number(m.capSize) || 100) === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label></div>
       <label class="check" style="margin-bottom:10px"><input type="checkbox" data-k="media.${i}.frame" ${m.frame ? 'checked' : ''}>위쪽 머리글·아래 띠도 함께 보이기 <small class="muted">(끄면 파일을 화면에 최대한 크게 보여줍니다)</small></label>
       <div class="row"><label class="f"><span>표시 시간 (초)</span><input type="number" min="3" max="300" data-k="media.${i}.sec" value="${esc(m.sec || '')}" placeholder="${S.config.slideSec}"></label></div>
       ${this.scopeBox('media.' + i, m)}</div>`).join('');
@@ -2652,7 +2859,7 @@ ${tt}
     if (el.dataset.gc != null && el.dataset.gc !== '') { const g = this.ensureCfg().groups[+el.dataset.gc]; if (g) { g.classes = el.checked ? Array.from(new Set([...g.classes, el.value])) : g.classes.filter(x => x !== el.value); this.markDirty(); } return; }
     if (el.dataset.k && (el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'radio' || /date|time/.test(el.type))) {
       this.onInput(e);
-      if (el.dataset.k === 'weekMode' || el.dataset.k === 'hours.on' || el.dataset.k === 'ticker.on' || el.dataset.k === 'timetable.on') this.rerenderKeep();
+      if (el.dataset.k === 'style.logoOn' || el.dataset.k === 'weekMode' || el.dataset.k === 'hours.on' || el.dataset.k === 'ticker.on' || el.dataset.k === 'timetable.on') this.rerenderKeep();
       if (this.quiet(el) && el.dataset.k === 'level') {
         const a = this.alertDraft; if (!a.fullTouched) { const f = this.defFull(a.level); a.fullM = Math.floor(f / 60); a.fullS = f % 60; }
         a.dur = normDur(a.dur); if (a.level === 'countdown' && (a.dur.mode === 'today' || a.dur.mode === 'manual')) a.dur = { mode: 'for', h: 0, m: 10, s: 0, until: '' };
@@ -2946,7 +3153,7 @@ ${tt}
     async 'style-preset'(b) { const p = STYLE_PRESETS[+b.dataset.i][1], c = this.ensureCfg(); c.theme = p.theme; c.style = Object.assign({}, c.style, { bg: p.bg, ink: p.ink, accent: p.accent }); this.markDirty(); this.renderTab(); },
     async 'clr-reset'(b) { this.setPath(this.ensureCfg(), b.dataset.k, ''); this.markDirty(); this.renderTab(); },
     'bg-pick'() { $('#bgFile').click(); },
-    'font-set'(b) { this.setPath(this.ensureCfg(), b.dataset.k, b.dataset.v === 'IBM Plex Sans KR' ? '' : b.dataset.v); this.markDirty(); this.rerenderKeep(); },
+    'font-set'(b) { this.setPath(this.ensureCfg(), b.dataset.k, b.dataset.v === (b.dataset.k === 'style.hfont' ? 'Gothic A1' : 'IBM Plex Sans KR') ? '' : b.dataset.v); this.markDirty(); this.rerenderKeep(); },
     async 'bg-remove'() { this.ensureCfg().style.bgImage = ''; this.markDirty(); this.renderTab(); },
     async 'txt-reset'(b) { const c = this.ensureCfg(); c.texts = c.texts || {}; delete c.texts[b.dataset.k]; this.markDirty(); this.renderTab(); },
     async 'cls-add'() { const c = this.ensureCfg(); c.classes.push({ id: 'c' + uid(), name: (c.classes.length + 1) + '반' }); this.markDirty(); this.renderTab(); },
@@ -3334,7 +3541,7 @@ ${tt}
             <div class="row" style="grid-template-columns:1fr"><label class="f"><span>제목</span><input type="text" data-k="title" value="${esc(a.title)}" placeholder="예: 3교시 시작이 10분 늦춰집니다"></label>
             <label class="f"><span>내용 (선택)</span><textarea rows="3" data-k="body">${esc(a.body)}</textarea></label></div>`}</div></div>
         <div class="step"><span class="no">4</span><div><b>받을 반 고르기</b><small class="help">‘특정 반만’이나 묶음 버튼으로 고르면 그 반의 태블릿에만 나옵니다.</small>${this.targetPicker('target', a.target)}</div></div>
-        <details class="adv" id="alAdv"${this.advOpen ? ' open' : ''}><summary>시간·예약·확인 설정 <small>(선택 · 그대로 두면 ${cd ? '10분 카운트다운' : a.level === 'info' ? '30분 동안 표시' : `팝업 ${fmtSec(this.fullSecOf(a))} 뒤 30분 동안 미니바`}, 지금 바로 보냄)</small></summary><div class="in">
+        <details class="adv" id="alAdv"${this.advOpen ? ' open' : ''}><summary>시간·예약·확인 설정 <small>(지금 설정: ${cd ? esc(durText(d)) + ' 카운트다운' : a.level === 'info' ? '미니바 ' + esc(durText(d)) : `전체화면 팝업 ${fmtSec(this.fullSecOf(a))} → 상단 미니바 ${esc(durText(d))}`} · ${w.mode === 'now' ? '지금 바로 보냄' : w.mode === 'at' ? '예약' : '매일 반복'})</small></summary><div class="in">
         <div class="step"><span class="no">⏱</span><div><b>보여주는 시간 정하기</b>
           ${cd ? `<div class="sub">카운트다운 길이</div><small class="help" style="margin-top:0">‘시간 정하기’는 보낸 순간부터 거꾸로 셉니다. ‘몇 시까지’는 그 시각이 0이 되도록 셉니다.</small>
               ${durBox([['for', '시간 정하기'], ['until', '몇 시까지']], [['0:3:0', '3분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:15:0', '15분'], ['0:20:0', '20분'], ['1:0:0', '1시간']])}
@@ -3346,7 +3553,7 @@ ${tt}
               <div class="tin">${num('fullM', a.fullM, 60, '분')}${num('fullS', a.fullS, 59, '초')}</div>
               <div class="quick">${q('full-set', 0, '팝업 안 함')}${q('full-set', 10, '10초')}${q('full-set', 20, '20초')}${q('full-set', 30, '30초')}${q('full-set', 60, '1분')}${q('full-set', 180, '3분')}<button type="button" class="btn ghost" data-act="full-default" title="다음부터 ${lvName}를 쓸 때 이 값으로 시작합니다">지금 값을 ‘${lvName}’ 기본값으로</button></div>` : ''}
               <div class="sub">상단 미니바 유지시간</div><small class="help" style="margin-top:0">미니바가 이 시간 동안 화면 위쪽에 남아 있다가 자동으로 사라집니다. 보낸 뒤에도 아래 목록에서 연장하거나 바로 내릴 수 있습니다.</small>
-              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지'], ['today', '오늘 자정까지'], ['manual', '직접 내릴 때까지']], [['0:5:0', '5분'], ['0:10:0', '10분'], ['0:30:0', '30분'], ['1:0:0', '1시간'], ['2:0:0', '2시간'], ['3:0:0', '3시간']])}
+              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지'], ['today', '오늘 자정까지'], ['manual', '직접 내릴 때까지']], [['0:1:0', '1분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:30:0', '30분'], ['1:0:0', '1시간'], ['3:0:0', '3시간']])}
               ${a.level !== 'info' ? `<div class="srow" style="margin-top:10px"><div class="sl"><b style="font-size:14px">확인 받기</b><small>태블릿에 ‘확인했습니다’ 버튼이 나오고, 누른 반이 아래 ‘지금 떠 있는 공지’에 표시됩니다. 대피처럼 전달 확인이 중요할 때 켜세요.</small></div><div class="sc">${UI.sw('ack', !!a.ack, '확인 받기')}</div></div>
               <div class="srow" style="padding-bottom:0"><div class="sl"><b style="font-size:14px">도착할 때 알림음</b><small>태블릿을 한 번 터치해 둔 뒤부터 소리가 납니다</small></div><div class="sc">${UI.sw('sound', a.sound !== false, '알림음')}</div></div>` : ''}`}
         </div></div>
@@ -3377,9 +3584,14 @@ ${tt}
         ${UI.row('배경 이미지', '가로 사진을 권장합니다. 글자가 잘 보이도록 위에 배경색을 살짝 덮습니다.', `${L.img ? `<img class="bgthumb" data-src="${esc(L.img)}" alt="">` : ''}${Store.canUpload() ? `<button class="btn sm" data-act="bg-pick">${L.img ? '바꾸기' : '이미지 넣기'}</button>` : '<small class="muted">업로드 권한 없음</small>'}${L.img ? '<button class="btn sm ghost" data-act="bg-remove">빼기</button>' : ''}`)}
         ${L.img ? UI.row('이미지 위 덮개', '높을수록 글자가 또렷하고 사진은 흐려집니다', UI.range('style.bgDim', st.bgDim ?? 45, 0, 90, 5, '%')) : ''}
       </section>
+      <section class="card"><h2>회사 로고</h2><p class="desc">(주)네패스 코코아팹 로고를 화면에 은은하게 넣습니다. 안내 내용을 가리지 않도록 작게, 투명하게 배치됩니다. 타이머·이미지 화면처럼 머리글이 숨는 화면에서는 오른쪽 아래에 나옵니다.</p>
+        <div style="background:var(--paper);border-radius:10px;padding:14px;margin-bottom:6px"><img src="${LOGO_SRC}" alt="" style="height:34px;opacity:${(Number(c.style.logoOp) || 70) / 100}"></div>
+        ${UI.row('로고 표시', '', UI.sw('style.logoOn', c.style.logoOn !== false, '로고'))}
+        ${c.style.logoOn !== false ? UI.row('위치', '', UI.seg('style.logoPos', [['head', '머리글 왼쪽'], ['corner', '오른쪽 아래']], c.style.logoPos || 'head')) + UI.row('진하기', '낮을수록 배경에 자연스럽게 녹아듭니다', UI.range('style.logoOp', c.style.logoOp || 70, 20, 100, 5, '%')) : ''}
+      </section>
       <section class="card"><h2>글꼴</h2><p class="desc">화면에 나오는 글자의 글꼴을 고릅니다. ‘제목·숫자’는 공지 제목, 반 이름, Wi-Fi 이름, 카운트다운·타이머 숫자에 쓰입니다.</p>
         ${(() => { FONTS.forEach(f => ensureFont(f[0])); const pick = (k, v) => `<div class="fonts">${FONTS.map(([n, label]) => `<button type="button" class="fontbtn" data-act="font-set" data-k="${k}" data-v="${esc(n)}" aria-pressed="${(v || 'IBM Plex Sans KR') === n}"><b style="font-family:${esc(fontStack(n))}">가나다 1조 123</b><small>${esc(label)}</small></button>`).join('')}</div>`;
-          return `<div class="sub">본문 글꼴</div>${pick('style.font', c.style.font)}<div class="sub" style="margin-top:18px">제목·숫자 글꼴</div>${pick('style.hfont', c.style.hfont || c.style.font)}`; })()}
+          return `<div class="sub">본문 글꼴</div>${pick('style.font', c.style.font)}<div class="sub" style="margin-top:18px">제목·숫자 글꼴</div>${pick('style.hfont', c.style.hfont || 'Gothic A1')}`; })()}
       </section>
       <section class="card"><h2>글자와 크기</h2>
         ${UI.row('연수명', '화면 왼쪽 위', UI.text('title', c.title, '연수 안내'), true)}
