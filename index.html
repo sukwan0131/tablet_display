@@ -847,6 +847,37 @@ textarea.one{resize:none;overflow:hidden;min-height:42px;line-height:1.4;white-s
   .ttt-r > :nth-child(7){grid-column:4;grid-row:3}
 }
 
+/* ===== 로고(작게·은은하게) · 로고 등록 미리보기 · 세로 Wi-Fi 박스 ===== */
+.brand-logo{height:calc(var(--u)*2.2*var(--logo-k,1));max-width:calc(var(--u)*18);object-fit:contain;opacity:var(--logo-op,.7)}
+.logo-corner{height:calc(var(--u)*2*var(--logo-k,1));max-width:calc(var(--u)*16);object-fit:contain}
+.modal.lgp .box{max-width:700px;max-height:92vh;overflow:auto}
+.lgp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.lgp-grid figure{margin:0;min-width:0}
+.lgp-grid figcaption{font-size:12.5px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.chk{height:130px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;background:conic-gradient(#e6e6e6 25%,#fff 0 50%,#e6e6e6 0 75%,#fff 0) 0 0/16px 16px;overflow:hidden}
+.chk img{max-width:92%;max-height:92%;object-fit:contain}
+.lgp-note{font-size:13px;margin:0 0 10px!important;line-height:1.6}
+.lgp-opts{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.lgp-tol{min-width:200px;flex:1}
+.lgp-strips{display:grid;gap:8px;margin-bottom:16px}
+.strip{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid var(--line)}
+.strip img{width:auto;object-fit:contain}
+.strip b{font-family:var(--hfont);font-size:15px;font-weight:800}
+.logo-prev{border-radius:10px;padding:14px;background:var(--paper);border:1px dashed var(--line);display:flex;align-items:center;min-height:62px}
+.logo-prev img{width:auto;max-width:100%;object-fit:contain}
+.pb-boxes{display:flex;flex-direction:column;gap:calc(var(--u)*1.4*var(--s,1))}
+.pb-box{display:flex;align-items:center;gap:calc(var(--u)*2);background:var(--card);border-radius:calc(var(--u)*1.8);padding:calc(var(--u)*1.2*var(--s,1)) calc(var(--u)*2.6);box-shadow:0 calc(var(--u)*.6) calc(var(--u)*2.4) color-mix(in srgb,var(--ink) 8%,transparent)}
+.pb-bx{flex:1;min-width:0;display:flex;flex-direction:column;gap:calc(var(--u)*.6*var(--s,1))}
+.pb-line{display:grid;grid-template-columns:calc(var(--u)*10.5*var(--s,1)) minmax(0,1fr);align-items:center;gap:calc(var(--u)*1.2)}
+.pb-line + .pb-line{border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);padding-top:calc(var(--u)*.6*var(--s,1))}
+.pb-k{font-size:calc(var(--u)*1.9*var(--s,1));color:var(--muted);font-weight:600;white-space:nowrap}
+.pb-v2{font-family:var(--hfont);font-size:calc(var(--u)*4*var(--s,1));font-weight:800;line-height:1.2;white-space:pre;overflow:hidden;min-width:0;color:var(--ink)}
+.pb-v2.open{color:var(--board)}
+.pb-box .qr.sm{padding:calc(var(--u)*.5*var(--s,1));border-radius:calc(var(--u)*.6);flex:none}
+.pb-box .qr.sm .qr-code img{width:calc(var(--u)*9.5*var(--s,1))!important;height:calc(var(--u)*9.5*var(--s,1))!important}
+.pb-box .qr.sm figcaption{display:none}
+.pb-mid{min-height:calc(var(--u)*13)}
+
 /* 미리보기 패널 */
 .pv-panel{position:sticky;top:124px}
 .pv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
@@ -1015,6 +1046,7 @@ const TEXT_DEFAULT = {}; TEXT_DEFS.forEach(([, , list]) => list.forEach(([k, , d
 const T = k => { const v = S.config.texts && S.config.texts[k]; return (v != null && v !== '') ? v : (TEXT_DEFAULT[k] || ''); };
 
 const LOGO_SRC = 'data:image/png;base64,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';
+const logoSrc = () => S.logo || LOGO_SRC;
 const FONTS = [
   ['IBM Plex Sans KR', '기본 고딕', '400;500;600;700'], ['Noto Sans KR', '본고딕', '400;500;700;900'], ['Gothic A1', '고딕 A1 (제목 기본)', '400;500;700;800;900'],
   ['Nanum Gothic', '나눔고딕', '400;700;800'], ['Nanum Myeongjo', '나눔명조', '400;700;800'], ['Gowun Dodum', '고운돋움', ''],
@@ -1045,7 +1077,7 @@ const DEFAULT_CONFIG = {
   slideSec: 12, transition: 'fade',
   ticker: { on: true, mode: 'marquee', speed: 5, size: 100, label: '안내' },
   theme: 'light', showQR: true, showClock: true, alertSound: true,
-  style: { bg: '', ink: '', accent: '', bgImage: '', bgDim: 45, scale: 100, font: '', hfont: '', logoOn: true, logoPos: 'head', logoOp: 70 },
+  style: { bg: '', ink: '', accent: '', bgImage: '', bgDim: 45, scale: 100, font: '', hfont: '', logoOn: true, logoPos: 'head', logoOp: 70, logoSize: 100 },
   hours: { on: false, start: '08:00', end: '19:00' },
   weekMode: 'auto', manualWeek: '',
   alertFull: { emergency: 20, breaking: 20 },
@@ -1076,16 +1108,18 @@ function look(cfg) {
   const base = cfg.theme === 'light' ? PAL.light : (cfg.theme === 'auto' && !matchMedia('(prefers-color-scheme: dark)').matches) ? PAL.light : PAL.dark;
   return { bg: hex(st.bg) || base.bg, ink: hex(st.ink) || base.ink, accent: hex(st.accent) || base.accent, img: st.bgImage || '', dim: Math.min(95, Math.max(0, Number(st.bgDim ?? 45))), scale: (Number(st.scale) || 100) / 100 };
 }
+function hexRgb(h) { const n = parseInt(String(h).slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mixHex(a, b, pct) { const x = hexRgb(a), y = hexRgb(b), t = pct / 100; return '#' + [0, 1, 2].map(i => Math.round(x[i] * t + y[i] * (1 - t)).toString(16).padStart(2, '0')).join(''); }
 function themeVars(cfg) {
-  const L = look(cfg), p = L.bg, k = L.ink, lightBg = onColor(p) !== '#FFFFFF', card = lightBg ? `color-mix(in srgb,#ffffff 82%,${p})` : `color-mix(in srgb,${k} 7%,${p})`;
+  const L = look(cfg), p = L.bg, k = L.ink, lightBg = onColor(p) !== '#FFFFFF', card = lightBg ? mixHex('#FFFFFF', p, 82) : mixHex(k, p, 7), cardRgb = hexRgb(card).join(',');
   const st = cfg.style || {}; if (st.font) ensureFont(st.font); if (st.hfont) ensureFont(st.hfont);
-  return `--logo-op:${Math.min(1, Math.max(.1, (Number(st.logoOp) || 70) / 100))};${st.font ? `--font:${fontStack(st.font)};` : ''}${st.hfont ? `--hfont:${fontStack(st.hfont)};` : ''}--paper:${p};--ink:${k};--board:${L.accent};--board-ink:${onColor(L.accent)};--muted:color-mix(in srgb,${k} 62%,${p});--line:color-mix(in srgb,${k} 16%,${p});--card:${L.img ? `color-mix(in srgb,${card} 78%,transparent)` : card};--scale:${L.scale}`;
+  return `--logo-op:${Math.min(1, Math.max(.1, (Number(st.logoOp) || 70) / 100))};--logo-k:${Math.min(1.6, Math.max(.4, (Number(st.logoSize) || 100) / 100))};${st.font ? `--font:${fontStack(st.font)};` : ''}${st.hfont ? `--hfont:${fontStack(st.hfont)};` : ''}--paper:${p};--ink:${k};--board:${L.accent};--board-ink:${onColor(L.accent)};--muted:${mixHex(k, p, 62)};--line:${mixHex(k, p, 16)};--card:${L.img ? `rgba(${cardRgb},.78)` : card};--scale:${L.scale}`;
 }
 
 const S = {
   config: mergeConfig(null), weeks: [], alerts: [], status: {}, log: [], admins: [], templates: [],
   loaded: { config: false, weeks: false, alerts: false, admins: false },
-  classId: null, deviceId: '', view: '', preview: false, previewClass: null,
+  logo: '', classId: null, deviceId: '', view: '', preview: false, previewClass: null,
   connected: true, discSince: 0, lastSync: 0, reloadSeen: null, depth: 0, who: '', weekOverride: undefined, pvMode: false
 };
 S.deviceId = LS.get('tsd-device', '') || (() => { const d = uid(); LS.set('tsd-device', d); return d; })();
@@ -1281,7 +1315,7 @@ async function writeLog(action, detail, undo, pid) {
 const MASTER_EMAIL = 'lolook4122@gmail.com';
 const LV_DESC = { 1: 'Lv.1 · 콘텐츠·공지 관리', 2: 'Lv.2 · + 관리자 추가', 3: 'Lv.3 · 모든 권한' };
 function lvOf(a) { if (!a) return 0; if (a.m) return 3; const v = Number(a.lv); return v >= 1 && v <= 3 ? v : (Store.mode === 'firebase' ? 1 : 3); }
-function can(perm) { const lv = lvOf(Auth.me); return perm === 'addAdmin' ? lv >= 2 : perm === 'manageAdmin' || perm === 'editLog' ? lv >= 3 : lv >= 1; }
+function can(perm) { const lv = lvOf(Auth.me); return perm === 'addAdmin' || perm === 'seeAdmins' ? lv >= 2 : (perm === 'manageAdmin' || perm === 'editLog' || perm === 'logo') ? lv >= 3 : lv >= 1; }
 function adminDoc(a) { return { name: a.name, email: a.email || '', hash: a.hash || '', lv: lvOf(a), m: !!a.m, kind: a.kind || (a.email ? 'email' : 'code'), exp: a.exp || 0, addedBy: a.addedBy || '', at: a.at || Date.now() }; }
 async function saveAdmin(a) { const d = adminDoc(a); if (!d.hash) delete d.hash; const extra = { lv: d.lv, m: d.m }; if (d.exp) extra.exp = d.exp; await Store.set('admins/' + a.id, d, extra); }
 const EXP_OPTS = [['0', '기한 없음'], ['today', '오늘까지'], ['1', '내일까지'], ['3', '3일'], ['7', '7일'], ['30', '30일']];
@@ -1320,7 +1354,14 @@ const Auth = {
   firstRun() { return !S.admins.length && !S.config.adminHash; },
   async registerMaster(existing) {
     if (this.regBusy) return; this.regBusy = true;
-    try { await saveAdmin({ id: this.user.uid, name: (existing && existing.name) || LS.get('tsd-who-last', '') || '마스터', email: this.user.email, lv: 3, m: true, addedBy: '(마스터)', at: (existing && existing.at) || Date.now() }); }
+    try {
+      if (!this.user.emailVerified) {
+        try { await this.user.sendEmailVerification(); } catch (e) {}
+        Admin.loginErr = `마스터 이메일(${this.user.email}) 인증이 필요합니다. 방금 인증 메일을 보냈으니 메일의 링크를 누른 뒤 다시 로그인하세요. (스팸함도 확인)`;
+        await firebase.auth().signOut(); return;
+      }
+      await saveAdmin({ id: this.user.uid, name: (existing && existing.name) || LS.get('tsd-who-last', '') || '마스터', email: this.user.email, lv: 3, m: true, addedBy: '(마스터)', at: (existing && existing.at) || Date.now() });
+    }
     catch (e) { console.warn('마스터 등록 실패', e); Admin.loginErr = '마스터 계정을 등록하지 못했습니다. Firebase 보안 규칙을 새 database.rules.json으로 게시했는지 확인하세요.'; }
     finally { this.regBusy = false; this.watch(); }
   },
@@ -1394,6 +1435,10 @@ const Auth = {
     this.bootstrapping = true; this.denied = false; LS.set('tsd-who-last', name);
     try {
       const cred = await firebase.auth().createUserWithEmailAndPassword(email, pw);
+      if (!cred.user.emailVerified) {
+        try { await cred.user.sendEmailVerification(); } catch (e) {}
+        await firebase.auth().signOut(); throw { code: 'verify' };
+      }
       try { await saveAdmin({ id: cred.user.uid, name, email: cred.user.email, lv: 3, m: true, addedBy: '(마스터)', at: Date.now() }); }
       catch (e) { throw { code: (await checkRest(FBC.databaseURL)) === 'rules' ? 'norules' : 'rulesold' }; }
     } finally { this.bootstrapping = false; this.watch(); }
@@ -1526,6 +1571,79 @@ function alertOcc(now = Date.now()) {
 function activeAlerts() { return alertOcc().filter(a => matchTarget(a.target)); }
 function isScheduled(a, now = Date.now()) { if (a.cleared) return false; if (a.repeat === 'daily') return !a.untilDate || a.untilDate >= ymd(new Date(now)); return !!a.startAt && a.startAt > now; }
 function isPast(a, now = Date.now()) { if (a.cleared) return true; if (a.repeat === 'daily') return !!a.untilDate && a.untilDate < ymd(new Date(now)); return !!a.expiresAt && a.expiresAt <= now; }
+const lvName = l => (LEVELS[l] || LEVELS.info).name;
+/* ===== 회사 로고: 불러오기 · 배경(누끼) 제거 · 가장자리 정리 ===== */
+async function loadLogoSource(file) {
+  const isSvg = /svg/i.test(file.type) || /\.svg$/i.test(file.name || '');
+  let blob = file;
+  if (isSvg) {
+    let t = await file.text();
+    if (!/<svg[^>]*\s(width|height)\s*=/i.test(t)) {
+      const m = /viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(t), w = 1000, h = m && +m[1] ? Math.round(1000 * m[2] / m[1]) : 1000;
+      t = t.replace(/<svg/i, `<svg width="${w}" height="${h}"`);
+    }
+    blob = new Blob([t], { type: 'image/svg+xml' });
+  }
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('load')); i.src = url; });
+    let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height; if (!w || !h) throw new Error('size');
+    const k = isSvg ? 1000 / Math.max(w, h) : Math.min(1, 1200 / Math.max(w, h)); w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h); return c;
+  } finally { URL.revokeObjectURL(url); }
+}
+function logoAnalyze(c) {
+  const w = c.width, h = c.height, d = c.getContext('2d').getImageData(0, 0, w, h).data; let trans = 0;
+  for (let i = 3; i < d.length; i += 4) if (d[i] < 40) trans++;
+  const edge = [], step = Math.max(1, Math.floor(Math.max(w, h) / 300)), pushPx = (x, y) => { const j = (y * w + x) * 4; edge.push([d[j], d[j + 1], d[j + 2], d[j + 3]]); };
+  for (let x = 0; x < w; x += step) { pushPx(x, 0); pushPx(x, h - 1); } for (let y = 0; y < h; y += step) { pushPx(0, y); pushPx(w - 1, y); }
+  const hasAlpha = edge.filter(q => q[3] < 40).length / edge.length > .5 || trans / (w * h) > .04;
+  const px = edge.filter(q => q[3] >= 40), med = ch => { const a = px.map(q => q[ch]).sort((x, y) => x - y); return a.length ? a[a.length >> 1] : 255; };
+  const bg = [med(0), med(1), med(2)], ok = px.filter(q => Math.hypot(q[0] - bg[0], q[1] - bg[1], q[2] - bg[2]) <= 36).length / Math.max(1, px.length);
+  return { hasAlpha, solid: ok >= .88, bg };
+}
+function logoCutout(src, bg, tol, holes) {
+  const w = src.width, h = src.height, n = w * h, ctx = src.getContext('2d'), d = ctx.getImageData(0, 0, w, h).data, near = new Uint8Array(n), mask = new Uint8Array(n), t2 = tol * tol;
+  for (let i = 0; i < n; i++) { const j = i * 4; if (d[j + 3] < 40) { near[i] = 1; continue; } const dr = d[j] - bg[0], dg = d[j + 1] - bg[1], db = d[j + 2] - bg[2]; near[i] = dr * dr + dg * dg + db * db <= t2 ? 1 : 0; }
+  const st = new Int32Array(n); let sp = 0;
+  const push = i => { if (near[i] && !mask[i]) { mask[i] = 1; st[sp++] = i; } };
+  for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); } for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+  while (sp) { const i = st[--sp], x = i % w, y = (i / w) | 0; if (x > 0) push(i - 1); if (x < w - 1) push(i + 1); if (y > 0) push(i - w); if (y < h - 1) push(i + w); }
+  if (holes) {
+    const seen = new Uint8Array(n), comp = new Int32Array(n), lim = Math.max(60, Math.floor(n * .12)); let sp2 = 0;
+    const tp = k => { if (near[k] && !mask[k] && !seen[k]) { seen[k] = 1; st[sp2++] = k; } };
+    for (let s0 = 0; s0 < n; s0++) {
+      if (!near[s0] || mask[s0] || seen[s0]) continue;
+      let c = 0; sp2 = 0; seen[s0] = 1; st[sp2++] = s0;
+      while (sp2) { const i = st[--sp2]; comp[c++] = i; const x = i % w, y = (i / w) | 0; if (x > 0) tp(i - 1); if (x < w - 1) tp(i + 1); if (y > 0) tp(i - w); if (y < h - 1) tp(i + w); }
+      if (c <= lim) for (let q = 0; q < c; q++) mask[comp[q]] = 1;
+    }
+  }
+  const out = ctx.createImageData(w, h), o = out.data;
+  for (let i = 0; i < n; i++) {
+    const j = i * 4; if (mask[i]) continue;
+    let r = d[j], g = d[j + 1], b = d[j + 2], a = d[j + 3];
+    const x = i % w, y = (i / w) | 0, edge = (x > 0 && mask[i - 1]) || (x < w - 1 && mask[i + 1]) || (y > 0 && mask[i - w]) || (y < h - 1 && mask[i + w]);
+    if (edge) { const dd = Math.hypot(r - bg[0], g - bg[1], b - bg[2]), k = Math.min(1, Math.max(0, (dd - tol * .4) / (tol * 1.2))); if (k < 1) { const kk = Math.max(k, .04); r = Math.max(0, Math.min(255, (r - (1 - kk) * bg[0]) / kk)); g = Math.max(0, Math.min(255, (g - (1 - kk) * bg[1]) / kk)); b = Math.max(0, Math.min(255, (b - (1 - kk) * bg[2]) / kk)); a *= kk; } }
+    o[j] = r; o[j + 1] = g; o[j + 2] = b; o[j + 3] = a;
+  }
+  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; c2.getContext('2d').putImageData(out, 0, 0); return c2;
+}
+function logoFinish(c) {
+  const w = c.width, h = c.height, d = c.getContext('2d').getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 12) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 < 0) return null;
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, pad = Math.round(Math.max(bw, bh) * .03); x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad);
+  const cw = Math.min(w - x0, bw + pad * 2), ch = Math.min(h - y0, bh + pad * 2), o = document.createElement('canvas'); o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch); return o;
+}
+function logoExport(c) {
+  let url = '';
+  for (const mw of [800, 640, 480, 360]) {
+    const k = Math.min(1, mw / c.width), o = document.createElement('canvas'); o.width = Math.max(1, Math.round(c.width * k)); o.height = Math.max(1, Math.round(c.height * k));
+    const x = o.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, o.width, o.height); url = o.toDataURL('image/png'); if (url.length < 320000) break;
+  }
+  return url;
+}
 function josa(w, a, b) { const c = String(w || '').charCodeAt(String(w || '').length - 1); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? a : b; }
 function fmtClock(sec) { sec = Math.max(0, sec); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60; return (h ? h + ':' + pad(m) : pad(m)) + ':' + pad(x); }
 function devKind() {
@@ -1547,11 +1665,6 @@ function tmPhase(t, now = nowS()) {
 function tmLeft(t, now = nowS()) { return !t ? 0 : t.st === 'pause' ? Math.max(0, Number(t.left) || 0) : Math.max(0, Math.ceil((t.endAt - now) / 1000)); }
 function ackKey(aid, cls, dev) { return (aid + '__' + cls + '__' + dev).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_'); }
 function fmtBody(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
-function ago(ts) {
-  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
-  if (s < 60) return '방금'; if (s < 3600) return Math.floor(s / 60) + '분 전';
-  if (s < 86400) return Math.floor(s / 3600) + '시간 전'; return Math.floor(s / 86400) + '일 전';
-}
 function fitText(el, maxPx, minPx) {
   let lo = minPx, hi = maxPx, best = minPx;
   for (let k = 0; k < 14; k++) {
@@ -1653,6 +1766,7 @@ window.addEventListener('popstate', e => {
   show(st.v || home());
 });
 function onData(kind) {
+  if (kind === 'logo') { if (S.view === 'display') Display.refresh(); else if (S.view === 'admin') Admin.refresh('logo'); return; }
   if (kind === 'issue') { if (S.view === 'admin') Admin.refresh('issue'); return; }
   if (kind === 'control') { if (S.view === 'display') Display.applyControl(); else if (S.view === 'admin') Admin.refresh('control'); return; }
   if (S.view === 'teacher') { if (kind === 'config') Teacher.start(); return; }
@@ -1909,7 +2023,7 @@ const Display = {
       <div class="ticker hidden" id="ticker"><span class="tag" id="tTag"></span><div class="rail" id="rail"></div></div>
       <div id="dOverlay"></div>
       <div class="tmview hidden" id="tmView"></div>
-      <img class="logo-corner" src="${LOGO_SRC}" alt="">
+      <img class="logo-corner" src="${esc(logoSrc())}" alt="">
       <div class="ctrl off" id="ctrl"><button data-c="prev" id="cPrev"></button><button data-c="next" id="cNext"></button></div>
       <div class="dpause hidden" id="dPause"></div>
       ${S.teacher ? Teacher.shellHTML() : ''}
@@ -2056,7 +2170,7 @@ const Display = {
     const d = new Date(), wk = currentWeek(), now = this.nowHTML(cfg);
     const st = cfg.style || {};
     const logo = st.logoOn !== false && (st.logoPos || 'head') === 'head';
-    return `${logo ? `<img class="brand-logo" src="${LOGO_SRC}" alt="(주)네패스 코코아팹"><i class="hdiv"></i>` : ''}<div class="brand" id="brand"><div class="t">${esc(cfg.title || '연수 안내')}</div>${cfg.subtitle ? `<div class="s">${esc(cfg.subtitle)}</div>` : ''}</div>
+    return `${logo ? `<img class="brand-logo" src="${esc(logoSrc())}" alt=""><i class="hdiv"></i>` : ''}<div class="brand" id="brand"><div class="t">${esc(cfg.title || '연수 안내')}</div>${cfg.subtitle ? `<div class="s">${esc(cfg.subtitle)}</div>` : ''}</div>
       <div class="now-chip${now ? '' : ' hidden'}" id="dNow">${now}</div>
       ${wk ? `<div class="wk">${esc(wk.label)}</div>` : ''}
       ${T('clsLabel') ? `<span class="clslab">${esc(T('clsLabel'))}</span>` : ''}<button class="cls" id="dCls" type="button"><span class="ink">${esc(className(viewerClass()))}</span></button>
@@ -2115,6 +2229,7 @@ const Display = {
     this.applyLook($('#disp'), cfg);
     this.orient();
     $('#dHead').innerHTML = this.headHTML(cfg); this.fixHead();
+    const lc = $('.logo-corner'); if (lc && lc.getAttribute('src') !== logoSrc()) lc.src = logoSrc();
     $('#stage').className = 'stage fx-' + (cfg.transition || 'fade');
     $('#sleepMsg').textContent = T('sleepMsg') + (cfg.hours.on ? ` (${cfg.hours.start}~${cfg.hours.end})` : '');
     this.rebuild();
@@ -2134,7 +2249,7 @@ const Display = {
     if (wk) {
       const rows = todayRows();
       if (cfg.timetable.on && rows.length) { const st = ttState(rows); out.push({ key: 'tt', type: 'tt', data: { rows, st, m: st.now, sec: cfg.timetable.sec } }); }
-      const cf = wk.wifiOrder === 'common';
+      const cf = wk.wifiOrder !== 'class';
       const ws = (wk.wifi || []).filter(w => w.ssid && showable(w) && matchTarget(w.target)).sort((a, b) => cf ? (Array.isArray(a.target) ? 1 : 0) - (Array.isArray(b.target) ? 1 : 0) : (Array.isArray(b.target) ? 1 : 0) - (Array.isArray(a.target) ? 1 : 0));
       if (ws.length && (wk.wifiLayout || 'together') === 'together') out.push({ key: 'wifi', type: 'wifi', data: { list: ws, sec: ws.length > 1 ? Math.max(Number(cfg.slideSec) || 12, 15) : '' } });
       else ws.forEach(w => out.push({ key: 'wifi:' + w.id, type: 'wifi', data: { list: [w] } }));
@@ -2261,13 +2376,15 @@ const Display = {
       else rows.push(['link', w.ssid, isOpen(w) ? T('wifiNoPass') : w.password, isOpen(w)]);
     });
     const qrs = hasQR() ? list.filter(w => w.qr !== false) : [];
+    const bs = list.length <= 2 ? 1 : Math.max(.55, 2.2 / list.length + .1);
+    const boxes = `<div class="pb-boxes" style="--s:${bs.toFixed(3)}">${list.map(w => `<div class="pb-box"><div class="pb-bx"><div class="pb-line"><span class="pb-k">${esc(T('wpNet'))}</span><span class="pb-v2" data-fit>${esc(w.ssid)}</span></div><div class="pb-line"><span class="pb-k">${esc(T('wpPw'))}</span><span class="pb-v2${isOpen(w) ? ' open' : ''}" data-fit>${esc(isOpen(w) ? T('wifiNoPass') : w.password)}</span></div></div>${w.qr !== false && hasQR() ? this.qrFig(w, true) : ''}</div>`).join('')}</div>`;
     const ps = Math.max(.5, Math.min(1, 4.2 / (list.length + 1)));
     const card = `<div class="pb-card" style="--s:${ps.toFixed(3)}"><div class="pb-rows">${rows.map(([ic, l, v, open]) => `<div class="pb-row"><span class="pb-ic">${ICON[ic]}</span><div class="pb-t"><span class="pb-l" data-fit>${esc(l)}</span><span class="pb-v${open ? ' open' : ''}" data-fit>${esc(v)}</span></div></div>`).join('')}</div>${qrs.length ? `<div class="pb-qr">${qrs.map(w => this.qrFig(w, true)).join('')}</div>` : ''}</div>`;
     if (this.portraitNow()) {
       const cid = viewerClass(), grp = cid && cid !== '__lobby' ? this.groupOf(cid) : '', cls = cid ? className(cid) : '';
       return `<div class="wposter pb">${grp ? `<div class="pb-band"><div class="pb-bt">${T('wpGrp') ? `<span class="pb-lab">${esc(T('wpGrp'))}</span>` : ''}<span class="pb-grp">${esc(grp)}</span></div><svg class="pb-ppl" viewBox="0 0 120 80" aria-hidden="true"><circle cx="60" cy="18" r="13"/><circle cx="22" cy="28" r="9.5"/><circle cx="98" cy="28" r="9.5"/><path d="M36 78c0-17 10.7-30 24-30s24 13 24 30z"/><path d="M4 78c0-13 7.6-22.5 18-22.5 5 0 9.4 2.2 12.6 6-2.8 4.8-4.4 10.4-4.6 16.5z"/><path d="M116 78c0-13-7.6-22.5-18-22.5-5 0-9.4 2.2-12.6 6 2.8 4.8 4.4 10.4 4.6 16.5z"/></svg></div>` : ''}
         <div class="pb-mid">${cls ? `<div class="wp-cls pb-cls"><span class="pb-name">${esc(cls)}<svg class="pb-spark" viewBox="0 0 60 60" aria-hidden="true"><path d="M22 6 16 26"/><path d="M52 20 34 34"/></svg></span></div>` : ''}</div>
-        ${card}</div>`;
+        ${list.length > 1 ? boxes : card}</div>`;
     }
     if (list.length > 1) {
       const n = list.length, anyQ = qrs.length > 0, hq = anyQ ? ' hasq' : '';
@@ -2294,6 +2411,8 @@ const Display = {
   post(el, s, u) {
     u = u || uPx();
     $$('.qr-code', el).forEach(qr => { if (!drawQR(qr, qr.dataset.qr, 512, 'M')) qr.closest('.qr').remove(); });
+    const bxs = $('.pb-boxes', el), wpo = $('.wposter', el), wc0 = $('.wp-cls', el);
+    if (bxs && wpo) { if (wc0) wc0.style.fontSize = (9 * u) + 'px'; let k = parseFloat(bxs.style.getPropertyValue('--s')) || 1; const over = () => bxs.getBoundingClientRect().bottom > wpo.getBoundingClientRect().bottom + 2; for (let i = 0; i < 14 && over() && k > .38; i++) { k *= .94; bxs.style.setProperty('--s', k.toFixed(3)); } }
     const wc = $('.wp-cls', el); if (wc) { let lo = 6 * u, hi = 34 * u, best = lo; for (let k = 0; k < 14; k++) { const mid = (lo + hi) / 2; wc.style.fontSize = mid + 'px'; if (wc.scrollWidth <= wc.clientWidth + 1 && wc.scrollHeight <= wc.clientHeight + 1) { best = mid; lo = mid; } else hi = mid; } wc.style.fontSize = best + 'px'; }
     const tl2 = $$('.tiles', el);
     if (tl2.length) {
@@ -2547,7 +2666,7 @@ const Preview = {
         ${cdA ? `<div class="cdview">${Display.cdHTML(cdA, now)}</div>` : ''}
         <div class="progress">${slides.length > 1 ? slides.map((_, j) => `<i class="${j < i ? 'done' : ''}">${j === i ? '<b style="transform:scaleX(.5)"></b>' : ''}</i>`).join('') : ''}</div>
         ${tk.on && lines.length ? `<div class="ticker" style="--ts:${(Number(tk.size) || 100) / 100}">${tk.label ? `<span class="tag">${esc(tk.label)}</span>` : ''}<div class="rail"><div class="run">${lines.map(esc).join('<span class="sep"></span>')}</div></div></div>` : ''}
-        <img class="logo-corner" src="${LOGO_SRC}" alt="">
+        <img class="logo-corner" src="${esc(logoSrc())}" alt="">
         ${full ? Display.overlayHTML(full, 1) : ''}</div>`;
       return { html, s, u, cfg, n: slides.length, i, full };
     });
@@ -2682,6 +2801,7 @@ const Admin = {
     if (S.view !== 'admin') return;
     if (kind === 'issue') { const b = $('#admBanner'); if (b) b.innerHTML = this.bannerHTML(); return; }
     if (kind === 'control') { const c = $('#ctlCard'); if (c) c.innerHTML = this.ctlInner(); this.refreshStatus(); return; }
+    if (kind === 'logo') { $$('img[data-logo]').forEach(i => { i.src = logoSrc(); }); Preview.schedule(); return; }
     const shell = !!$('.adm');
     if (!this.authed() || !shell) { if (kind === 'config' || kind === 'admins' || !shell) return this.start(); return; }
     const h = $('#admTitle'); if (h) h.textContent = S.config.title || '연수 안내';
@@ -2699,7 +2819,6 @@ const Admin = {
     const fb = Auth.fb(), first = fb ? this.fbMode === 'first' : Auth.firstRun();
     this.loginMode = this.loginMode || 'email';
     const err = this.loginErr || (Auth.denied === 'expired' ? '사용 기한이 지난 계정입니다. 관리자에게 새 코드를 받으세요.' : Auth.denied ? '이 계정은 관리자로 등록되어 있지 않습니다. 기존 관리자에게 추가를 요청하세요.' : '');
-    this.loginErr = '';
     const byCode = fb ? this.loginMode === 'code' : true;
     let fields, title, desc, btn;
     if (fb && first) { title = '마스터 계정 만들기'; desc = `모든 권한을 가진 마스터 계정(${MASTER_EMAIL})을 처음 한 번 만듭니다. 비밀번호는 여기서 직접 정하세요. 다른 관리자는 마스터가 설정 화면에서 추가합니다.`; btn = '마스터 계정 만들기'; fields = `<input type="text" id="lgName" placeholder="이름 (변경 이력에 표시)"><input type="email" id="lgEmail" placeholder="이메일" autocomplete="username" value="${MASTER_EMAIL}"><input type="password" id="lgPw" placeholder="비밀번호 (6자 이상)" autocomplete="new-password"><input type="password" id="lgPw2" placeholder="비밀번호 확인" autocomplete="new-password">`; }
@@ -2711,13 +2830,13 @@ const Admin = {
       ${tabs}<form id="loginForm" autocomplete="off">${fields}<button class="btn pri" type="submit">${btn}</button><p class="err" id="loginErr">${esc(err)}</p></form>
       ${fb ? `<p style="margin-top:8px"><button class="link" id="lgSwitch">${first ? '이미 계정이 있으면 로그인' : '마스터 계정 처음 만들기'}</button></p>` : ''}</main>`;
     $('#lgBack').onclick = goBack;
-    $$('[data-lgm]').forEach(r => r.onchange = () => { this.loginMode = r.dataset.lgm; this.renderLogin(); });
-    $('#lgSwitch') && ($('#lgSwitch').onclick = () => { this.fbMode = first ? 'login' : 'first'; Auth.denied = false; this.renderLogin(); });
+    $$('[data-lgm]').forEach(r => r.onchange = () => { this.loginMode = r.dataset.lgm; this.loginErr = ''; this.renderLogin(); });
+    $('#lgSwitch') && ($('#lgSwitch').onclick = () => { this.fbMode = first ? 'login' : 'first'; Auth.denied = false; this.loginErr = ''; this.renderLogin(); });
     setTimeout(() => { const i = $$('#loginForm input').find(x => !x.value); i && i.focus(); }, 30);
     const v = id => { const e = $('#' + id); return e ? e.value.trim() : ''; };
     $('#loginForm').onsubmit = async e => {
       e.preventDefault();
-      const errEl = $('#loginErr'); errEl.textContent = '';
+      const errEl = $('#loginErr'); errEl.textContent = ''; this.loginErr = '';
       if (Date.now() < this.lockUntil) { errEl.textContent = `잠시 후 다시 시도하세요 (${Math.ceil((this.lockUntil - Date.now()) / 1000)}초)`; return; }
       try {
         if (fb && first) {
@@ -2748,7 +2867,7 @@ const Admin = {
           }
           this.fails = 0;
         }
-      } catch (x) { console.warn(x); errEl.textContent = x && x.code === 'notmaster' ? `마스터 계정은 ${MASTER_EMAIL} 로만 만들 수 있습니다. 다른 분은 마스터에게 추가를 요청하세요.` : x && x.code === 'rulesold' ? '계정은 만들어졌지만 관리자 등록이 막혔습니다. Firebase 규칙 탭에 새 database.rules.json을 붙여넣고 게시한 뒤, 이 이메일로 로그인하세요.' : x && x.code === 'exists' ? '이미 관리자가 있습니다. 기존 관리자에게 추가를 요청하세요.' : x && x.code === 'norules' ? 'Firebase 보안 규칙이 아직 게시되지 않았습니다. Realtime Database → 규칙 탭에 database.rules.json 내용을 붙여넣고 게시한 뒤 다시 시도하세요.' : fbErr(x); }
+      } catch (x) { console.warn(x); if (x && x.code === 'verify') { this.fbMode = 'login'; this.loginErr = `계정을 만들었습니다. 이메일(${MASTER_EMAIL})로 인증 메일을 보냈으니 메일의 링크를 누른 뒤, 아래에서 이메일과 비밀번호로 로그인하세요. (스팸함도 확인)`; this.renderLogin(); return; } errEl.textContent = x && x.code === 'verify' ? `계정을 만들었습니다. 이메일(${MASTER_EMAIL})로 인증 메일을 보냈으니 메일의 링크를 누른 뒤, 이 화면에서 ‘이미 계정이 있으면 로그인’으로 로그인하세요. (스팸함도 확인)` : x && x.code === 'notmaster' ? `마스터 계정은 ${MASTER_EMAIL} 로만 만들 수 있습니다. 다른 분은 마스터에게 추가를 요청하세요.` : x && x.code === 'rulesold' ? '계정은 만들어졌지만 관리자 등록이 막혔습니다. Firebase 규칙 탭에 새 database.rules.json을 붙여넣고 게시한 뒤, 이 이메일로 로그인하세요.' : x && x.code === 'exists' ? '이미 관리자가 있습니다. 기존 관리자에게 추가를 요청하세요.' : x && x.code === 'norules' ? 'Firebase 보안 규칙이 아직 게시되지 않았습니다. Realtime Database → 규칙 탭에 database.rules.json 내용을 붙여넣고 게시한 뒤 다시 시도하세요.' : fbErr(x); }
     };
   },
   renderShell() {
@@ -2767,6 +2886,7 @@ const Admin = {
       <div id="savebarSlot"></div>
       <input type="file" id="mediaFile" accept="image/*,application/pdf" multiple hidden>
       <input type="file" id="bgFile" accept="image/*" hidden>
+      <input type="file" id="logoFile" accept="image/*,.svg" hidden>
     </div>`;
     const app = $('#app');
     app.onclick = e => { if (Preview.handle(e)) return; this.onClick(e); };
@@ -2779,6 +2899,7 @@ const Admin = {
       const wr = e.target.closest && e.target.closest('.wft-r[data-key]');
       if (wr) { const isSlot = wr.dataset.key.startsWith('c:'), wi = isSlot ? null : this.wfFind(wr.dataset.key), cid = isSlot ? wr.dataset.key.slice(2) : (wi && Array.isArray(wi.target) && wi.target.length === 1 ? wi.target[0] : ''); if (cid && Preview.cls !== cid) { Preview.cls = cid; const sel = $('#pvCls'); if (sel) sel.value = cid; Preview.key = 'wifi'; Preview.schedule(); } } const p = e.target.closest('[data-pk]'); if (p && Preview.key !== p.dataset.pk) { Preview.key = p.dataset.pk; Preview.schedule(); } });
     $('#mediaFile').onchange = e => { const f = Array.from(e.target.files || []); e.target.value = ''; this.addFiles(f); };
+    $('#logoFile').onchange = e => { const f = (e.target.files || [])[0]; e.target.value = ''; if (f) this.logoFromFile(f); };
     $('#bgFile').onchange = e => { const f = (e.target.files || [])[0]; e.target.value = ''; if (f) this.setBgImage(f); };
     this.renderTab();
     Preview.mount();
@@ -2941,10 +3062,8 @@ const Admin = {
   weekEditor() {
     const d = this.draft;
     ['wifi', 'notices', 'media', 'timetable'].forEach(k => d[k] = d[k] || []);
-    const dates = this.weekDates();
     this.secOpen = this.secOpen || { basic: true };
     const sec = (k, title, cnt, inner, attrs) => `<details class="card secbox" data-ctx="week" data-sec="${k}" id="sec-${k}" ${attrs || ''}${this.secOpen[k] ? ' open' : ''}><summary><h2>${title}</h2><span class="cnt">${esc(cnt)}</span></summary><div class="in">${inner}</div></details>`;
-    const dateSel = (key, v) => `<select data-k="${key}" aria-label="날짜"><option value="">매일</option>${dates.map(x => { const t = new Date(x + 'T00:00'); return `<option value="${x}"${v === x ? ' selected' : ''}>${t.getMonth() + 1}/${t.getDate()} (${DAYS[t.getDay()]})</option>`; }).join('')}${v && !dates.includes(v) ? `<option value="${esc(v)}" selected>${esc(v)}</option>` : ''}</select>`;
     const bulk = list => `<div class="inline bulk"><button type="button" class="btn sm" data-act="pub-all" data-list="${list}" data-v="1">모두 게시</button><button type="button" class="btn sm" data-act="pub-all" data-list="${list}" data-v="0">모두 해제</button><small>‘게시’에 체크한 항목만 태블릿에 나옵니다. 미리 여러 개를 써 두고 필요한 것만 체크하세요.</small></div>`;
     const pubCnt = arr => `${arr.length}개 · 게시 ${arr.filter(x => !x.hidden).length}`;
     const notices = d.notices.map((n, i) => `<div class="item${n.hidden ? ' off' : ''}" data-pk="n:${esc(n.id)}">${this.itemHead('notices', i, d.notices.length, '공지 ' + (i + 1), n)}
@@ -3096,10 +3215,10 @@ const Admin = {
   wfInput(el) {
     const d = this.draft; if (!d) return;
     const [key, field] = el.dataset.wf.split('|'), isChk = el.type === 'checkbox', val = isChk ? el.checked : el.value, row = el.closest('.wft-r');
-    let it = this.wfFind(key), created = false;
+    let it = this.wfFind(key);
     if (!it) {
       if (key[0] !== 'c' || (field !== 'ssid' && field !== 'pw') || !String(val).trim()) return;
-      it = { id: uid(), ssid: '', password: '', security: 'nopass', note: '', target: [key.slice(2)], qr: true, hidden: false, from: '', to: '' }; d.wifi.push(it); created = true;
+      it = { id: uid(), ssid: '', password: '', security: 'nopass', note: '', target: [key.slice(2)], qr: true, hidden: false, from: '', to: '' }; d.wifi.push(it);
       this.wfRekey(row, 'a:' + it.id);
       const x = $('.wft-x', row); if (x) x.innerHTML = this.wfXHTML(it, 'primary', key.slice(2));
     }
@@ -3189,12 +3308,49 @@ const Admin = {
     const legacy = m.legacy.length ? `<details class="adv" open style="margin-top:14px"><summary>여러 반을 한꺼번에 지정한 Wi-Fi ${m.legacy.length}개 <small>(이전 방식으로 만든 항목 · 위 표에 맞지 않아 따로 모아 둡니다)</small></summary><div class="in">${m.legacy.map(i => this.wifiLegacyItem(d.wifi[i], i)).join('')}</div></details>` : '';
     return `<p class="desc">공통 Wi-Fi 한 줄과 반별 Wi-Fi를 <b>한 표에서 한눈에 보고 바로 고칩니다.</b> 반별 Wi-Fi는 그 반 태블릿에만 나옵니다. 한 반에 Wi-Fi가 더 필요하면 그 줄의 <b>＋</b>로 추가하세요. 비밀번호를 비우면 <b>개방형 WIFI</b>로 나오고, 칸보다 길면 한 줄로 글자가 줄어듭니다. 2줄로 보이려면 <b>Shift+Enter</b>로 줄을 바꾸세요.</p>
       <div class="wft-tools"><button type="button" class="btn sm pri" data-act="wf-paste">엑셀에서 붙여넣기</button><button type="button" class="btn sm" data-act="wf-fill">규칙으로 자동 채우기</button><button type="button" class="btn sm" data-act="wf-clear">반별 Wi-Fi 모두 비우기</button><button type="button" class="btn sm" data-act="add-wifi">+ 공통 Wi-Fi 추가</button></div>
-      <div class="wft-tools"><b style="font-size:13.5px">표시 순서</b>${UI.seg('wifiOrder', [['class', '반별 Wi-Fi → 공통 Wi-Fi'], ['common', '공통 Wi-Fi → 반별 Wi-Fi']], d.wifiOrder || 'class')}<small class="muted">태블릿 화면에서 어느 쪽을 위에 보여줄지 정합니다. 같은 종류끼리는 ▲▼로 순서를 바꿉니다.</small></div>
+      <div class="wft-tools"><b style="font-size:13.5px">표시 순서</b>${UI.seg('wifiOrder', [['common', '공통 Wi-Fi → 반별 Wi-Fi'], ['class', '반별 Wi-Fi → 공통 Wi-Fi']], d.wifiOrder || 'common')}<small class="muted">태블릿 화면에서 어느 쪽을 위에 보여줄지 정합니다. 같은 종류끼리는 ▲▼로 순서를 바꿉니다.</small></div>
       <div class="wft-tools"><input type="search" id="wfQ" placeholder="반 이름·네트워크명 검색" value="${esc(f.q)}" aria-label="검색"><label class="check"><input type="checkbox" id="wfEmpty" ${f.empty ? 'checked' : ''}>비어 있는 반만 보기</label>${chips}</div>
       <p class="wft-sum" id="wfSum">${this.wfSumHTML()}</p>
       <div class="wft" id="wfWrap" data-pk="wifi">${this.wifiTableHTML()}</div>
       ${legacy}
       ${UI.row('여러 개일 때', '한 반에 Wi-Fi가 2개 이상 나올 때의 표시 방식', UI.seg('wifiLayout', [['together', '한 화면에 모아서'], ['each', '하나씩 차례로']], d.wifiLayout || 'together'))}`;
+  },
+  async logoFromFile(f) {
+    if (!can('logo')) return toast('로고는 Lv.3 관리자만 바꿀 수 있습니다');
+    let src; try { src = await loadLogoSource(f); } catch (e) { console.warn(e); return toast('이 파일은 열 수 없습니다. PNG·JPG·WebP·GIF·SVG 파일로 올려 주세요. (아이폰 HEIC 사진은 JPG로 바꿔 주세요)', 6000); }
+    const an = logoAnalyze(src), st = { rm: !an.hasAlpha && an.solid, holes: true, tol: 40 };
+    const cfg = this.cfgDraft ? mergeConfig(Object.assign(clone(S.config), clone(this.cfgDraft))) : S.config, sty = cfg.style || {}, L = look(cfg), other = onColor(L.bg) === '#FFFFFF' ? PAL.light : PAL.dark;
+    const op = Math.min(1, Math.max(.1, (Number(sty.logoOp) || 70) / 100)), sz = Math.min(1.6, Math.max(.4, (Number(sty.logoSize) || 100) / 100)); let result = null;
+    modal(`<h3>이 로고로 등록할까요?</h3><p>등록하면 모든 태블릿 화면의 로고가 바로 바뀝니다. 아직 저장되지 않았으니 아래를 확인하고 결정하세요.</p>
+      <div class="lgp-grid"><figure><figcaption>고른 파일</figcaption><div class="chk"><img id="lgO" alt=""></div></figure><figure><figcaption>등록될 모습 (투명한 부분은 체크무늬)</figcaption><div class="chk"><img id="lgN" alt=""></div></figure></div>
+      <p class="lgp-note" id="lgNote"></p>
+      <div class="lgp-opts"><label class="check"><input type="checkbox" id="lgRm">배경 지우기</label><label class="check"><input type="checkbox" id="lgHo">글자 안쪽 빈 공간도 지우기</label><label class="f lgp-tol"><span>지우는 강도 <output id="lgTv"></output></span><input type="range" id="lgTol" min="10" max="90" step="2"></label></div>
+      <div class="sub">실제 화면에서는 이렇게 보입니다 (크기·진하기 그대로)</div>
+      <div class="lgp-strips"><div class="strip" id="lgS1" style="background:${L.bg};color:${L.ink}"><img alt=""><b>${esc(S.config.title || '연수 안내')}</b></div><div class="strip" id="lgS2" style="background:${other.bg};color:${other.ink}"><img alt=""><b>${esc(S.config.title || '연수 안내')}</b></div></div>
+      <div class="acts"><button class="btn" data-x="0">취소</button><button class="btn pri" data-x="1" id="lgOk">이대로 등록</button></div>`, (m, close) => {
+      m.classList.add('lgp');
+      const q = id => $('#' + id, m), note = q('lgNote'), ok = q('lgOk');
+      q('lgO').src = src.toDataURL(); q('lgRm').checked = st.rm; q('lgHo').checked = st.holes; q('lgTol').value = st.tol;
+      const render = () => {
+        q('lgTv').textContent = st.tol; q('lgHo').disabled = !st.rm || an.hasAlpha; q('lgTol').disabled = !st.rm || an.hasAlpha; q('lgRm').disabled = an.hasAlpha;
+        let work = src; if (st.rm && !an.hasAlpha) work = logoCutout(src, an.bg, st.tol, st.holes);
+        const fin = logoFinish(work);
+        if (!fin) { result = null; ok.disabled = true; note.textContent = '남는 그림이 없습니다. 지우는 강도를 낮추거나 ‘배경 지우기’를 끄세요.'; return; }
+        const url = logoExport(fin); result = { url, kb: Math.round(url.length * .75 / 1024) }; ok.disabled = false;
+        q('lgN').src = url; $$('#lgS1 img, #lgS2 img', m).forEach(i => { i.src = url; i.style.height = Math.round(28 * sz) + 'px'; i.style.opacity = op; });
+        const base = an.hasAlpha ? '배경이 이미 투명한 이미지라 그대로 씁니다.' : an.solid ? (st.rm ? `배경이 단색이라 자동으로 지웠습니다. 결과가 이상하면 강도를 조절하거나 ‘배경 지우기’를 꺼 보세요.` : '배경을 지우지 않고 그대로 등록합니다.') : (st.rm ? '배경이 단색이 아니라 완벽하지 않을 수 있습니다. 결과가 거칠면 ‘배경 지우기’를 끄고, 배경이 투명한 PNG·SVG 파일을 쓰는 것을 권장합니다.' : '배경이 사진이나 그라데이션처럼 복잡해 자동으로 지우기 어렵습니다. 그대로 쓰거나 배경이 투명한 PNG·SVG 파일로 올려 주세요.');
+        note.textContent = `${base} 등록 용량 약 ${result.kb}KB`;
+      };
+      let tm; q('lgRm').onchange = e => { st.rm = e.target.checked; render(); }; q('lgHo').onchange = e => { st.holes = e.target.checked; render(); };
+      q('lgTol').oninput = e => { st.tol = Number(e.target.value); q('lgTv').textContent = st.tol; clearTimeout(tm); tm = setTimeout(render, 120); };
+      render();
+      m.addEventListener('click', async e => {
+        const b = e.target.closest('[data-x]'); if (!b) return; if (b.dataset.x !== '1') return close();
+        if (!result) return; ok.disabled = true;
+        try { await Store.set('app/logo', { src: result.url, name: f.name, by: S.who, at: Date.now() }); writeLog('회사 로고 변경', [f.name + (st.rm && !an.hasAlpha ? ' · 배경 제거' : '')]); close(); toast('로고를 등록했습니다. 태블릿에 바로 반영됩니다'); }
+        catch (x) { ok.disabled = false; toast(saveErr(x)); }
+      });
+    });
   },
   bindAdv() { const d = $('#alAdv'); if (d) d.addEventListener('toggle', () => { this.advOpen = d.open; }); },
   bindDrop() {
@@ -3706,6 +3862,12 @@ const Admin = {
     async 'style-preset'(b) { const p = STYLE_PRESETS[+b.dataset.i][1], c = this.ensureCfg(); c.theme = p.theme; c.style = Object.assign({}, c.style, { bg: p.bg, ink: p.ink, accent: p.accent }); this.markDirty(); this.renderTab(); },
     async 'clr-reset'(b) { this.setPath(this.ensureCfg(), b.dataset.k, ''); this.markDirty(); this.renderTab(); },
     'bg-pick'() { $('#bgFile').click(); },
+    'logo-pick'() { if (!can('logo')) return toast('로고는 Lv.3 관리자만 바꿀 수 있습니다'); $('#logoFile').click(); },
+    async 'logo-reset'() {
+      if (!can('logo')) return toast('로고는 Lv.3 관리자만 바꿀 수 있습니다');
+      if (!(await ask('기본 로고로 되돌리기', '등록해 둔 로고를 지우고 처음의 (주)네패스 코코아팹 로고로 되돌립니다. 모든 태블릿에 바로 적용됩니다.', '되돌리기', true))) return;
+      try { await Store.del('app/logo'); writeLog('회사 로고를 기본으로 되돌림', []); toast('기본 로고로 되돌렸습니다'); } catch (x) { toast(saveErr(x)); }
+    },
     'font-set'(b) { this.setPath(this.ensureCfg(), b.dataset.k, b.dataset.v === (b.dataset.k === 'style.hfont' ? 'Gothic A1' : 'IBM Plex Sans KR') ? '' : b.dataset.v); this.markDirty(); this.rerenderKeep(); },
     async 'bg-remove'() { this.ensureCfg().style.bgImage = ''; this.markDirty(); this.renderTab(); },
     async 'txt-reset'(b) { const c = this.ensureCfg(); c.texts = c.texts || {}; delete c.texts[b.dataset.k]; this.markDirty(); this.renderTab(); },
@@ -3730,6 +3892,7 @@ const Admin = {
       const d = this.ensureCfg(), cfg = clone(S.config);
       Object.assign(cfg, clone(d));
       cfg.adminHash = S.config.adminHash; cfg.teacherHash = S.config.teacherHash; cfg.reloadToken = S.config.reloadToken;
+      if (!can('logo')) { cfg.style = Object.assign({}, cfg.style); ['logoOn', 'logoPos', 'logoOp', 'logoSize'].forEach(k => { cfg.style[k] = (S.config.style || {})[k]; }); }
       cfg.slideSec = Math.min(300, Math.max(3, Number(cfg.slideSec) || 12));
       cfg.classes = (cfg.classes || []).filter(c => c.name && c.name.trim());
       const ids = new Set(cfg.classes.map(c => c.id)); cfg.groups = (cfg.groups || []).map((g, i) => ({ id: g.id, name: (g.name || '').trim() || `묶음 ${i + 1}`, classes: g.classes.filter(id => ids.has(id)) }));
@@ -3970,6 +4133,7 @@ const Admin = {
       if (!data || !Array.isArray(data.weeks)) return toast('백업 내용이 아닙니다');
       if (!(await ask('백업 불러오기', '지금 콘텐츠와 꾸미기·설정을 백업 내용으로 바꿉니다. 관리자 계정은 유지됩니다.', '불러오기', true))) return;
       const cfg = mergeConfig(Object.assign({}, data.config || {}, { adminHash: S.config.adminHash, reloadToken: S.config.reloadToken }));
+      if (!can('logo')) ['logoOn', 'logoPos', 'logoOp', 'logoSize'].forEach(k => { cfg.style[k] = (S.config.style || {})[k]; });
       try { await Store.set('app/config', cfg); await Store.set('app/weeks', { list: data.weeks }); if (Array.isArray(data.alerts)) await Store.set('app/alerts', { list: data.alerts }); S.config = cfg; S.weeks = data.weeks; this.cfgDraft = null; writeLog('백업 불러오기', [`프로젝트 ${data.weeks.length}개`]); this.renderTab(); toast('불러왔습니다'); }
       catch (x) { toast(saveErr(x)); }
     },
@@ -4022,7 +4186,7 @@ const Admin = {
   alertListsHTML() {
     const now = Date.now(), occ = alertOcc(now), sched = S.alerts.filter(a => isScheduled(a, now)), past = S.alerts.filter(a => isPast(a, now)).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     this.histSel = this.histSel || new Set();
-    const head = x => `<span class="pill ${x.level}">${LEVELS[x.level].name}</span>${x.repeat === 'daily' ? ' <span class="state">매일 반복</span>' : ''}<b>${esc(x.title)}</b>`;
+    const head = x => `<span class="pill ${x.level}">${lvName(x.level)}</span>${x.repeat === 'daily' ? ' <span class="state">매일 반복</span>' : ''}<b>${esc(x.title)}</b>`;
     const liveRow = o => {
       const base = S.alerts.find(a => a.id === o.baseId) || o, rep = base.repeat === 'daily', cd = o.level === 'countdown';
       const when = cd ? `${hm(new Date(cdEndOf(o)))}에 0` : o.expiresAt ? `${hm(new Date(o.expiresAt))}까지 (남은 ${fmtSec((o.expiresAt - now) / 1000)})` : '직접 내릴 때까지';
@@ -4074,7 +4238,7 @@ const Admin = {
   tplListHTML() {
     const mine = S.templates || [];
     return `<h2>자주 쓰는 멘트 ${mine.length}개</h2><p class="desc">‘수정’을 누르면 위 입력칸에 불러와 고친 뒤 저장할 수 있습니다. 받을 대상은 보낼 때마다 고릅니다.</p>
-      ${mine.length ? mine.map((t, i) => `<div class="list-row"><div class="m"><span class="pill ${t.level}">${LEVELS[t.level].name}</span><b>${esc(t.label)}</b><small>${esc(t.title)} · ${t.level !== 'info' ? `팝업 ${fmtSec(t.full || 0)} · ` : ''}${esc(durText(t.dur))} 유지</small></div>
+      ${mine.length ? mine.map((t, i) => `<div class="list-row"><div class="m"><span class="pill ${t.level}">${lvName(t.level)}</span><b>${esc(t.label)}</b><small>${esc(t.title)} · ${t.level !== 'info' ? `팝업 ${fmtSec(t.full || 0)} · ` : ''}${esc(durText(t.dur))} 유지</small></div>
         <div class="r"><button class="btn sm" data-act="tpl-move" data-id="${esc(t.id)}" data-d="-1" ${i === 0 ? 'disabled' : ''} aria-label="위로">▲</button><button class="btn sm" data-act="tpl-move" data-id="${esc(t.id)}" data-d="1" ${i === mine.length - 1 ? 'disabled' : ''} aria-label="아래로">▼</button><button class="btn sm" data-act="tpl-load" data-src="my" data-id="${esc(t.id)}">불러오기</button><button class="btn sm" data-act="tpl-edit" data-id="${esc(t.id)}">수정</button><button class="btn sm" data-act="tpl-del" data-id="${esc(t.id)}">삭제</button></div></div>`).join('') : '<p class="desc" style="margin:0">저장한 멘트가 없습니다. 예시를 불러와 고친 뒤 ‘멘트로 저장’해 보세요.</p>'}`;
   },
   renderTplArea() { const c = $('#tplChips'); if (c) c.innerHTML = this.tplChipsHTML(); const l = $('#tplList'); if (l) l.innerHTML = this.tplListHTML(); },
@@ -4149,11 +4313,13 @@ const Admin = {
         ${UI.row('배경 이미지', '가로 사진을 권장합니다. 글자가 잘 보이도록 위에 배경색을 살짝 덮습니다.', `${L.img ? `<img class="bgthumb" data-src="${esc(L.img)}" alt="">` : ''}${Store.canUpload() ? `<button class="btn sm" data-act="bg-pick">${L.img ? '바꾸기' : '이미지 넣기'}</button>` : '<small class="muted">업로드 권한 없음</small>'}${L.img ? '<button class="btn sm ghost" data-act="bg-remove">빼기</button>' : ''}`)}
         ${L.img ? UI.row('이미지 위 덮개', '높을수록 글자가 또렷하고 사진은 흐려집니다', UI.range('style.bgDim', st.bgDim ?? 45, 0, 90, 5, '%')) : ''}
       </section>
-      <section class="card"><h2>회사 로고</h2><p class="desc">(주)네패스 코코아팹 로고를 화면에 은은하게 넣습니다. 안내 내용을 가리지 않도록 작게, 투명하게 배치됩니다. 타이머·이미지 화면처럼 머리글이 숨는 화면에서는 오른쪽 아래에 나옵니다.</p>
-        <div style="background:var(--paper);border-radius:10px;padding:14px;margin-bottom:6px"><img src="${LOGO_SRC}" alt="" style="height:34px;opacity:${(Number(c.style.logoOp) || 70) / 100}"></div>
+      ${can('logo') ? `<section class="card"><h2>회사 로고</h2><p class="desc">화면 머리글에 은은하게 넣는 회사 로고입니다. <b>Lv.3 관리자만</b> 바꿀 수 있습니다. 새 이미지를 고르면 <b>배경을 자동으로 지우고(누끼)</b>, 등록하기 전에 미리보기로 한 번 더 물어봅니다.</p>
+        <div class="logo-prev"><img data-logo src="${esc(logoSrc())}" alt="" style="height:${Math.round(30 * Math.min(1.6, Math.max(.4, (Number(c.style.logoSize) || 100) / 100)))}px;opacity:${(Number(c.style.logoOp) || 70) / 100}"></div>
+        <div class="inline" style="margin:12px 0 4px"><button class="btn pri" data-act="logo-pick">로고 이미지 바꾸기</button>${S.logo ? '<button class="btn" data-act="logo-reset">기본 로고로 되돌리기</button>' : ''}</div>
+        <small class="help" style="margin-top:0">PNG·JPG·WebP·GIF·SVG 파일을 쓸 수 있습니다. 배경이 단색인 이미지는 가장자리부터 지우고, 이미 투명한 이미지는 그대로 씁니다.</small>
         ${UI.row('로고 표시', '', UI.sw('style.logoOn', c.style.logoOn !== false, '로고'))}
-        ${c.style.logoOn !== false ? UI.row('위치', '', UI.seg('style.logoPos', [['head', '머리글 왼쪽'], ['corner', '오른쪽 아래']], c.style.logoPos || 'head')) + UI.row('진하기', '낮을수록 배경에 자연스럽게 녹아듭니다', UI.range('style.logoOp', c.style.logoOp || 70, 20, 100, 5, '%')) : ''}
-      </section>
+        ${c.style.logoOn !== false ? UI.row('위치', '', UI.seg('style.logoPos', [['head', '머리글 왼쪽'], ['corner', '오른쪽 아래']], c.style.logoPos || 'head')) + UI.row('크기', '작을수록 눈에 덜 띕니다', UI.range('style.logoSize', c.style.logoSize || 100, 50, 150, 5, '%')) + UI.row('진하기', '낮을수록 배경에 자연스럽게 녹아듭니다', UI.range('style.logoOp', c.style.logoOp || 70, 20, 100, 5, '%')) : ''}
+      </section>` : ''}
       <section class="card"><h2>글꼴</h2><p class="desc">화면에 나오는 글자의 글꼴을 고릅니다. ‘제목·숫자’는 공지 제목, 반 이름, Wi-Fi 이름, 카운트다운·타이머 숫자에 쓰입니다.</p>
         ${(() => { FONTS.forEach(f => ensureFont(f[0])); const pick = (k, v) => `<div class="fonts">${FONTS.map(([n, label]) => `<button type="button" class="fontbtn" data-act="font-set" data-k="${k}" data-v="${esc(n)}" aria-pressed="${(v || 'IBM Plex Sans KR') === n}"><b style="font-family:${esc(fontStack(n))}">가나다 1조 123</b><small>${esc(label)}</small></button>`).join('')}</div>`;
           return `<div class="sub">본문 글꼴</div>${pick('style.font', c.style.font)}<div class="sub" style="margin-top:18px">제목·숫자 글꼴</div>${pick('style.hfont', c.style.hfont || 'Gothic A1')}`; })()}
@@ -4183,15 +4349,18 @@ const Admin = {
 
   /* ----- 설정 ----- */
   adminCard() {
-    const fb = Auth.fb(), me = Auth.me || {}, myLv = lvOf(me), lv3 = can('manageAdmin');
+    const fb = Auth.fb(), me = Auth.me || {}, myLv = lvOf(me), lv3 = can('manageAdmin'), seeAll = can('seeAdmins');
     const lvSel = a => `<select data-admlv="${esc(a.id)}" aria-label="관리자 레벨" style="width:auto;padding:5px 8px;font-size:13px">${[1, 2, 3].map(v => `<option value="${v}"${lvOf(a) === v ? ' selected' : ''}>Lv.${v}</option>`).join('')}</select>`;
-    return `<h2>관리자 계정</h2><p class="desc">내 레벨: <b>${LV_DESC[myLv] || '-'}</b> · Lv.1 콘텐츠·공지 · Lv.2 +관리자 추가 · Lv.3 모든 권한(다른 관리자 정보 변경, 코드 관리자 만들기, 변경 이력 수정)</p>
-      ${S.admins.slice().sort((a, b) => (b.m ? 1 : 0) - (a.m ? 1 : 0) || (a.at || 0) - (b.at || 0)).map(a => {
+    const list = S.admins.filter(a => seeAll || a.id === me.id).sort((a, b) => (b.m ? 1 : 0) - (a.m ? 1 : 0) || (a.at || 0) - (b.at || 0));
+    const desc = lv3 ? `내 레벨: <b>${LV_DESC[myLv] || '-'}</b> · Lv.1 콘텐츠·공지 · Lv.2 +관리자 추가 · Lv.3 모든 권한(다른 관리자 정보 변경, 코드 관리자 만들기, 변경 이력 수정, 회사 로고 변경)`
+      : seeAll ? `내 레벨: <b>${LV_DESC[myLv] || '-'}</b>` : `내 레벨: <b>${LV_DESC[myLv] || '-'}</b>`;
+    return `<h2>${seeAll ? '관리자 계정' : '내 계정'}</h2><p class="desc">${desc}</p>
+      ${list.map(a => {
         const self = a.id === me.id, manage = lv3 && !self && !a.m, code = (a.kind || (a.email ? 'email' : 'code')) === 'code';
         return `<div class="list-row"><div class="m"><b style="margin-top:0">${esc(a.name)}${a.m ? ' <span class="pill info">마스터</span>' : ''}${code ? ' <span class="state">코드 접속</span>' : ''}${self ? ' <span class="state live">나</span>' : ''}</b><small>${a.email && !code ? esc(a.email) + ' · ' : ''}${manage ? '' : 'Lv.' + lvOf(a) + ' · '}${code ? expText(a) + ' · ' : ''}${a.addedBy ? '추가: ' + esc(a.addedBy) : ''}</small></div>
         <div class="r">${manage ? lvSel(a) : ''}${self ? `<button class="btn sm" data-act="me-code">${fb && !code ? '내 비밀번호 바꾸기' : '내 코드 바꾸기'}</button>` : manage ? `${code && lv3 ? `<button class="btn sm" data-act="adm-showcode" data-id="${esc(a.id)}">코드 보기</button>` : ''}<button class="btn sm" data-act="adm-edit" data-id="${esc(a.id)}">정보 변경</button><button class="btn sm" data-act="adm-del" data-id="${esc(a.id)}">삭제</button>` : ''}</div></div>`;
       }).join('')}
-      <div class="inline" style="margin-top:12px">${can('addAdmin') ? `<button class="btn pri" data-act="adm-add">+ ${fb ? '이메일 관리자' : '관리자'} 추가</button>` : ''}${lv3 && fb ? '<button class="btn pri" data-act="adm-addcode">+ 코드로 접속하는 관리자</button>' : ''}${!can('addAdmin') ? '<small class="muted">관리자 추가는 Lv.2 이상만 할 수 있습니다.</small>' : ''}</div>
+      ${can('addAdmin') || (lv3 && fb) ? `<div class="inline" style="margin-top:12px">${can('addAdmin') ? `<button class="btn pri" data-act="adm-add">+ ${fb ? '이메일 관리자' : '관리자'} 추가</button>` : ''}${lv3 && fb ? '<button class="btn pri" data-act="adm-addcode">+ 코드로 접속하는 관리자</button>' : ''}</div>` : ''}
       ${lv3 && fb ? '<p class="desc" style="margin:10px 0 0">코드 관리자는 이메일 없이 코드 하나로 로그인합니다. 하루짜리 도우미처럼 잠깐 쓸 사람에게 사용 기한을 정해 주세요.</p>' : ''}`;
   },
   teacherCard() {
@@ -4262,7 +4431,7 @@ const Admin = {
     const pidOf = e => e.pid || (e.undo && e.undo.type === 'week' ? e.undo.id : '');
     const list = S.log.filter(e => (!q || JSON.stringify([e.who, e.action, e.detail]).includes(q)) && (!pf || (pf === '_none' ? !pidOf(e) : pidOf(e) === pf)));
     const projOpts = [['', '전체'], ...S.weeks.map(w => [w.id, w.label]), ['_none', '프로젝트 외 (공지·설정·관리자 등)']];
-    return `<section class="card"><h2>변경 이력</h2><p class="desc">최근 200건입니다. ${ed ? '되돌리기·삭제·정리는 Lv.3만 할 수 있습니다.' : '되돌리기·삭제는 Lv.3 관리자만 할 수 있어 지금은 보기만 가능합니다.'}</p>
+    return `<section class="card"><h2>변경 이력</h2><p class="desc">최근 200건입니다.${ed ? ' 되돌리기·삭제·정리를 할 수 있습니다.' : ''}</p>
       <div class="row"><label class="f"><span>프로젝트</span><select id="logProj">${projOpts.map(([v, n]) => `<option value="${esc(v)}"${pf === v ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       <label class="f"><span>검색 (이름·내용)</span><input type="search" id="logQ" value="${esc(q)}" placeholder="예: ${esc(S.who || '홍길동')}, 공지, Wi-Fi"></label></div>
       ${ed ? (() => { this.logSel = this.logSel || new Set(); const n = list.filter(e => this.logSel.has(e._id)).length; return `<div class="inline" style="margin-bottom:6px"><label class="check"><input type="checkbox" data-lsel-all="1" ${list.length && n === list.length ? 'checked' : ''}>전체 선택</label><button class="btn sm warn" data-act="log-del-sel" ${n ? '' : 'disabled'}>선택 삭제 (${n})</button><button class="btn sm" data-act="log-prune" data-d="7">7일 지난 이력 정리</button><button class="btn sm" data-act="log-prune" data-d="30">30일 지난 이력 정리</button><button class="btn sm warn" data-act="log-del-all">이력 전체 삭제</button></div>`; })() : ''}
@@ -4308,6 +4477,7 @@ async function main() {
   await Store.init();
   Store.watch('app/config', (v, server) => { S.config = mergeConfig(v); if (server) S.loaded.config = true; onData('config'); });
   Store.watch('app/weeks', (v, server) => { S.weeks = (v && Array.isArray(v.list)) ? v.list : []; if (server) S.loaded.weeks = true; onData('weeks'); });
+  Store.watch('app/logo', v => { S.logo = (v && typeof v.src === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(v.src)) ? v.src : ''; onData('logo'); });
   Store.watch('app/control', v => { S.control = v || { pause: {}, cmds: [] }; onData('control'); });
   Store.watch('app/alerts', (v, server) => { S.alerts = (v && Array.isArray(v.list)) ? v.list : []; if (server) S.loaded.alerts = true; onData('alerts'); });
   Auth.init();
