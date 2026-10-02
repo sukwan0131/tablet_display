@@ -1092,6 +1092,26 @@ const CONFIG_LABELS = {
   showQR: 'QR 표시', showClock: '시계 표시', alertSound: '알림음', style: '색·배경·크기', hours: '운영 시간', weekMode: '프로젝트 선택 방식', manualWeek: '고정 프로젝트',
   alertFull: '긴급·공지 전체화면 팝업 기본값', timetable: '시간표 설정', texts: '화면 문구', classes: '반 목록', groups: '반 묶음'
 };
+function nameTokens(str) {
+  const out = [];
+  for (const m of String(str || '').trim().toLowerCase().matchAll(/(\d+)|([\s\S])/gu)) {
+    if (m[1]) out.push([1, Number(m[1])]);
+    else { const ch = m[2], cc = ch.codePointAt(0); out.push([/\s/.test(ch) ? 0 : /[a-z]/.test(ch) ? 2 : (cc >= 0xAC00 && cc <= 0xD7A3) || (cc >= 0x3130 && cc <= 0x318F) || (cc >= 0x1100 && cc <= 0x11FF) ? 3 : /[\p{L}]/u.test(ch) ? 4 : 0, cc]); }
+  }
+  return out;
+}
+function cmpName(a, b) {
+  const x = nameTokens(a), y = nameTokens(b), n = Math.min(x.length, y.length);
+  for (let i = 0; i < n; i++) { if (x[i][0] !== y[i][0]) return x[i][0] - y[i][0]; if (x[i][1] !== y[i][1]) return x[i][1] - y[i][1]; }
+  return x.length - y.length || String(a).localeCompare(String(b));
+}
+function sortClasses(cfg) {
+  cfg.classes = (cfg.classes || []).slice().sort((a, b) => cmpName(a.name, b.name) || String(a.id).localeCompare(String(b.id)));
+  const idx = new Map(cfg.classes.map((c, i) => [c.id, i]));
+  cfg.groups = (cfg.groups || []).map(g => Object.assign({}, g, { classes: (g.classes || []).slice().sort((a, b) => (idx.has(a) ? idx.get(a) : 1e9) - (idx.has(b) ? idx.get(b) : 1e9)) })).sort((a, b) => cmpName(a.name, b.name) || String(a.id).localeCompare(String(b.id)));
+  return cfg;
+}
+function sortIds(ids) { const idx = new Map((S.config.classes || []).map((c, i) => [c.id, i])); return ids.slice().sort((a, b) => (idx.has(a) ? idx.get(a) : 1e9) - (idx.has(b) ? idx.get(b) : 1e9)); }
 function mergeConfig(v) {
   const c = clone(DEFAULT_CONFIG);
   if (!v || typeof v !== 'object') return c;
@@ -1101,7 +1121,7 @@ function mergeConfig(v) {
   }
   if (!Array.isArray(c.classes)) c.classes = [];
   if (!Array.isArray(c.groups)) c.groups = [];
-  return c;
+  return sortClasses(c);
 }
 function look(cfg) {
   const st = cfg.style || {};
@@ -1495,7 +1515,7 @@ function targetText(t) {
   if (!t.length) return '대상 없음';
   const key = t.slice().sort().join(','), g = (S.config.groups || []).find(g => g.classes && g.classes.length && g.classes.slice().sort().join(',') === key);
   if (g) return g.name;
-  const names = t.map(className);
+  const names = sortIds(t).map(className);
   return names.length > 4 ? names.slice(0, 4).join(', ') + ` 외 ${names.length - 4}개 반` : names.join(', ');
 }
 function currentWeek() {
@@ -1882,7 +1902,7 @@ const Teacher = {
   classes() {
     const gs = this.groups();
     const ids = gs.length ? Array.from(new Set(gs.flatMap(g => g.classes))) : (LS.get('tsd-tcls', []) || []);
-    return ids.filter(id => S.config.classes.some(c => c.id === id));
+    return sortIds(ids.filter(id => S.config.classes.some(c => c.id === id)));
   },
   start() {
     applyTheme('auto');
@@ -3871,6 +3891,7 @@ const Admin = {
     'font-set'(b) { this.setPath(this.ensureCfg(), b.dataset.k, b.dataset.v === (b.dataset.k === 'style.hfont' ? 'Gothic A1' : 'IBM Plex Sans KR') ? '' : b.dataset.v); this.markDirty(); this.rerenderKeep(); },
     async 'bg-remove'() { this.ensureCfg().style.bgImage = ''; this.markDirty(); this.renderTab(); },
     async 'txt-reset'(b) { const c = this.ensureCfg(); c.texts = c.texts || {}; delete c.texts[b.dataset.k]; this.markDirty(); this.renderTab(); },
+    async 'cls-sort'() { sortClasses(this.ensureCfg()); this.markDirty(); this.renderTab(); toast('반과 묶음을 이름순(숫자 → 영어 → 한글)으로 정리했습니다'); },
     async 'cls-add'() { const c = this.ensureCfg(); c.classes.push({ id: 'c' + uid(), name: (c.classes.length + 1) + '반' }); this.markDirty(); this.renderTab(); },
     async 'cls-del-sel'() {
       const c = this.ensureCfg(), ids = new Set([...(this.clsSel || [])].filter(id => c.classes.some(x => x.id === id)));
@@ -3896,6 +3917,7 @@ const Admin = {
       cfg.slideSec = Math.min(300, Math.max(3, Number(cfg.slideSec) || 12));
       cfg.classes = (cfg.classes || []).filter(c => c.name && c.name.trim());
       const ids = new Set(cfg.classes.map(c => c.id)); cfg.groups = (cfg.groups || []).map((g, i) => ({ id: g.id, name: (g.name || '').trim() || `묶음 ${i + 1}`, classes: g.classes.filter(id => ids.has(id)) }));
+      sortClasses(cfg);
       const t = {}; Object.entries(cfg.texts || {}).forEach(([k, v]) => { if (v != null && String(v).trim() !== '') t[k] = v; }); cfg.texts = t;
       try { await this.saveConfig(cfg, this.sub === 'design' ? '꾸미기 저장' : '설정 저장'); this.dirty = false; this.cfgDraft = null; this.renderTab(); toast('저장했습니다. 태블릿에 곧 반영됩니다'); } catch (x) { toast(saveErr(x)); }
     },
@@ -4179,7 +4201,7 @@ const Admin = {
   ackInfo(o) {
     if (!o.ack) return '';
     const got = new Map(); (S.acks || []).forEach(k => { if (k && k.aid === o.id && !got.has(k.classId)) got.set(k.classId, k.at); });
-    const targets = Array.isArray(o.target) ? o.target : S.config.classes.map(c => c.id);
+    const targets = sortIds(Array.isArray(o.target) ? o.target : S.config.classes.map(c => c.id));
     const n = targets.filter(t => got.has(t)).length;
     return `<details style="margin-top:6px"><summary>확인 <span style="color:var(--ink);font-weight:700">${n}/${targets.length}반</span>${got.has('__lobby') ? ' · 공용 화면 확인' : ''}</summary><div class="acklist">${targets.map(t => `<span class="${got.has(t) ? 'ok' : ''}">${esc(className(t))}${got.has(t) ? ' ✓ ' + hm(new Date(got.get(t))) : ''}</span>`).join('')}</div></details>`;
   },
@@ -4385,8 +4407,8 @@ const Admin = {
   set_classes() {
     const c = this.ensureCfg();
     return `<div data-ctx="cfg">
-      <section class="card"><h2>반 목록</h2><p class="desc">태블릿은 처음 켤 때 이 목록에서 자기 반을 고릅니다. 오른쪽 작은 글씨(ID)는 태블릿이 기억하는 값이라 이름을 바꿔도 연결이 유지됩니다.</p>
-        ${(() => { this.clsSel = this.clsSel || new Set(); const n = c.classes.filter(x => this.clsSel.has(x.id)).length; return `<div class="inline" style="margin-bottom:10px"><label class="check"><input type="checkbox" data-clsall="1" ${c.classes.length && n === c.classes.length ? 'checked' : ''}>전체 선택</label><button class="btn sm warn" data-act="cls-del-sel" ${n ? '' : 'disabled'}>선택한 반 삭제 (${n})</button></div>`; })()}
+      <section class="card"><h2>반 목록</h2><p class="desc">태블릿은 처음 켤 때 이 목록에서 자기 반을 고릅니다. 모든 목록은 <b>이름순(숫자 → 영어 → 한글)</b>으로 자동 정리되어 나옵니다. 오른쪽 작은 글씨(ID)는 태블릿이 기억하는 값이라 이름을 바꿔도 연결이 유지됩니다.</p>
+        ${(() => { this.clsSel = this.clsSel || new Set(); const n = c.classes.filter(x => this.clsSel.has(x.id)).length; return `<div class="inline" style="margin-bottom:10px"><label class="check"><input type="checkbox" data-clsall="1" ${c.classes.length && n === c.classes.length ? 'checked' : ''}>전체 선택</label><button class="btn sm warn" data-act="cls-del-sel" ${n ? '' : 'disabled'}>선택한 반 삭제 (${n})</button><button class="btn sm" data-act="cls-sort" title="숫자 → 영어 → 한글 순서로 정리">이름순 정렬</button></div>`; })()}
         ${c.classes.map((x, i) => `<div class="cls-row"><input type="checkbox" data-clssel="${esc(x.id)}" ${this.clsSel.has(x.id) ? 'checked' : ''} aria-label="선택" style="width:18px;height:18px;accent-color:var(--board)"><input type="text" data-k="classes.${i}.name" value="${esc(x.name)}" aria-label="반 이름"><code>${esc(x.id)}</code><button class="btn sm" data-act="cls-del" data-i="${i}">삭제</button></div>`).join('')}
         <div class="inline" style="margin-top:6px"><button class="btn" data-act="cls-add">+ 반 추가</button></div>
         <details style="margin-top:12px"><summary>한 번에 만들기 (예: 1반~46반)</summary>
