@@ -901,6 +901,101 @@ textarea.one{resize:none;overflow:hidden;min-height:42px;line-height:1.4;white-s
   .pv-card{box-shadow:0 16px 40px rgba(0,0,0,.28)}
   .adm-body.nopv .pv-panel{display:none}
 }
+
+/* ===== 모바일·태블릿 대응 (관리자 · 선택 · 로그인 화면) ===== */
+html,body{max-width:100%;overflow-x:hidden}
+.adm *{min-width:0}
+.adm-top h1{white-space:normal;line-height:1.25}
+@media (max-width:900px){
+  .adm-top{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"back ttl" "me r";gap:4px 10px;align-items:center;padding:8px 12px;position:static}
+  .adm-top .back{grid-area:back;padding:8px 6px 8px 0;white-space:nowrap}
+  .adm-top .ttl{grid-area:ttl}
+  .adm-top h1{font-size:15px}
+  .adm-top .mode{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .adm-top .me{grid-area:me;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34vw}
+  .adm-top .r{grid-area:r;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .adm-top .r .btn{padding:8px 10px;font-size:13px;white-space:nowrap}
+  .tabs{top:0;padding:4px 8px;gap:0}
+  .tabs button{padding:11px 12px;flex:1 0 auto;text-align:center}
+  .adm-body{padding:14px 10px 140px;gap:14px}
+  .card{padding:16px;border-radius:10px;margin-bottom:12px;scroll-margin-top:64px}
+  .card > h2{font-size:17px}
+  .desc{font-size:13.5px}
+  .list-row{flex-wrap:wrap}
+  .list-row .r{flex:1 1 100%;justify-content:flex-start}
+  .savebar{flex-wrap:wrap;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));gap:6px}
+  .savebar .msg{flex:1 1 100%;margin:0;font-size:12.5px}
+  .savebar .btn{flex:1 1 auto}
+  .seg,.segb{max-width:100%;flex-wrap:wrap}
+  .wft-tools{gap:6px}
+  .wft-tools input[type=search]{width:100%;max-width:none}
+  .modal{padding:12px}
+  .modal .box{padding:18px;max-height:calc(100dvh - 24px);max-height:calc(100vh - 24px);overflow:auto;border-radius:14px}
+  .modal .acts{justify-content:stretch}
+  .modal .acts .btn{flex:1 1 auto}
+  .lgp-grid{grid-template-columns:1fr}
+  .quickbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .quickbar button{padding:12px;font-size:14.5px}
+  .quickbar button small{font-size:11.5px}
+  .set-layout{gap:10px}
+  .subnav{flex-wrap:nowrap!important;overflow-x:auto;gap:2px;margin:0 -10px;padding:0 10px 4px;border-bottom:1px solid var(--line)}
+  .subnav button{white-space:nowrap;padding:10px 12px;flex:none}
+  .subnav button[aria-current="true"]{box-shadow:inset 0 -3px 0 var(--board)}
+  .wk-list{overflow-x:auto;flex-wrap:nowrap!important}
+  .item{padding:12px}
+  .tin input[type=number]{width:64px}
+}
+@media (max-width:480px){
+  .adm-top .r{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .adm-top{grid-template-areas:"back ttl" "me me" "r r"}
+  .adm-top .me{max-width:none}
+  .adm-body{padding:10px 8px 150px}
+  .card{padding:14px}
+  .srow{gap:8px}
+  .st-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .quickbar button small{display:none}
+  .login,.setup,.connect{padding-left:14px;padding-right:14px}
+}
+@media (max-height:520px) and (max-width:960px){
+  .tabs{position:static}
+  .savebar{padding:6px 12px;flex-wrap:nowrap}
+  .savebar .msg{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .adm-body{padding-bottom:90px}
+}
+@media (pointer:coarse){
+  .btn{min-height:42px}
+  .btn.sm{min-height:38px;padding-top:7px;padding-bottom:7px}
+  .btn.ico{min-width:38px;min-height:38px;width:38px;height:38px}
+  .tabs button,.subnav button{min-height:44px}
+  input[type=text],input[type=search],input[type=number],input[type=email],input[type=password],input[type=date],input[type=datetime-local],select,textarea{min-height:42px;font-size:16px}
+  .wft-r textarea.one,.ttt-r input,.ttt-r select{min-height:40px;font-size:15px}
+  .chip{padding:9px 13px}
+  .wft-c input,.check input,.chip input,.pub input{width:22px;height:22px}
+  .seg label,.segb span{padding-top:10px;padding-bottom:10px}
+}
+
+.mode-me{display:none}
+.mode-me b{color:var(--ink)}
+@media (max-width:900px){
+  .adm-top{grid-template-areas:"back ttl" "r r"}
+  .adm-top .me{display:none}
+  .adm-top .mode{white-space:normal}
+  .mode-me{display:inline}
+  .subnav{margin:0!important}
+}
+@media (max-width:480px){
+  .adm-top{grid-template-areas:"back ttl" "r r"}
+}
+@media (pointer:coarse){
+  input[type=range]{min-height:34px}
+  .link{min-height:44px;padding:10px 4px;display:inline-flex;align-items:center}
+}
+@media (max-width:480px){
+  .login,.setup,.connect{padding-left:16px;padding-right:16px}
+  .login h1,.setup h1,.connect h1{font-size:22px;line-height:1.3}
+  .grid-cls{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .grp-pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
@@ -2832,7 +2927,7 @@ const Admin = {
     const shell = !!$('.adm');
     if (!this.authed() || !shell) { if (kind === 'config' || kind === 'admins' || !shell) return this.start(); return; }
     const h = $('#admTitle'); if (h) h.textContent = ADMIN_TITLE;
-    if (kind === 'admins') { const c = $('#adminCard'); if (c) c.innerHTML = this.adminCard(); $('#meName') && ($('#meName').textContent = S.who); return; }
+    if (kind === 'admins') { const c = $('#adminCard'); if (c) c.innerHTML = this.adminCard(); $$('#meName,[data-me]').forEach(n => { n.textContent = S.who; }); return; }
     if (this.tab === 'weeks') {
       if (this.dirty) { this.renderWeekList(); Preview.schedule(); return; }
       if (this.draftId) { if (S.weeks.some(w => w.id === this.draftId)) this.loadDraft(this.draftId); else { this.draft = null; this.draftId = null; } }
@@ -2904,7 +2999,7 @@ const Admin = {
     $('#app').innerHTML = `<div class="adm">
       <header class="adm-top">
         <button class="back" data-act="back">뒤로</button>
-        <div class="ttl"><h1 id="admTitle">${esc(ADMIN_TITLE)}</h1><div class="mode">관리자 · ${esc(Store.label())}</div></div>
+        <div class="ttl"><h1 id="admTitle">${esc(ADMIN_TITLE)}</h1><div class="mode">관리자 · ${esc(Store.label())}<span class="mode-me"> · <b data-me>${esc(S.who)}</b> 님</span></div></div>
         <span class="me"><b id="meName">${esc(S.who)}</b> 님</span>
         <div class="r"><button class="btn sm pri" data-act="qr-connect">기기 연결 QR</button><button class="btn sm" data-act="pv-toggle" aria-pressed="${Preview.on}">미리보기</button><button class="btn sm" data-act="logout">로그아웃</button></div>
       </header>
