@@ -1172,7 +1172,7 @@ const DEFAULT_CONFIG = {
   title: '연수 안내', subtitle: '',
   slideSec: 12, transition: 'fade',
   ticker: { on: true, mode: 'marquee', speed: 5, size: 100, label: '안내' },
-  theme: 'light', showQR: true, showClock: true, alertSound: true,
+  theme: 'light', showQR: true, showClock: true, alertSound: true, alertLead: 3,
   style: { bg: '', ink: '', accent: '', bgImage: '', bgDim: 45, scale: 100, font: '', hfont: '', logoOn: true, logoPos: 'head', logoOp: 70, logoSize: 100 },
   hours: { on: false, start: '08:00', end: '19:00' },
   weekMode: 'auto', manualWeek: '',
@@ -1185,7 +1185,7 @@ const DEFAULT_CONFIG = {
 };
 const CONFIG_LABELS = {
   title: '연수명', subtitle: '부제', slideSec: '기본 표시 시간', transition: '전환 효과', ticker: '흐르는 문구 설정', theme: '기본 색 테마',
-  showQR: 'QR 표시', showClock: '시계 표시', alertSound: '알림음', style: '색·배경·크기', hours: '운영 시간', weekMode: '프로젝트 선택 방식', manualWeek: '고정 프로젝트',
+  showQR: 'QR 표시', showClock: '시계 표시', alertSound: '알림음', alertLead: '공지 동시 표시 대기 시간', style: '색·배경·크기', hours: '운영 시간', weekMode: '프로젝트 선택 방식', manualWeek: '고정 프로젝트',
   alertFull: '긴급·공지 전체화면 팝업 기본값', timetable: '시간표 설정', texts: '화면 문구', classes: '반 목록', groups: '반 묶음'
 };
 function nameTokens(str) {
@@ -1666,7 +1666,7 @@ function dateAt(day, time) { const m = /^(\d{1,2}):(\d{2})/.exec(time || '00:00'
 function occEnd(a, start) { const e = expiresFrom(a.dur, start); return a.level === 'countdown' ? e + (Number(a.afterSec) || 0) * 1000 : e; }
 function cdEndOf(a) { return a.cdEnd != null ? a.cdEnd : expiresFrom(a.dur, a.createdAt); }
 /* 예약·매일 반복을 풀어 지금 떠 있어야 할 공지 목록을 만듭니다 */
-function alertOcc(now = Date.now()) {
+function alertOcc(now = nowS()) {
   const out = [];
   S.alerts.forEach(a => {
     if (a.cleared) return;
@@ -1685,8 +1685,10 @@ function alertOcc(now = Date.now()) {
   return out;
 }
 function activeAlerts() { return alertOcc().filter(a => matchTarget(a.target)); }
-function isScheduled(a, now = Date.now()) { if (a.cleared) return false; if (a.repeat === 'daily') return !a.untilDate || a.untilDate >= ymd(new Date(now)); return !!a.startAt && a.startAt > now; }
-function isPast(a, now = Date.now()) { if (a.cleared) return true; if (a.repeat === 'daily') return !!a.untilDate && a.untilDate < ymd(new Date(now)); return !!a.expiresAt && a.expiresAt <= now; }
+function isScheduled(a, now = nowS()) { if (a.cleared) return false; if (a.repeat === 'daily') return !a.untilDate || a.untilDate >= ymd(new Date(now)); return !!a.startAt && a.startAt > now && !a.imm; }
+function isPast(a, now = nowS()) { if (a.cleared) return true; if (a.repeat === 'daily') return !!a.untilDate && a.untilDate < ymd(new Date(now)); return !!a.expiresAt && a.expiresAt <= now; }
+const wantsSound = a => !!a && !!a.soundV && a.sound === true;
+const alertLeadMs = () => Math.min(10, Math.max(1, Number(S.config.alertLead) || 3)) * 1000;
 const lvName = l => (LEVELS[l] || LEVELS.info).name;
 /* ===== 회사 로고: 불러오기 · 배경(누끼) 제거 · 가장자리 정리 ===== */
 async function loadLogoSource(file) {
@@ -2166,7 +2168,7 @@ const Display = {
   orient() { const d = $('#disp'); d && d.classList.toggle('portrait', innerHeight > innerWidth); },
   stop() {
     this.unTm && this.unTm(); this.unTm = null; if (S.teacher) Teacher.unmount();
-    clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
+    clearTimeout(this.startT); clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
     this.tickerAnim && this.tickerAnim.cancel(); this.tickerAnim = null;
     this.onResize && window.removeEventListener('resize', this.onResize);
     try { this.wl && this.wl.release(); } catch (e) {} this.wl = null;
@@ -2193,7 +2195,7 @@ const Display = {
     const ak = e.target.closest('[data-ack]');
     if (ak) { e.stopPropagation(); this.sendAck(ak.dataset.ack); return; }
     const pin = e.target.closest('[data-pin]');
-    if (pin) { const a = S.alerts.find(x => x.id === pin.dataset.pin); this.fullUntil[pin.dataset.pin] = Date.now() + Math.max(10, this.fullSec(a)) * 1000; this.alertSig = ''; this.renderAlerts(); return; }
+    if (pin) { const a = S.alerts.find(x => x.id === pin.dataset.pin); this.fullUntil[pin.dataset.pin] = nowS() + Math.max(10, this.fullSec(a)) * 1000; this.alertSig = ''; this.renderAlerts(); return; }
     const ov = e.target.closest('[data-ov]');
     if (ov) { this.fullUntil[ov.dataset.ov] = 0; this.alertSig = ''; this.renderAlerts(); return; }
     if (e.target.closest('#brand')) {
@@ -2218,7 +2220,7 @@ const Display = {
   async sendAck(aid) {
     if (S.preview) return toast('미리보기에서는 확인이 기록되지 않습니다');
     LS.set('tsd-acked:' + aid, true); this.fullUntil[aid] = 0; this.alertSig = ''; this.renderAlerts();
-    try { await Store.set('acks/' + ackKey(aid, S.classId || '-', S.deviceId), { aid, classId: S.classId, device: S.deviceId, at: Date.now() }); }
+    try { await Store.set('acks/' + ackKey(aid, S.classId || '-', S.deviceId), { aid, classId: S.classId, device: S.deviceId, at: nowS() }); }
     catch (e) { LS.del('tsd-acked:' + aid); this.alertSig = ''; this.renderAlerts(); toast('확인을 보내지 못했습니다. 다시 눌러 주세요'); }
   },
   askClass() {
@@ -2622,7 +2624,8 @@ const Display = {
   renderAlerts() {
     if (S.view !== 'display') return;
     const w = $('#dWarn'); if (w) { const t = this.warnText(); if (w.textContent !== t) w.textContent = t; w.classList.toggle('hidden', !t); }
-    const now = Date.now(), tmOn = this.renderTimer(), all = activeAlerts();
+    const now = nowS(), tmOn = this.renderTimer(), all = activeAlerts();
+    this.armStart(now);
     const act = all.filter(a => a.level !== 'countdown' && (!tmOn || a.level === 'emergency' || a.level === 'breaking'));
     this.renderCountdown(tmOn ? [] : all.filter(a => a.level === 'countdown'), now);
     if (S.teacher) Teacher.tick();
@@ -2630,10 +2633,8 @@ const Display = {
     act.forEach(a => {
       if (this.seen[a.id]) return;
       this.seen[a.id] = now;
-      if ((a.level === 'emergency' || a.level === 'breaking') && now - a.createdAt < 10 * 60000) {
-        const sec = this.fullSec(a); if (sec > 0) this.fullUntil[a.id] = now + sec * 1000;
-        if (a.sound !== false) a.level === 'emergency' ? urgent++ : brk++;
-      }
+      if (a.level === 'emergency' || a.level === 'breaking') { const sec = this.fullSec(a); if (sec > 0) this.fullUntil[a.id] = a.createdAt + sec * 1000; }
+      if (wantsSound(a) && now - a.createdAt < 15000) a.level === 'emergency' ? urgent++ : brk++;
     });
     if (urgent) chime(true); else if (brk) chime(false);
     const rank = { emergency: 0, breaking: 1, info: 2 };
@@ -2655,6 +2656,19 @@ const Display = {
       const ob = $('.ob', o); if (ob) { const u = uPx(); fitText(ob, 3.4 * u, 1.8 * u); }
       this.updateCountdown(full[0]);
     } else o.innerHTML = '';
+  },
+  /* 아직 시작 전인 공지가 있으면 그 시각에 딱 맞춰 화면을 다시 그립니다 (모든 대상 태블릿이 같은 순간에 표시) */
+  armStart(now) {
+    clearTimeout(this.startT);
+    const today = ymd(new Date(now)); let next = Infinity;
+    S.alerts.forEach(a => {
+      if (a.cleared || !matchTarget(a.target)) return;
+      let st = 0;
+      if (a.repeat === 'daily') { if ((a.fromDate && today < a.fromDate) || (a.untilDate && today > a.untilDate) || (a.skip || []).includes(today)) return; st = dateAt(today, a.time); }
+      else st = a.startAt || 0;
+      if (st > now && st < next) next = st;
+    });
+    if (next < Infinity && next - now < 3600000) this.startT = setTimeout(() => this.renderAlerts(), Math.max(0, next - nowS()) + 6);
   },
   renderTimer() {
     const v = $('#tmView'); if (!v) return false;
@@ -2688,11 +2702,11 @@ const Display = {
     v.classList.remove('hidden'); $('#disp').classList.add('is-cd');
     v.innerHTML = this.cdHTML(a, now);
     this.cdDoneSeen = this.cdDoneSeen || {};
-    if (now >= cdEndOf(a) && !this.cdDoneSeen[a.id]) { this.cdDoneSeen[a.id] = true; if (now - cdEndOf(a) < 5000 && a.sound !== false) chime(false); }
+    if (now >= cdEndOf(a) && !this.cdDoneSeen[a.id]) { this.cdDoneSeen[a.id] = true; if (now - cdEndOf(a) < 5000 && wantsSound(a)) chime(false); }
   },
   updateCountdown(a) {
     const cd = $('#dOverlay .cd'); if (!cd || !a) return;
-    const total = this.fullSec(a) * 1000 || 1, left = Math.max(0, this.fullUntil[a.id] - Date.now());
+    const total = this.fullSec(a) * 1000 || 1, left = Math.max(0, this.fullUntil[a.id] - nowS());
     cd.style.transform = `scaleX(${Math.min(1, left / total)})`;
   },
   isSleeping() {
@@ -2895,16 +2909,16 @@ const Admin = {
   defFull(level) { if (level === 'info' || level === 'countdown') return 0; const f = S.config.alertFull || {}; return Number(f[level] ?? 20) || 0; },
   newAlert(level = 'breaking', target = 'all') {
     const f = this.defFull(level);
-    return { level, title: '', body: '', target, fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: false, dur: { mode: 'for', h: 0, m: level === 'countdown' ? 10 : 15, s: 0, until: '' }, sound: true, ack: level === 'emergency' || level === 'breaking', after: '', afterM: 1, afterS: 0, when: { mode: 'now', at: '', time: '', from: '', until: '' } };
+    return { level, title: '', body: '', target, fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: false, dur: { mode: 'for', h: 0, m: level === 'countdown' ? 10 : 15, s: 0, until: '' }, sound: false, soundTouched: false, ack: level === 'emergency' || level === 'breaking', after: '', afterM: 1, afterS: 0, when: { mode: 'now', at: '', time: '', from: '', until: '' } };
   },
   fullSecOf(a) { return !a || a.level === 'info' || a.level === 'countdown' ? 0 : Math.min(3600, Math.max(0, (Number(a.fullM) || 0) * 60 + (Number(a.fullS) || 0))); },
   afterSecOf(a) { return Math.min(3600, Math.max(0, (Number(a.afterM) || 0) * 60 + (Number(a.afterS) || 0))); },
   fromTpl(t) {
     const f = t.full != null ? Number(t.full) : this.defFull(t.level), af = t.afterSec != null ? Number(t.afterSec) : 60, cur = this.alertDraft;
-    return { level: t.level, title: t.title || '', body: t.body || '', target: cur ? clone(cur.target) : 'all', fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: true, dur: normDur(t.dur), sound: t.sound !== false,
+    return { level: t.level, title: t.title || '', body: t.body || '', target: cur ? clone(cur.target) : 'all', fullM: Math.floor(f / 60), fullS: f % 60, fullTouched: true, dur: normDur(t.dur), sound: !!t.soundV && t.sound === true, soundTouched: true,
       ack: t.ack != null ? !!t.ack : (t.level === 'emergency' || t.level === 'breaking'), after: t.after || '', afterM: Math.floor(af / 60), afterS: af % 60, when: cur ? clone(cur.when) : { mode: 'now' } };
   },
-  toTpl(a, label, id) { return { id: id || uid(), label, level: a.level, title: a.title.trim(), body: (a.body || '').trim(), full: this.fullSecOf(a), dur: normDur(a.dur), sound: a.sound !== false, ack: !!a.ack, after: (a.after || '').trim(), afterSec: this.afterSecOf(a) }; },
+  toTpl(a, label, id) { return { id: id || uid(), label, level: a.level, title: a.title.trim(), body: (a.body || '').trim(), full: this.fullSecOf(a), dur: normDur(a.dur), sound: a.sound === true, soundV: 2, ack: !!a.ack, after: (a.after || '').trim(), afterSec: this.afterSecOf(a) }; },
 
   start() {
     applyTheme('auto');
@@ -3557,6 +3571,7 @@ const Admin = {
   },
   onChange(e) {
     const el = e.target;
+    if (el.dataset.snd) { const a = this.alertDraft; if (a) { a.sound = el.value === 'on'; a.soundTouched = true; this.updateSummary(); Preview.schedule(); } return; }
     if (el.dataset.tm) {
       const v = parseTimeText(el.value);
       if (el.value.trim() && !v) { el.classList.add('bad'); toast('시간은 09:30처럼 입력하세요'); this.setPath(this.draft, el.dataset.k, ''); }
@@ -3930,14 +3945,15 @@ const Admin = {
       if (d.mode === 'for' && durSec(d) < 1) return toast(cd ? '카운트다운 길이를 1초 이상으로 정하세요' : '상단 미니바 유지시간을 1초 이상으로 정하세요');
       if (d.mode === 'until' && !/^\d{1,2}:\d{2}/.test(d.until)) return toast('끝나는 시각을 정하세요');
       if (cd && (d.mode === 'today' || d.mode === 'manual')) return toast('카운트다운은 시간 정하기 또는 몇 시까지만 쓸 수 있습니다');
-      const now = Date.now(); let start = now;
+      const now = nowS(), lead = alertLeadMs(); let start = w.mode === 'now' ? now + lead : now;
       if (w.mode === 'at') { start = w.at ? new Date(w.at).getTime() : NaN; if (!(start > now + 5000)) return toast('예약 시각은 지금보다 뒤여야 합니다'); }
       if (w.mode === 'daily') { if (!/^\d{1,2}:\d{2}/.test(w.time || '')) return toast('매일 보낼 시각을 정하세요'); if (d.mode === 'manual') return toast('매일 반복은 ‘직접 내릴 때까지’로 둘 수 없습니다. 유지시간을 정해 주세요'); if (w.until && w.from && w.until < w.from) return toast('반복 종료일이 시작일보다 빠릅니다'); }
       const lv = LEVELS[a.level].name, editing = this.editingAlert && S.alerts.find(x => x.id === this.editingAlert);
       const verb = editing ? '예약 수정' : w.mode === 'now' ? '보내기' : '예약하기';
       if (!(await ask(`${lv} ${verb}`, this.summaryText(), verb, a.level === 'emergency'))) return;
-      const item = { id: editing ? editing.id : uid(), level: a.level, title: a.title.trim(), body: (a.body || '').trim(), target: clone(a.target), createdAt: now, fullSec: this.fullSecOf(a), sound: a.sound !== false, dur: d,
-        ack: (a.level === 'emergency' || a.level === 'breaking') && !!a.ack, after: cd ? (a.after || '').trim() : '', afterSec: cd ? this.afterSecOf(a) : 0, cleared: false, by: S.who };
+      const item = { id: editing ? editing.id : uid(), level: a.level, title: a.title.trim(), body: (a.body || '').trim(), target: clone(a.target), createdAt: now, fullSec: this.fullSecOf(a), sound: a.sound === true, dur: d,
+        ack: (a.level === 'emergency' || a.level === 'breaking') && !!a.ack, after: cd ? (a.after || '').trim() : '', afterSec: cd ? this.afterSecOf(a) : 0, cleared: false, by: S.who, soundV: 2 };
+      if (w.mode === 'now') { item.startAt = start; item.imm = true; }
       if (w.mode === 'daily') Object.assign(item, { repeat: 'daily', time: normTime(w.time), fromDate: w.from || ymd(new Date()), untilDate: w.until || '', skip: editing ? (editing.skip || []) : [] });
       else {
         if (w.mode === 'at') item.startAt = start;
@@ -3950,7 +3966,8 @@ const Admin = {
         await Store.set('app/alerts', { list }); S.alerts = list;
         writeLog(`${lv} ${editing ? '예약 수정' : w.mode === 'now' ? '발송' : '예약'}`, [item.title, '대상: ' + targetText(item.target), this.whenText(item)]);
         this.alertDraft = this.newAlert(a.level, 'all'); this.editingTpl = null; this.editingAlert = null; this.renderTab();
-        toast(w.mode === 'now' ? `‘${item.title}’ ${lv}${josa(lv, '을', '를')} 보냈습니다` : `‘${item.title}’ ${lv}${josa(lv, '을', '를')} 예약했습니다`);
+        toast(w.mode === 'now' ? `‘${item.title}’ ${lv}${josa(lv, '을', '를')} 보냈습니다 · ${Math.round(lead / 1000)}초 뒤 대상 태블릿에 동시에 표시됩니다` : `‘${item.title}’ ${lv}${josa(lv, '을', '를')} 예약했습니다`, 4500);
+        if (w.mode === 'now') setTimeout(() => { if (S.view === 'admin' && this.tab === 'alerts') this.renderAlertLists(); }, lead + 700);
       } catch (x) { toast(saveErr(x)); }
     },
     async 'alert-clear'(b) {
@@ -4315,7 +4332,7 @@ const Admin = {
     return `<details style="margin-top:6px"><summary>확인 <span style="color:var(--ink);font-weight:700">${n}/${targets.length}반</span>${got.has('__lobby') ? ' · 공용 화면 확인' : ''}</summary><div class="acklist">${targets.map(t => `<span class="${got.has(t) ? 'ok' : ''}">${esc(className(t))}${got.has(t) ? ' ✓ ' + hm(new Date(got.get(t))) : ''}</span>`).join('')}</div></details>`;
   },
   alertListsHTML() {
-    const now = Date.now(), occ = alertOcc(now), sched = S.alerts.filter(a => isScheduled(a, now)), past = S.alerts.filter(a => isPast(a, now)).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    const now = nowS(), occ = alertOcc(now), pend = S.alerts.filter(a => a.imm && !a.cleared && a.startAt > now), sched = S.alerts.filter(a => isScheduled(a, now)), past = S.alerts.filter(a => isPast(a, now)).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     this.histSel = this.histSel || new Set();
     const head = x => `<span class="pill ${x.level}">${lvName(x.level)}</span>${x.repeat === 'daily' ? ' <span class="state">매일 반복</span>' : ''}<b>${esc(x.title)}</b>`;
     const liveRow = o => {
@@ -4328,7 +4345,7 @@ const Admin = {
       <div class="r"><button class="btn sm" data-act="alert-reuse" data-id="${esc(x.id)}" data-edit="1">수정</button><button class="btn sm warn" data-act="alert-clear" data-id="${esc(x.id)}">${x.repeat === 'daily' ? '반복 취소' : '예약 취소'}</button></div></div>`;
     const pastRow = x => `<div class="list-row"><label class="check" style="align-self:center"><input type="checkbox" data-hsel="${esc(x.id)}" ${this.histSel.has(x.id) ? 'checked' : ''} aria-label="선택"></label><div class="m">${head(x)}<small>${esc(targetText(x.target))} · ${stamp(x.startAt || x.createdAt)}${x.repeat === 'daily' ? ' 반복 종료' : ' 발송'}${x.by ? ' · ' + esc(x.by) : ''} · ${x.cleared ? '내림' : '시간 종료'}</small></div>
       <div class="r"><button class="btn sm" data-act="alert-reuse" data-id="${esc(x.id)}">다시 쓰기</button><button class="btn sm" data-act="alert-del" data-id="${esc(x.id)}">삭제</button></div></div>`;
-    return `<section class="card"><h2>지금 떠 있는 공지 ${occ.length}건</h2><p class="desc">‘확인 받기’를 켠 공지는 반별로 누가 확인했는지 여기서 볼 수 있습니다.</p>${occ.length ? occ.map(liveRow).join('') + `<div style="margin-top:10px"><button class="btn" data-act="alert-clear-all">모두 내리기</button></div>` : '<p class="desc" style="margin:0">지금 화면에 떠 있는 공지가 없습니다.</p>'}</section>
+    return `<section class="card"><h2>지금 떠 있는 공지 ${occ.length + pend.length}건</h2><p class="desc">‘확인 받기’를 켠 공지는 반별로 누가 확인했는지 여기서 볼 수 있습니다.</p>${pend.map(x => `<div class="list-row"><div class="m">${head(x)}<small>${esc(targetText(x.target))} · <b style="display:inline;color:var(--board)">${Math.max(1, Math.ceil((x.startAt - now) / 1000))}초 뒤</b> 대상 태블릿에 동시에 표시됩니다</small></div><div class="r"><button class="btn sm warn" data-act="alert-clear" data-id="${esc(x.id)}">보내기 취소</button></div></div>`).join('')}${occ.length ? occ.map(liveRow).join('') + `<div style="margin-top:10px"><button class="btn" data-act="alert-clear-all">모두 내리기</button></div>` : pend.length ? '' : '<p class="desc" style="margin:0">지금 화면에 떠 있는 공지가 없습니다.</p>'}</section>
       <section class="card"><h2>예약된 공지 ${sched.length}건</h2><p class="desc">정해진 시각이 되면 자동으로 나타납니다. ‘수정’을 누르면 위 입력칸에서 고칠 수 있습니다.</p>${sched.length ? sched.map(schedRow).join('') : '<p class="desc" style="margin:0">예약된 공지가 없습니다. 5단계에서 ‘날짜·시각 예약’이나 ‘매일 반복’을 고르면 여기에 생깁니다.</p>'}</section>
       <section class="card" id="tplList">${this.tplListHTML()}</section>
       <section class="card"><h2>지난 기록 ${past.length}건</h2>${past.length ? `<div class="inline" style="margin-bottom:6px"><label class="check"><input type="checkbox" data-hsel-all="1" ${past.length && past.every(x => this.histSel.has(x.id)) ? 'checked' : ''}>전체 선택</label><button class="btn sm" data-act="hist-del-sel">선택 삭제 (${[...this.histSel].filter(id => past.some(x => x.id === id)).length})</button><button class="btn sm warn" data-act="hist-del-all">기록 전체 삭제</button></div>${past.slice(0, 100).map(pastRow).join('')}` : '<p class="desc" style="margin:0">지난 기록이 없습니다.</p>'}</section>`;
@@ -4336,11 +4353,11 @@ const Admin = {
   renderAlertLists() { const el = $('#alLists'); if (el) el.innerHTML = this.alertListsHTML(); },
   summaryText() {
     const a = this.alertDraft, lv = LEVELS[a.level].name, w = a.when || { mode: 'now' };
-    const whenT = w.mode === 'at' ? (w.at ? stamp(new Date(w.at).getTime()) + '에 보냄' : '예약 시각 미정') : w.mode === 'daily' ? `매일 ${w.time || '--:--'}에 보냄 (${w.from || '오늘'} ~ ${w.until || '계속'})` : '지금 바로 보냄';
+    const whenT = w.mode === 'at' ? (w.at ? stamp(new Date(w.at).getTime()) + '에 보냄' : '예약 시각 미정') : w.mode === 'daily' ? `매일 ${w.time || '--:--'}에 보냄 (${w.from || '오늘'} ~ ${w.until || '계속'})` : `지금 바로 보냄 (${Math.round(alertLeadMs() / 1000)}초 뒤 대상 태블릿에 동시에 표시)`;
     let show;
     if (a.level === 'countdown') show = `카운트다운 ${durText(a.dur)} → 0이 되면 ‘${a.after || T('cdDone')}’ ${fmtSec(this.afterSecOf(a))} 표시`;
     else { const fs = this.fullSecOf(a); show = (a.level === 'info' ? '상단 미니바와 흐르는 문구' : fs > 0 ? `전체화면 팝업 ${fmtSec(fs)} → 상단 미니바` : '상단 미니바') + ` · 미니바 ${durText(a.dur)}` + (a.ack && a.level !== 'info' ? '\n확인 버튼 표시' : ''); }
-    return `종류: ${lv}\n대상: ${targetText(a.target)}\n제목: ${a.title || '(제목 없음)'}\n보여주기: ${show}\n언제: ${whenT}`;
+    return `종류: ${lv}\n대상: ${targetText(a.target)}\n제목: ${a.title || '(제목 없음)'}\n보여주기: ${show}\n알림음: ${a.sound === true ? '울림' : '울리지 않음'}\n언제: ${whenT}`;
   },
   summaryHTML() {
     const a = this.alertDraft, d = normDur(a.dur), w = a.when || { mode: 'now' }, cd = a.level === 'countdown', fs = this.fullSecOf(a);
@@ -4352,9 +4369,9 @@ const Admin = {
     if (w.mode === 'at' && !(start > Date.now())) warns.push('예약 시각이 이미 지났습니다.');
     if (w.mode === 'daily' && d.mode === 'manual') warns.push('매일 반복은 ‘직접 내릴 때까지’로 둘 수 없습니다.');
     if (!cd && exp && fs > 0 && fs * 1000 > exp - start) warns.push('전체화면 팝업 시간이 상단 미니바 유지시간보다 깁니다.');
-    const whenT = w.mode === 'at' ? `<b>${w.at ? stamp(start) : '--'}</b>에` : w.mode === 'daily' ? `<b>매일 ${esc(w.time || '--:--')}</b>에 (${esc(w.from || '오늘')} ~ ${esc(w.until || '계속')})` : '<b>지금 바로</b>';
+    const whenT = w.mode === 'at' ? `<b>${w.at ? stamp(start) : '--'}</b>에` : w.mode === 'daily' ? `<b>매일 ${esc(w.time || '--:--')}</b>에 (${esc(w.from || '오늘')} ~ ${esc(w.until || '계속')})` : `<b>지금 바로</b>(${Math.round(alertLeadMs() / 1000)}초 뒤 동시 표시)`;
     const show = cd ? `<b>${esc(durText(d))}</b> 카운트다운 → 0이 되면 ‘${esc(a.after || T('cdDone'))}’를 ${fmtSec(this.afterSecOf(a))} 보여줌`
-      : (a.level === 'info' ? '상단 미니바와 흐르는 문구로 조용히 표시' : fs > 0 ? `<b>${fmtSec(fs)}</b> 전체화면 팝업 → 상단 미니바` : '팝업 없이 바로 상단 미니바') + ` · 미니바 <b>${esc(durText(d))}</b>${exp && w.mode !== 'daily' ? ` <span class="muted">(${stamp(exp)}에 자동으로 내려감)</span>` : ''}${a.ack && a.level !== 'info' ? ' · 확인 버튼 표시' : ''}`;
+      : (a.level === 'info' ? '상단 미니바와 흐르는 문구로 조용히 표시' : fs > 0 ? `<b>${fmtSec(fs)}</b> 전체화면 팝업 → 상단 미니바` : '팝업 없이 바로 상단 미니바') + ` · 미니바 <b>${esc(durText(d))}</b>${exp && w.mode !== 'daily' ? ` <span class="muted">(${stamp(exp)}에 자동으로 내려감)</span>` : ''}${a.ack && a.level !== 'info' ? ' · 확인 버튼 표시' : ''} · 알림음 <b>${a.sound === true ? '울림' : '울리지 않음'}</b>`;
     return `${whenT} <b>${esc(targetText(a.target))}</b>에 <b>${LEVELS[a.level].name}</b>${josa(LEVELS[a.level].name, '을', '를')} ${w.mode === 'now' ? '보냅니다' : '보내도록 예약합니다'}.<br>${show}${warns.map(x => `<span class="w">${x}</span>`).join('')}`;
   },
   updateSummary() { const el = $('#alSum'); if (el) el.innerHTML = this.summaryHTML(); },
@@ -4391,7 +4408,8 @@ const Admin = {
         ${editA ? `<div class="editbar"><b>예약된 ‘${esc(editA.title)}’을(를) 수정하는 중입니다</b><button class="btn sm" data-act="alert-edit-cancel">수정 그만두기</button></div>` : ''}
         <div class="step"><span class="no">1</span><div><b>멘트 불러오기<small>선택</small></b><small class="help">자주 쓰는 멘트나 예시를 누르면 아래 칸이 자동으로 채워집니다. 불러온 뒤 고쳐서 보내도 됩니다.</small><div id="tplChips">${this.tplChipsHTML()}</div></div></div>
         <div class="step"><span class="no">2</span><div><b>종류 고르기</b><small class="help">얼마나 눈에 띄게 알릴지 정합니다. 급한 상황일수록 왼쪽 종류를 쓰세요. 쉬는 시간처럼 남은 시간을 보여줄 땐 ‘카운트다운’을 고르세요.</small>
-          <div class="lv-cards">${Object.entries(LEVELS).map(([k, v]) => `<label class="lv-card ${k}"><input type="radio" name="lv" data-k="level" value="${k}" ${a.level === k ? 'checked' : ''}><b>${v.name}</b><small>${v.desc}</small></label>`).join('')}</div></div></div>
+          <div class="lv-cards">${Object.entries(LEVELS).map(([k, v]) => `<label class="lv-card ${k}"><input type="radio" name="lv" data-k="level" value="${k}" ${a.level === k ? 'checked' : ''}><b>${v.name}</b><small>${v.desc}</small></label>`).join('')}</div>
+          <div class="srow" style="padding:12px 0 0;border-top:0"><div class="sl"><b style="font-size:14px">알림음</b><small>${cd ? '0이 되는 순간' : '태블릿에 공지가 뜨는 순간'} 소리를 낼지 정합니다. 기본은 울리지 않으며, <b>‘알림음 울림’을 골라야만</b> 소리가 납니다. 태블릿을 한 번 터치해 둔 뒤부터 소리가 납니다.</small></div><div class="sc"><div class="segb" role="radiogroup" aria-label="알림음"><label><input type="radio" name="snd" data-snd="1" value="on" ${a.sound === true ? 'checked' : ''}><span>🔔 알림음 울림</span></label><label><input type="radio" name="snd" data-snd="1" value="off" ${a.sound !== true ? 'checked' : ''}><span>🔕 알림음 울리지 않음</span></label></div></div></div></div></div>
         <div class="step"><span class="no">3</span><div><b>내용 쓰기</b>
           ${cd ? `<small class="help">제목은 숫자 위에, 설명은 숫자 아래에 작게 나옵니다. 0이 되면 숫자 대신 ‘0이 되면 보여줄 문구’가 크게 나옵니다.</small>
             <div class="row" style="grid-template-columns:1fr"><label class="f"><span>카운트다운 제목</span><input type="text" data-k="title" value="${esc(a.title)}" placeholder="예: 쉬는 시간"></label>
@@ -4407,15 +4425,14 @@ const Admin = {
               ${durBox([['for', '시간 정하기'], ['until', '몇 시까지']], [['0:3:0', '3분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:15:0', '15분'], ['0:20:0', '20분'], ['1:0:0', '1시간']])}
               <div class="sub">0이 된 뒤 문구를 보여주는 시간</div><small class="help" style="margin-top:0">이 시간이 지나면 원래 화면으로 돌아갑니다.</small>
               <div class="tin">${num('afterM', a.afterM, 60, '분')}${num('afterS', a.afterS, 59, '초')}</div>
-              <div class="quick">${[[0, '바로 끝내기'], [30, '30초'], [60, '1분'], [180, '3분'], [300, '5분']].map(([v, n]) => `<button type="button" class="btn" data-act="after-set" data-v="${v}">${n}</button>`).join('')}</div>
-              <div class="srow" style="margin-top:10px;padding-bottom:0"><div class="sl"><b style="font-size:14px">0이 되면 알림음</b><small>태블릿을 한 번 터치해 둔 뒤부터 소리가 납니다</small></div><div class="sc">${UI.sw('sound', a.sound !== false, '알림음')}</div></div>`
+              <div class="quick">${[[0, '바로 끝내기'], [30, '30초'], [60, '1분'], [180, '3분'], [300, '5분']].map(([v, n]) => `<button type="button" class="btn" data-act="after-set" data-v="${v}">${n}</button>`).join('')}</div>`
           : `${a.level !== 'info' ? `<div class="sub">전체화면 팝업</div><small class="help" style="margin-top:0">도착하면 이 시간 동안 화면 전체를 덮는 팝업으로 보이고, 지나면 상단 미니바로 줄어듭니다. 0으로 두면 팝업 없이 바로 미니바로 나옵니다. 태블릿에서 미니바를 누르면 팝업을 다시 볼 수 있습니다.</small>
               <div class="tin">${num('fullM', a.fullM, 60, '분')}${num('fullS', a.fullS, 59, '초')}</div>
               <div class="quick">${q('full-set', 0, '팝업 안 함')}${q('full-set', 10, '10초')}${q('full-set', 20, '20초')}${q('full-set', 30, '30초')}${q('full-set', 60, '1분')}${q('full-set', 180, '3분')}<button type="button" class="btn ghost" data-act="full-default" title="다음부터 ${lvName}를 쓸 때 이 값으로 시작합니다">지금 값을 ‘${lvName}’ 기본값으로</button></div>` : ''}
               <div class="sub">상단 미니바 유지시간</div><small class="help" style="margin-top:0">미니바가 이 시간 동안 화면 위쪽에 남아 있다가 자동으로 사라집니다. 보낸 뒤에도 아래 목록에서 연장하거나 바로 내릴 수 있습니다.</small>
               ${durBox([['for', '시간 정하기'], ['until', '몇 시까지'], ['today', '오늘 자정까지'], ['manual', '직접 내릴 때까지']], [['0:1:0', '1분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:30:0', '30분'], ['1:0:0', '1시간'], ['3:0:0', '3시간']])}
               ${a.level !== 'info' ? `<div class="srow" style="margin-top:10px"><div class="sl"><b style="font-size:14px">확인 받기</b><small>태블릿에 ‘확인했습니다’ 버튼이 나오고, 누른 반이 아래 ‘지금 떠 있는 공지’에 표시됩니다. 대피처럼 전달 확인이 중요할 때 켜세요.</small></div><div class="sc">${UI.sw('ack', !!a.ack, '확인 받기')}</div></div>
-              <div class="srow" style="padding-bottom:0"><div class="sl"><b style="font-size:14px">도착할 때 알림음</b><small>태블릿을 한 번 터치해 둔 뒤부터 소리가 납니다</small></div><div class="sc">${UI.sw('sound', a.sound !== false, '알림음')}</div></div>` : ''}`}
+` : ''}`}
         </div></div>
         <div class="step"><span class="no">📅</span><div><b>언제 보낼까요?</b><small class="help">‘날짜·시각 예약’은 한 번, ‘매일 반복’은 시작일~종료일 동안 매일 같은 시각에 자동으로 보냅니다. 교시마다 반복되는 안내에 쓰세요.</small>
           ${UI.seg('when.mode', [['now', '지금 바로'], ['at', '날짜·시각 예약'], ['daily', '매일 반복']], w.mode)}
@@ -4545,6 +4562,7 @@ const Admin = {
         ${UI.row('운영 시간', '시간 밖에는 시계만 흐리게 보여 화면 번인과 전력을 줄입니다', UI.sw('hours.on', c.hours.on, '운영 시간'))}
         ${c.hours.on ? UI.row('운영 시작 · 종료', '', `<input type="time" data-k="hours.start" value="${esc(c.hours.start)}" style="width:120px"><span class="muted">~</span><input type="time" data-k="hours.end" value="${esc(c.hours.end)}" style="width:120px">`) : ''}
         ${UI.row('알림음 전체 켜기', '끄면 공지마다 켜 두어도 소리가 나지 않습니다 (태블릿을 한 번 터치한 뒤부터 소리가 납니다)', UI.sw('alertSound', c.alertSound, '알림음'))}
+        ${UI.row('공지 동시 표시 대기 시간', '공지를 보내면 이 시간 뒤에 대상 태블릿이 한꺼번에 띄웁니다. 인터넷이 느린 태블릿이 있으면 늘리세요', UI.range('alertLead', c.alertLead || 3, 1, 10, 1, '초'))}
       </section>
       <section class="card"><h2>데이터</h2><p class="desc">저장소: <b>${esc(Store.label())}</b>${Store.mode === 'local' ? ' · 이 브라우저에만 저장되어 다른 태블릿에 반영되지 않습니다.' : ''}</p>
         <div class="inline">${Store.canUpload() ? '<button class="btn" data-act="media-clean">쓰지 않는 이미지 정리</button>' : ''}</div>
