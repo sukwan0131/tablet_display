@@ -1269,7 +1269,7 @@ const Store = {
         if (!firebase.apps.length) firebase.initializeApp(FBC);
         this.fb = firebase.database(); this.mode = 'firebase';
         this.fb.ref('.info/connected').on('value', s => { const v = !!s.val(), prev = this.conn; this.conn = v; setConnected(v); if (!v) { this.od && this.od.clear(); } else if (prev === false && S.view === 'display') setTimeout(() => Display.beat(), 300); });
-        this.fb.ref('.info/serverTimeOffset').on('value', s => { S.offset = Number(s.val()) || 0; if (S.view === 'display' && typeof Display !== 'undefined' && Display.slides && Display.slides.length) Display.tickSync(); });
+        this.fb.ref('.info/serverTimeOffset').on('value', s => { if (!S.clkOk) S.offset = Number(s.val()) || 0; if (S.view === 'display' && typeof Display !== 'undefined' && Display.slides && Display.slides.length) Display.tickSync(); });
         return;
       } catch (e) { console.warn('Firebase 연결 실패', e); this.mode = 'error'; this.problem = 'fbload'; this.detail = String((e && e.message) || e); return; }
     }
@@ -1789,6 +1789,15 @@ function tmPhase(t, now = nowS()) {
   return null;
 }
 function tmLeft(t, now = nowS()) { return !t ? 0 : (t.st === 'pause' || t.st === 'ready') ? Math.max(0, Number(t.left) || 0) : Math.max(0, Math.ceil((t.endAt - now) / 1000)); }
+/* 서버 시각과 이 기기 시계의 차이를 재서(여러 번 중 왕복이 가장 짧은 값) 모든 태블릿이 같은 '서버 시계'를 쓰게 합니다 */
+async function clockSample(path, t0, p0) {
+  const rtt = performance.now() - p0; if (rtt > 1500) return;
+  const v = await Store.fb.ref(path + '/srv').once('value'), srv = Number(v.val()); if (!srv) return;
+  S.clk = S.clk || []; S.clk.push({ rtt, off: srv - (t0 + rtt / 2) }); if (S.clk.length > 20) S.clk.shift();
+  const top = S.clk.slice().sort((a, b) => a.rtt - b.rtt).slice(0, 5), old = S.offset || 0;   // 왕복이 가장 짧은 5개 중 가운데 값(튀는 값은 무시)
+  const offs = top.map(x => x.off).sort((a, b) => a - b); S.offset = offs[offs.length >> 1]; S.clockRtt = Math.round(top[0].rtt); S.clkOk = true;
+  if (Math.abs(S.offset - old) > 15 && S.view === 'display' && typeof Display !== 'undefined') { Display.tmArm = null; if (Display.slides && Display.slides.length) Display.tickSync(); Display.renderAlerts(); }
+}
 function ackKey(aid, cls, dev) { return (aid + '__' + cls + '__' + dev).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_'); }
 function fmtBody(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
 function fitText(el, maxPx, minPx) {
@@ -1823,22 +1832,35 @@ function audioOut() {
   }
   return actx.__out;
 }
-/* 한 번의 '삐' : 사각파(또렷) + 한 옥타브 아래 삼각파(묵직)를 겹쳐 크고 선명하게 */
-function beep(freq, start, dur, vol) {
-  const out = audioOut(); if (!out) return;
-  [['square', freq, vol], ['triangle', freq / 2, vol * 0.7]].forEach(([type, f, v]) => {
+/* 한 번의 '삑' : 사각파(또렷) + 아래 옥타브 삼각파(묵직). 만든 소리 장치들을 돌려줌 */
+function beep(freq, start, dur, vol, dest) {
+  const out = dest || audioOut(); if (!out) return [];
+  const made = [];
+  [['square', freq, vol], ['triangle', freq / 2, vol * 0.55]].forEach(([type, f, v]) => {
     const o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter();
-    o.type = type; o.frequency.setValueAtTime(f, start); lp.type = 'lowpass'; lp.frequency.value = 6000;
-    g.gain.setValueAtTime(0.0001, start); g.gain.exponentialRampToValueAtTime(v, start + 0.01); g.gain.setValueAtTime(v, start + Math.max(0.02, dur - 0.03)); g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-    o.connect(g); g.connect(lp); lp.connect(out); o.start(start); o.stop(start + dur + 0.02);
+    o.type = type; o.frequency.setValueAtTime(f, start); lp.type = 'lowpass'; lp.frequency.value = 7000;
+    g.gain.setValueAtTime(0.0001, start); g.gain.exponentialRampToValueAtTime(v, start + 0.004); g.gain.setValueAtTime(v, start + Math.max(0.01, dur - 0.012)); g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    o.connect(g); g.connect(lp); lp.connect(out); o.start(start); o.stop(start + dur + 0.02); made.push(o);
   });
+  return made;
 }
 function soundReady() { if (!actx || !S.config.alertSound) return false; try { if (actx.state === 'suspended' && actx.resume) { const r = actx.resume(); r && r.catch && r.catch(() => {}); } } catch (e) {} return true; }
-/* 타이머 종료음: 삐삐삐 × 4회 (약 4초). delay초 뒤 '정확한 순간'에 시작 → 여러 대가 같은 순간에 울림 */
-function playAlarm(delay) {
-  if (!soundReady()) return;
-  const t0 = actx.currentTime + Math.max(0, delay || 0);
-  for (let b = 0; b < 4; b++) for (let k = 0; k < 3; k++) beep(1568, t0 + b * 1.05 + k * 0.25, 0.17, 0.9);
+/* 지금부터 ms 뒤에 '스피커에서 소리가 나오는' 오디오 시계 시각 (기기마다 다른 출력 지연을 보정) */
+function audioTimeAfter(ms) {
+  const now = performance.now();
+  try { if (actx.getOutputTimestamp) { const ts = actx.getOutputTimestamp(); if (ts && ts.contextTime > 0 && ts.performanceTime > 0) return Math.max(actx.currentTime + 0.01, ts.contextTime + (now + ms - ts.performanceTime) / 1000); } } catch (e) {}
+  const lat = (actx.outputLatency || 0) + (actx.baseLatency || 0);
+  return Math.max(actx.currentTime + 0.01, actx.currentTime + ms / 1000 - lat);
+}
+/* 타이머 종료음: 알람 시계처럼 '삑삑삑삑'(4번)을 7번 반복 (약 6초). delayMs 뒤 정확한 순간에 시작.
+   끝나기 직전에 예약하고, 취소(cancel) 할 수 있습니다. */
+function playAlarm(delayMs) {
+  if (!soundReady()) return null;
+  const t0 = audioTimeAfter(Math.max(0, delayMs || 0)), out = audioOut(), ag = actx.createGain(), oscs = [];
+  ag.gain.value = 1; ag.connect(out);
+  const w = actx.createOscillator(), wg = actx.createGain(); wg.gain.value = 0.00005; w.frequency.value = 220; w.connect(wg); wg.connect(ag); w.start(actx.currentTime); w.stop(t0 + 6.4); oscs.push(w);   // 소리 장치를 미리 깨워 둠(들리지 않음)
+  for (let g = 0; g < 7; g++) for (let k = 0; k < 4; k++) beep(2640, t0 + g * 0.88 + k * 0.13, 0.075, 0.9, ag).forEach(o => oscs.push(o));
+  return { cancel() { try { ag.gain.cancelScheduledValues(0); ag.gain.setValueAtTime(0, actx.currentTime); oscs.forEach(o => { try { o.stop(); } catch (e) {} }); } catch (e) {} } };
 }
 function chime(urgent) {
   if (!soundReady()) return;
@@ -2219,7 +2241,7 @@ const Display = {
     $('#pvExit') && $('#pvExit').addEventListener('click', e => { e.stopPropagation(); goBack(); });
     this.hintT = setTimeout(() => { const h = $('#hint'); if (h) h.style.opacity = 0; }, 15000);
     this.slides = []; this.idx = 0; this.sig = ''; this.tickerSig = ''; this.alertSig = ''; this.alertListSig = ''; this.paused = this.remotePaused(); this.bgSrc = null; this.hold = null; this.shown = false; this.shownOnce = false; this.forceProg = false; this.lay = ''; this.cmdSeen = {}; ((S.control || {}).cmds || []).forEach(c => { if (nowS() - c.at > 20000) this.cmdSeen[c.id] = 1; });
-    this.tm = null; this.tmArm = null; this.unTm && this.unTm(); const tcid = viewerClass(); this.unTm = tcid && tcid !== '__lobby' ? Store.watch('timers/' + tcid, v => { this.tm = v; this.tmSig = ''; this.alertSig = ''; if (S.view === 'display') this.renderAlerts(); }) : null;
+    this.tm = null; this.tmArm = null; if (Store.mode === 'firebase') [400, 800, 1200, 1700, 2200, 2800, 3400, 4100, 4800, 5600, 6500, 7500].forEach(ms => setTimeout(() => { if (S.view === 'display') this.beat(); }, ms)); this.unTm && this.unTm(); const tcid = viewerClass(); this.unTm = tcid && tcid !== '__lobby' ? Store.watch('timers/' + tcid, v => { this.tm = v; this.tmSig = ''; this.alertSig = ''; if (S.view === 'display') this.renderAlerts(); }) : null;
     if (S.teacher) Teacher.mount();
     this.orient();
     this.refresh();
@@ -2233,7 +2255,7 @@ const Display = {
   orient() { const d = $('#disp'); d && d.classList.toggle('portrait', innerHeight > innerWidth); },
   stop() {
     this.unTm && this.unTm(); this.unTm = null; if (S.teacher) Teacher.unmount();
-    clearTimeout(this.startT); clearTimeout(this.tmEndT); clearTimeout(this.tmSndT); this.tmArm = null; clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
+    clearTimeout(this.startT); this.cancelTimerSound(); clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
     this.tickerAnim && this.tickerAnim.cancel(); this.tickerAnim = null;
     this.onResize && window.removeEventListener('resize', this.onResize);
     try { this.wl && this.wl.release(); } catch (e) {} this.wl = null;
@@ -2737,13 +2759,16 @@ const Display = {
   },
   /* 타이머가 끝나는 순간에 화면과 소리를 정확히 맞춥니다 (모든 태블릿이 한 번에) */
   armTimer(t, ph) {
-    if (!t || t.mode === 'sw' || ph !== 'run') { clearTimeout(this.tmEndT); clearTimeout(this.tmSndT); this.tmArm = null; return; }
+    if (!t || t.mode === 'sw' || (ph !== 'run' && ph !== 'done')) { this.cancelTimerSound(); return; }
+    if (ph === 'done') return;   // 울리는 중에는 그대로 둠
     if (this.tmArm === t.endAt) return;
-    this.tmArm = t.endAt; clearTimeout(this.tmEndT); clearTimeout(this.tmSndT);
+    this.cancelTimerSound(); this.tmArm = t.endAt;
     const ms = t.endAt - nowS();
-    this.tmEndT = setTimeout(() => this.renderAlerts(), Math.max(0, ms) + 4);
-    this.tmSndT = setTimeout(() => { playAlarm(Math.max(0, t.endAt - nowS()) / 1000); }, Math.max(0, ms - 400));
+    const fire = () => { const r = t.endAt - nowS(); if (r > 2) this.tmEndT = setTimeout(fire, r + 2); else this.renderAlerts(); };   // 시계 보정으로 시각이 바뀌어도 끝나는 순간에 맞춤
+    this.tmEndT = setTimeout(fire, Math.max(0, ms) + 4);
+    this.tmSndT = setTimeout(() => { this.alarmH = playAlarm(Math.max(0, t.endAt - nowS())); }, Math.max(0, ms - 2500));
   },
+  cancelTimerSound() { clearTimeout(this.tmEndT); clearTimeout(this.tmSndT); if (this.alarmH) { this.alarmH.cancel(); this.alarmH = null; } this.tmArm = null; },
   renderTimer() {
     const v = $('#tmView'); if (!v) return false;
     const t = this.tm, now = nowS(), ph = tmPhase(t, now);
@@ -2805,11 +2830,12 @@ const Display = {
     this.initBattery();
     const s = this.slides.length ? (this.idx + 1) + '/' + this.slides.length : '-', b = this.bat;
     const path = 'status/' + (S.classId + '__' + S.deviceId).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
+    const sv = Store.mode === 'firebase' && window.firebase && firebase.database && firebase.database.ServerValue, t0 = Date.now(), p0 = performance.now();
     Store.set(path, {
       classId: S.classId, device: S.deviceId, lastSeen: Date.now(), week: (currentWeek() || {}).label || '',
       screen: innerWidth + '×' + innerHeight, slide: s, kind: devKind(), role: S.teacher ? 'teacher' : '',
       bat: b ? { lv: Math.round(b.level * 100), ch: !!b.charging } : null
-    }).then(() => Store.presence(path)).catch(() => {});
+    }, sv ? { srv: sv.TIMESTAMP } : undefined).then(async () => { Store.presence(path); if (sv) await clockSample(path, t0, p0); }).catch(() => {});
   }
 };
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.view === 'display') { Display.lockScreen(); Display.beat(); } });
