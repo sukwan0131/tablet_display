@@ -996,6 +996,9 @@ html,body{max-width:100%;overflow-x:hidden}
   .grid-cls{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   .grp-pick{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+.tmbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tmbtns .btn{padding:14px 8px;font-size:16px;font-weight:700}
+.tmbtns .btn[aria-pressed="true"]{background:var(--board);color:var(--board-ink);border-color:var(--board)}
 </style>
 </head>
 <body>
@@ -1128,7 +1131,7 @@ const TEXT_DEFS = [
     ['minimize', '팝업에서 줄이기 안내', '누르면 작게 줄어듭니다'], ['pinOpen', '미니바 안내', '눌러서 크게 보기'],
     ['ackBtn', '확인 버튼', '👆 확인했으면 여기를 눌러 주세요'], ['acked', '확인 후 표시', '✅ 확인 완료'],
     ['cdAt', '카운트다운 끝나는 시각 뒤 문구', '에 끝납니다'],
-    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['swTitle', '스톱워치 기본 제목', '스톱워치'], ['swRun', '스톱워치 진행 중 표시', '시간을 재는 중입니다'], ['swStopped', '스톱워치 정지 후 문구', '정지되었습니다'], ['swPause', '스톱워치 일시정지 버튼', '⏸ 일시정지'], ['swResume', '스톱워치 계속 버튼', '▶ 계속'], ['swStopBtn', '스톱워치 정지 버튼', '■ 정지'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
+    ['tmTitle', '타이머 기본 제목', '타이머'], ['tmDone', '타이머 종료 문구', '시간이 끝났습니다'], ['tmPaused', '타이머 일시정지 표시', '일시정지'], ['swTitle', '스톱워치 기본 제목', '스톱워치'], ['tmReady', '타이머·스톱워치 대기 문구', '시작을 기다리는 중'], ['swRun', '스톱워치 진행 중 표시', '시간을 재는 중입니다'], ['swStopped', '스톱워치 정지 후 문구', '정지되었습니다'], ['swPause', '스톱워치 일시정지 버튼', '⏸ 일시정지'], ['swResume', '스톱워치 계속 버튼', '▶ 계속'], ['swStopBtn', '스톱워치 정지 버튼', '■ 정지'], ['dPaused', '원격 멈춤 표시', '⏸ 화면 멈춤'], ['cdDone', '카운트다운 끝난 뒤 기본 문구', '수업을 시작합니다']
   ]],
   ['반 선택 화면', '', [
     ['setupTitle', '제목', '이 태블릿이 표시할 반을 고르세요'],
@@ -1772,15 +1775,20 @@ function devKind() {
   if (/CrOS/.test(u)) return 'Chromebook'; if (/Windows/.test(u)) return 'Windows'; if (/Mac/.test(u)) return 'Mac'; return '기기';
 }
 function swElapsed(t, now = nowS()) { return !t ? 0 : t.st === 'run' ? Math.max(0, (Number(t.base) || 0) + (now - t.startAt) / 1000) : Math.max(0, Number(t.elapsed) || 0); }
-function tmShow(t, now = nowS()) { const ph = tmPhase(t, now); if (!ph) return ''; if (t.mode === 'sw') return (ph === 'pause' ? '⏸ ' : ph === 'stop' ? '■ ' : '⏱ ') + fmtClock(Math.floor(swElapsed(t, now))) + (ph === 'stop' ? ' 정지' : ' 스톱워치'); return ph === 'run' ? '⏳ ' + fmtClock(tmLeft(t, now)) : ph === 'pause' ? '⏸ 일시정지' : '끝남'; }
+function tmShow(t, now = nowS()) {
+  const ph = tmPhase(t, now); if (!ph) return '';
+  if (t.mode === 'sw') return (ph === 'pause' ? '⏸ ' : ph === 'stop' ? '■ ' : '⏱ ') + fmtClock(Math.floor(swElapsed(t, now))) + (ph === 'stop' ? ' 정지' : ph === 'ready' ? ' 대기' : ' 스톱워치');
+  return ph === 'ready' ? '⏳ ' + fmtClock(tmLeft(t, now)) + ' 대기' : ph === 'run' ? '⏳ ' + fmtClock(tmLeft(t, now)) : ph === 'pause' ? '⏸ 일시정지' : '끝남';
+}
 function tmPhase(t, now = nowS()) {
   if (!t || !t.st || t.st === 'off') return null;
+  if (t.st === 'ready') return 'ready';
   if (t.mode === 'sw') return t.st === 'run' ? (swElapsed(t, now) < 12 * 3600 ? 'run' : null) : t.st === 'pause' ? 'pause' : t.st === 'stop' ? 'stop' : null;
   if (t.st === 'pause') return 'pause';
   if (t.st === 'run') { if (t.endAt > now) return 'run'; if (now - t.endAt < 5 * 60000) return 'done'; }
   return null;
 }
-function tmLeft(t, now = nowS()) { return !t ? 0 : t.st === 'pause' ? Math.max(0, Number(t.left) || 0) : Math.max(0, Math.ceil((t.endAt - now) / 1000)); }
+function tmLeft(t, now = nowS()) { return !t ? 0 : (t.st === 'pause' || t.st === 'ready') ? Math.max(0, Number(t.left) || 0) : Math.max(0, Math.ceil((t.endAt - now) / 1000)); }
 function ackKey(aid, cls, dev) { return (aid + '__' + cls + '__' + dev).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_'); }
 function fmtBody(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
 function fitText(el, maxPx, minPx) {
@@ -1807,15 +1815,36 @@ function ttState(rows) {
 
 let actx = null;
 function unlockAudio() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) {} }
-function chime(urgent) {
-  if (!actx || !S.config.alertSound) return;
-  const t = actx.currentTime; const notes = urgent ? [880, 660, 880, 660, 880] : [660, 880];
-  notes.forEach((f, i) => {
-    const o = actx.createOscillator(), g = actx.createGain(), s = t + i * 0.26;
-    o.type = 'sine'; o.frequency.value = f;
-    g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.3, s + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.23);
-    o.connect(g).connect(actx.destination); o.start(s); o.stop(s + 0.25);
+function audioOut() {
+  if (!actx) return null;
+  if (!actx.__out) {
+    const comp = actx.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 8; comp.ratio.value = 10; comp.attack.value = 0.002; comp.release.value = 0.12;
+    const master = actx.createGain(); master.gain.value = 1; comp.connect(master); master.connect(actx.destination); actx.__out = comp;
+  }
+  return actx.__out;
+}
+/* 한 번의 '삐' : 사각파(또렷) + 한 옥타브 아래 삼각파(묵직)를 겹쳐 크고 선명하게 */
+function beep(freq, start, dur, vol) {
+  const out = audioOut(); if (!out) return;
+  [['square', freq, vol], ['triangle', freq / 2, vol * 0.7]].forEach(([type, f, v]) => {
+    const o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter();
+    o.type = type; o.frequency.setValueAtTime(f, start); lp.type = 'lowpass'; lp.frequency.value = 6000;
+    g.gain.setValueAtTime(0.0001, start); g.gain.exponentialRampToValueAtTime(v, start + 0.01); g.gain.setValueAtTime(v, start + Math.max(0.02, dur - 0.03)); g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    o.connect(g); g.connect(lp); lp.connect(out); o.start(start); o.stop(start + dur + 0.02);
   });
+}
+function soundReady() { if (!actx || !S.config.alertSound) return false; try { if (actx.state === 'suspended' && actx.resume) { const r = actx.resume(); r && r.catch && r.catch(() => {}); } } catch (e) {} return true; }
+/* 타이머 종료음: 삐삐삐 × 4회 (약 4초). delay초 뒤 '정확한 순간'에 시작 → 여러 대가 같은 순간에 울림 */
+function playAlarm(delay) {
+  if (!soundReady()) return;
+  const t0 = actx.currentTime + Math.max(0, delay || 0);
+  for (let b = 0; b < 4; b++) for (let k = 0; k < 3; k++) beep(1568, t0 + b * 1.05 + k * 0.25, 0.17, 0.9);
+}
+function chime(urgent) {
+  if (!soundReady()) return;
+  const t0 = actx.currentTime + 0.02;
+  if (urgent) for (let i = 0; i < 8; i++) beep(i % 2 ? 1319 : 988, t0 + i * 0.24, 0.22, 0.9);   // 긴급: 경보음
+  else for (let r = 0; r < 2; r++) { beep(1047, t0 + r * 0.9, 0.3, 0.85); beep(1319, t0 + r * 0.9 + 0.34, 0.4, 0.85); }   // 공지·안내: 딩-동 ×2
 }
 
 async function imageToBlob(src, maxSide, quality) {
@@ -2041,28 +2070,34 @@ const Teacher = {
   shellHTML() { return `<button class="tfab" id="tFab" type="button">⏱ 타이머·스톱워치</button><aside class="tpanel hidden" id="tPanel" aria-label="타이머 조작"></aside>`; },
   mount() {
     this.unmount();
-    this.classes().forEach(cid => this.un.push(Store.watch('timers/' + cid, v => { this.tms[cid] = v; this.renderStatus(); })));
+    this.classes().forEach(cid => this.un.push(Store.watch('timers/' + cid, v => { this.tms[cid] = v; this.renderStatus(); if (this.open && !this.pmode) { const m = this.detectMode(); if (m) { this.pmode = m; this.render(); } } })));
     $('#tFab').onclick = e => { e.stopPropagation(); this.open = !this.open; this.render(); };
     this.render();
   },
   unmount() { this.un.forEach(f => f && f()); this.un = []; },
+  detectMode() {
+    for (const id of this.classes()) { const t = this.tms[id]; if (tmPhase(t)) return t.mode === 'sw' ? 'sw' : 'timer'; }
+    return null;
+  },
   render() {
     const p = $('#tPanel'); if (!p) return;
     p.classList.toggle('hidden', !this.open);
     if (!this.open) return;
-    const mine = this.classes(), f = this.form = this.form || { m: 10, s: 0, title: '' };
-    this.pmode = this.pmode || 'timer'; const sw = this.pmode === 'sw';
-    p.innerHTML = `<h3>${sw ? '스톱워치' : '타이머'} <button class="btn sm" data-t="close">닫기</button></h3>
-      <div class="segb tmode"><label><input type="radio" name="tpm" data-tpm="timer" ${sw ? '' : 'checked'}><span>⏳ 타이머 (거꾸로)</span></label><label><input type="radio" name="tpm" data-tpm="sw" ${sw ? 'checked' : ''}><span>⏱ 스톱워치 (앞으로)</span></label></div>
-      <small class="help">시작하면 아래 모든 반의 태블릿에 똑같은 화면이 전체 화면으로 나옵니다. 그동안은 긴급·공지만 함께 뜹니다.</small>
+    const mine = this.classes(), f = this.form = this.form || { m: 0, s: 0, title: '' };
+    if (this.pmode === undefined) this.pmode = this.detectMode();
+    const mode = this.pmode, sw = mode === 'sw';
+    p.innerHTML = `<h3>타이머·스톱워치 <button class="btn sm" data-t="close">닫기</button></h3>
+      <div class="tmbtns"><button type="button" class="btn" data-t="mode" data-m="timer" aria-pressed="${mode === 'timer'}">⏳ 타이머</button><button type="button" class="btn" data-t="mode" data-m="sw" aria-pressed="${sw}">⏱ 스톱워치</button></div>
+      <small class="help" style="margin-top:8px">${mode ? (sw ? '‘시작’을 누르면 00:00부터 올라갑니다. ‘정지’는 기록을 고정하고, ‘초기화’는 00:00으로 되돌립니다.' : '시간을 정하면 태블릿 화면에 바로 그 시간이 나타나고, ‘시작’을 누르면 줄어듭니다. ‘정지’는 처음 시간으로 되돌립니다.') : '위에서 타이머나 스톱워치를 누르면 맡은 반 태블릿에 <b>바로 시계(00:00)가 나타납니다.</b> 시간을 정한 뒤 ‘시작’을 누르세요. 그동안 태블릿에는 긴급·공지만 함께 뜹니다.'}</small>
       <div class="sub" style="margin-top:12px">적용 대상: ${esc(this.groups().map(g => g.name).join(', ') || '고른 반')} <small class="muted">(${mine.length}개 반)</small></div>
       <ul class="tst" id="tStat" style="margin-top:10px"></ul>
-      <div class="sub">제목 (선택)</div><input type="text" id="tTitle" value="${esc(f.title)}" placeholder="${sw ? '예: 발표 시간, 실습' : '예: 모둠 활동, 쉬는 시간'}">
-      ${sw ? `<div class="big"><button class="btn pri" data-t="swstart">▶ 처음부터 시작</button><button class="btn" data-t="swpause">⏸ 모두 일시정지</button><button class="btn" data-t="swresume">▶ 모두 계속</button><button class="btn" data-t="swstop">■ 모두 정지</button></div><div class="inline" style="margin-top:10px"><button class="btn warn" data-t="stop">× 끝내기 (화면 닫기)</button></div><small class="help" style="margin-top:8px">각 태블릿에서도 일시정지·정지를 할 수 있습니다. 위 목록에서 반별 상태와 정지 기록을 확인하세요.</small>`
+      ${mode ? `<div class="sub">제목 (선택)</div><input type="text" id="tTitle" value="${esc(f.title)}" placeholder="${sw ? '예: 발표 시간, 실습' : '예: 모둠 활동, 쉬는 시간'}">
+      ${sw ? `<div class="big"><button class="btn pri" data-t="swstart">▶ 시작</button><button class="btn" data-t="swpause">⏸ 일시정지</button><button class="btn" data-t="swresume">▶ 계속</button><button class="btn" data-t="swstop">■ 정지</button><button class="btn" data-t="swreset">↺ 초기화</button><button class="btn warn" data-t="end">× 끝내기</button></div><small class="help" style="margin-top:8px">각 태블릿에서도 일시정지·정지를 할 수 있습니다. 위 목록에서 반별 상태와 정지 기록을 확인하세요. ‘끝내기’는 태블릿을 원래 화면으로 돌립니다.</small>`
       : `<div class="sub">시간</div>
       <div class="tin" style="margin-top:0"><input type="number" id="tM" min="0" max="600" value="${f.m}"><span>분</span><input type="number" id="tS" min="0" max="59" value="${f.s}"><span>초</span></div>
-      <div class="quick">${[1, 3, 5, 10, 15, 20, 30, 60].map(m => `<button type="button" class="btn" data-t="preset" data-m="${m}">${m}분</button>`).join('')}</div>
-      <div class="big"><button class="btn pri" data-t="start">▶ 시작</button><button class="btn" data-t="pause">⏸ 일시정지</button><button class="btn" data-t="resume">▶ 계속</button><button class="btn warn" data-t="stop">■ 끝내기</button><button class="btn" data-t="add" data-v="60">+1분</button><button class="btn" data-t="add" data-v="-60">−1분</button></div>`}
+      <div class="quick">${[1, 3, 5, 7, 10, 15, 20, 30, 60].map(m => `<button type="button" class="btn" data-t="preset" data-m="${m}">${m}분</button>`).join('')}</div>
+      <div class="big"><button class="btn pri" data-t="start">▶ 시작</button><button class="btn" data-t="pause">⏸ 일시정지</button><button class="btn" data-t="resume">▶ 계속</button><button class="btn" data-t="stop">■ 정지</button><button class="btn" data-t="add" data-v="60">+1분</button><button class="btn" data-t="add" data-v="-60">−1분</button></div>
+      <div class="inline" style="margin-top:10px"><button class="btn warn" data-t="end">× 끝내기 (화면 닫기)</button></div>`}` : ''}
       <div class="sub">이 기기 화면에 보일 반</div><select id="tView">${mine.map(id => `<option value="${esc(id)}"${S.classId === id ? ' selected' : ''}>${esc(className(id))}</option>`).join('')}</select>
       <div class="inline" style="margin-top:16px"><button class="btn sm" data-t="repick">맡은 묶음 다시 고르기</button><button class="btn sm ghost" data-t="lock">강사 코드 잠그기</button></div>`;
     this.renderStatus();
@@ -2071,41 +2106,70 @@ const Teacher = {
       const el = e.target;
       if (el.dataset.tsel) { el.checked ? this.sel.add(el.dataset.tsel) : this.sel.delete(el.dataset.tsel); }
       if (el.id === 'tView') { LS.set('tsd-tview', el.value); Display.stop(); this.start(); }
-      if (el.dataset.tpm) { this.pmode = el.dataset.tpm; this.render(); }
     };
-    p.oninput = e => { const el = e.target; if (el.id === 'tM') f.m = Number(el.value) || 0; if (el.id === 'tS') f.s = Number(el.value) || 0; if (el.id === 'tTitle') f.title = el.value; };
+    p.oninput = e => { const el = e.target; if (el.id === 'tM') f.m = Number(el.value) || 0; if (el.id === 'tS') f.s = Number(el.value) || 0; if (el.id === 'tTitle') f.title = el.value; if (/^t(M|S|Title)$/.test(el.id)) this.liveReady(); };
+  },
+  /* 시간·제목을 고치는 동안(아직 시작 전이면) 태블릿 화면도 바로 따라 바뀝니다 */
+  liveReady() {
+    clearTimeout(this.lrT);
+    this.lrT = setTimeout(async () => {
+      if (!this.pmode) return;
+      if (this.classes().some(id => ['run', 'pause'].includes(tmPhase(this.tms[id])))) return;
+      await this.publishReady(this.pmode);
+    }, 280);
+  },
+  async publishReady(m) {
+    const ids = this.classes(), f = this.form, now = nowS(), sec = Math.max(0, (Number(f.m) || 0) * 60 + (Number(f.s) || 0)), title = (f.title || '').trim();
+    for (const id of ids) { try { await Store.set('timers/' + id, m === 'sw' ? { mode: 'sw', st: 'ready', elapsed: 0, title, at: now } : { st: 'ready', total: sec, left: sec, title, at: now }); } catch (x) { toast('저장하지 못했습니다. 네트워크를 확인하세요'); return false; } }
+    return true;
+  },
+  async setMode(m) {
+    const ids = this.classes(); if (!ids.length) return toast('맡은 반이 없습니다. ‘맡은 반 다시 고르기’를 눌러 주세요');
+    const now = nowS(), active = ids.filter(id => ['run', 'pause'].includes(tmPhase(this.tms[id], now)));
+    const same = active.length && active.every(id => (this.tms[id].mode === 'sw') === (m === 'sw'));
+    if (active.length && !same && !(await ask('종류 바꾸기', '진행 중인 타이머·스톱워치가 있습니다. 바꾸면 멈추고 새 시계가 나옵니다.', '바꾸기', true))) return;
+    this.pmode = m;
+    if (!same) await this.publishReady(m);
+    this.render();
   },
   statusText(t) {
     const ph = tmPhase(t); if (!ph) return '꺼짐';
     if (t.mode === 'sw') return tmShow(t);
-    return ph === 'run' ? `진행 중 ${fmtClock(tmLeft(t))}` : ph === 'pause' ? `일시정지 ${fmtClock(tmLeft(t))}` : '끝남';
+    return ph === 'ready' ? `대기 ${fmtClock(tmLeft(t))}` : ph === 'run' ? `진행 중 ${fmtClock(tmLeft(t))}` : ph === 'pause' ? `일시정지 ${fmtClock(tmLeft(t))}` : '끝남';
   },
   renderStatus() { const u = $('#tStat'); if (u) u.innerHTML = this.classes().map(id => `<li><span>${esc(className(id))}</span><b>${esc(this.statusText(this.tms[id]))}</b></li>`).join(''); },
   tick() {
     if (this.open) this.renderStatus();
     const f = $('#tFab'); if (!f) return;
-    let run = 0, pz = 0, st = 0;
-    this.classes().forEach(id => { const t = this.tms[id], ph = tmPhase(t); if (!ph) return; if (ph === 'pause') pz++; else if (ph === 'stop') st++; else run++; });
-    const txt = (run || pz || st) ? `⏱ 진행 ${run}${pz ? ` · 멈춤 ${pz}` : ''}${st ? ` · 정지 ${st}` : ''}` : '⏱ 타이머·스톱워치';
+    let run = 0, pz = 0, st = 0, rd = 0;
+    this.classes().forEach(id => { const t = this.tms[id], ph = tmPhase(t); if (!ph) return; if (ph === 'pause') pz++; else if (ph === 'stop') st++; else if (ph === 'ready') rd++; else run++; });
+    const txt = (run || pz || st || rd) ? `⏱ ${run ? `진행 ${run}` : '대기'}${rd && run ? ` · 대기 ${rd}` : ''}${pz ? ` · 멈춤 ${pz}` : ''}${st ? ` · 정지 ${st}` : ''}` : '⏱ 타이머·스톱워치';
     if (f.textContent !== txt) f.textContent = txt;
   },
   async act(b) {
     const a = b.dataset.t, f = this.form;
     if (a === 'close') { this.open = false; return this.render(); }
-    if (a === 'preset') { f.m = Number(b.dataset.m); f.s = 0; $('#tM').value = f.m; $('#tS').value = 0; return; }
+    if (a === 'mode') return this.setMode(b.dataset.m);
+    if (a === 'preset') { f.m = Number(b.dataset.m); f.s = 0; $('#tM').value = f.m; $('#tS').value = 0; this.liveReady(); return; }
     if (a === 'repick') { this.picking = true; Display.stop(); S.teacher = false; S.view = 'teacher'; return this.start(); }
     if (a === 'lock') { LS.del('tsd-tauth'); Display.stop(); S.teacher = false; S.view = 'teacher'; return this.start(); }
     const ids = this.classes(); if (!ids.length) return toast('맡은 반이 없습니다. ‘맡은 반 다시 고르기’를 눌러 주세요');
     const now = nowS(), sec = Math.max(0, (Number(f.m) || 0) * 60 + (Number(f.s) || 0)), title = (f.title || '').trim();
+    if (a === 'add' && !ids.some(id => ['run', 'pause'].includes(tmPhase(this.tms[id], now)))) {
+      const ns = Math.max(0, sec + (Number(b.dataset.v) || 0)); f.m = Math.floor(ns / 60); f.s = ns % 60; const im = $('#tM'), is = $('#tS'); if (im) im.value = f.m; if (is) is.value = f.s;
+      await this.publishReady('timer'); return;
+    }
     const next = id => {
       const t = this.tms[id], ph = tmPhase(t, now), isSw = t && t.mode === 'sw';
-      if (a === 'swstart') return { mode: 'sw', st: 'run', startAt: now, base: 0, title, at: now };
+      if (a === 'end') return { st: 'off', at: now };
+      if (a === 'swstart') return isSw && (ph === 'run' || ph === 'pause') ? null : { mode: 'sw', st: 'run', startAt: now, base: 0, title, at: now };
+      if (a === 'swreset') return { mode: 'sw', st: 'ready', elapsed: 0, title, at: now };
       if (a === 'swpause') return isSw && ph === 'run' ? { mode: 'sw', st: 'pause', elapsed: swElapsed(t, now), title: t.title, at: now } : null;
       if (a === 'swstop') return isSw && (ph === 'run' || ph === 'pause') ? { mode: 'sw', st: 'stop', elapsed: swElapsed(t, now), title: t.title || '', at: now } : null;
       if (a === 'swresume') return isSw && ph === 'pause' ? { mode: 'sw', st: 'run', startAt: now, base: Number(t.elapsed) || 0, title: t.title, at: now } : null;
       if (isSw && a !== 'stop' && a !== 'start') return null;
-      if (a === 'start') return sec > 0 ? { st: 'run', endAt: now + sec * 1000, total: sec, title, at: now } : null;
-      if (a === 'stop') return { st: 'off', at: now };
+      if (a === 'start') return ph === 'run' || ph === 'pause' ? null : (sec > 0 ? { st: 'run', endAt: now + sec * 1000, total: sec, title, at: now } : null);
+      if (a === 'stop') return { st: 'ready', total: sec, left: sec, title, at: now };
       if (a === 'pause') return ph === 'run' ? { st: 'pause', left: tmLeft(t, now), total: t.total, title: t.title, at: now } : null;
       if (a === 'resume') return ph === 'pause' ? { st: 'run', endAt: now + tmLeft(t, now) * 1000, total: t.total, title: t.title, at: now } : null;
       if (a === 'add') {
@@ -2118,6 +2182,7 @@ const Teacher = {
     if (a === 'start' && sec <= 0) return toast('시간을 1초 이상으로 정하세요');
     let n = 0;
     for (const id of ids) { const v = next(id); if (!v) continue; try { await Store.set('timers/' + id, v); n++; } catch (x) { toast('저장하지 못했습니다. 네트워크를 확인하세요'); return; } }
+    if (a === 'end') { this.pmode = null; this.render(); return toast('태블릿을 원래 화면으로 돌렸습니다'); }
     toast(n ? `${n}개 반에 적용했습니다` : '바꿀 타이머가 없습니다');
   }
 };
@@ -2154,7 +2219,7 @@ const Display = {
     $('#pvExit') && $('#pvExit').addEventListener('click', e => { e.stopPropagation(); goBack(); });
     this.hintT = setTimeout(() => { const h = $('#hint'); if (h) h.style.opacity = 0; }, 15000);
     this.slides = []; this.idx = 0; this.sig = ''; this.tickerSig = ''; this.alertSig = ''; this.alertListSig = ''; this.paused = this.remotePaused(); this.bgSrc = null; this.hold = null; this.shown = false; this.shownOnce = false; this.forceProg = false; this.lay = ''; this.cmdSeen = {}; ((S.control || {}).cmds || []).forEach(c => { if (nowS() - c.at > 20000) this.cmdSeen[c.id] = 1; });
-    this.tm = null; this.unTm && this.unTm(); const tcid = viewerClass(); this.unTm = tcid && tcid !== '__lobby' ? Store.watch('timers/' + tcid, v => { this.tm = v; this.tmSig = ''; this.alertSig = ''; if (S.view === 'display') this.renderAlerts(); }) : null;
+    this.tm = null; this.tmArm = null; this.unTm && this.unTm(); const tcid = viewerClass(); this.unTm = tcid && tcid !== '__lobby' ? Store.watch('timers/' + tcid, v => { this.tm = v; this.tmSig = ''; this.alertSig = ''; if (S.view === 'display') this.renderAlerts(); }) : null;
     if (S.teacher) Teacher.mount();
     this.orient();
     this.refresh();
@@ -2168,7 +2233,7 @@ const Display = {
   orient() { const d = $('#disp'); d && d.classList.toggle('portrait', innerHeight > innerWidth); },
   stop() {
     this.unTm && this.unTm(); this.unTm = null; if (S.teacher) Teacher.unmount();
-    clearTimeout(this.startT); clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
+    clearTimeout(this.startT); clearTimeout(this.tmEndT); clearTimeout(this.tmSndT); this.tmArm = null; clearTimeout(this.timer); clearInterval(this.clockT); clearInterval(this.hbT); clearInterval(this.alertT); clearTimeout(this.hintT); clearInterval(this.tickerT); clearTimeout(this.ctrlT); clearTimeout(this.pauseT);
     this.tickerAnim && this.tickerAnim.cancel(); this.tickerAnim = null;
     this.onResize && window.removeEventListener('resize', this.onResize);
     try { this.wl && this.wl.release(); } catch (e) {} this.wl = null;
@@ -2670,9 +2735,19 @@ const Display = {
     });
     if (next < Infinity && next - now < 3600000) this.startT = setTimeout(() => this.renderAlerts(), Math.max(0, next - nowS()) + 6);
   },
+  /* 타이머가 끝나는 순간에 화면과 소리를 정확히 맞춥니다 (모든 태블릿이 한 번에) */
+  armTimer(t, ph) {
+    if (!t || t.mode === 'sw' || ph !== 'run') { clearTimeout(this.tmEndT); clearTimeout(this.tmSndT); this.tmArm = null; return; }
+    if (this.tmArm === t.endAt) return;
+    this.tmArm = t.endAt; clearTimeout(this.tmEndT); clearTimeout(this.tmSndT);
+    const ms = t.endAt - nowS();
+    this.tmEndT = setTimeout(() => this.renderAlerts(), Math.max(0, ms) + 4);
+    this.tmSndT = setTimeout(() => { playAlarm(Math.max(0, t.endAt - nowS()) / 1000); }, Math.max(0, ms - 400));
+  },
   renderTimer() {
     const v = $('#tmView'); if (!v) return false;
     const t = this.tm, now = nowS(), ph = tmPhase(t, now);
+    this.armTimer(t, ph);
     $('#disp').classList.toggle('is-tm', !!ph);
     if (!ph) { if (!v.classList.contains('hidden')) { v.classList.add('hidden'); v.innerHTML = ''; v.dataset.key = ''; } return false; }
     v.classList.remove('hidden');
@@ -2681,15 +2756,16 @@ const Display = {
       if (v.dataset.key !== key) {
         v.dataset.key = key;
         const btns = S.preview ? '' : ph === 'run' ? `<button class="swbtn" type="button" data-sw="pause">${esc(T('swPause'))}</button><button class="swbtn stop" type="button" data-sw="stop">${esc(T('swStopBtn'))}</button>` : ph === 'pause' ? `<button class="swbtn" type="button" data-sw="resume">${esc(T('swResume'))}</button><button class="swbtn stop" type="button" data-sw="stop">${esc(T('swStopBtn'))}</button>` : '';
-        v.innerHTML = `<h2>${esc(t.title || T('swTitle'))}</h2><div class="num${ph === 'pause' ? ' pz' : ph === 'stop' ? ' stopped' : ''}" id="swNum">${fmtClock(e)}</div><p>${ph === 'pause' ? esc(T('tmPaused')) : ph === 'stop' ? esc(T('swStopped')) : esc(T('swRun'))}</p>${btns ? `<div class="swctl">${btns}</div>` : ''}`;
+        v.innerHTML = `<h2>${esc(t.title || T('swTitle'))}</h2><div class="num${ph === 'pause' ? ' pz' : ph === 'stop' ? ' stopped' : ''}" id="swNum">${fmtClock(e)}</div><p>${ph === 'pause' ? esc(T('tmPaused')) : ph === 'stop' ? esc(T('swStopped')) : ph === 'ready' ? esc(T('tmReady')) : esc(T('swRun'))}</p>${btns ? `<div class="swctl">${btns}</div>` : ''}`;
       } else { const n = $('#swNum', v); if (n) n.textContent = fmtClock(e); }
       return true;
     }
     v.dataset.key = '';
     const left = tmLeft(t, now), total = Math.max(1, Number(t.total) || left || 1), title = t.title || T('tmTitle');
     if (ph === 'done') {
-      if (this.tmDoneId !== t.endAt) { this.tmDoneId = t.endAt; if (now - t.endAt < 5000) chime(true); }
       v.innerHTML = `<div class="fin">${esc(T('tmDone'))}</div><p>${esc(title)}</p>`;
+    } else if (ph === 'ready') {
+      v.innerHTML = `<h2>${esc(title)}</h2><div class="num">${fmtClock(left)}</div><div class="cbar"><i style="transform:scaleX(1)"></i></div><p>${esc(T('tmReady'))}</p>`;
     } else {
       v.innerHTML = `<h2>${esc(title)}</h2><div class="num${left <= 60 ? ' hot' : ''}${ph === 'pause' ? ' pz' : ''}">${fmtClock(left)}</div><div class="cbar"><i style="transform:scaleX(${Math.min(1, left / total).toFixed(4)})"></i></div><p>${ph === 'pause' ? esc(T('tmPaused')) : hm(new Date(t.endAt - (S.offset || 0))) + esc(T('cdAt'))}</p>`;
     }
@@ -4422,7 +4498,7 @@ const Admin = {
         <details class="adv" id="alAdv"${this.advOpen ? ' open' : ''}><summary>시간·예약·확인 설정 <small>(지금 설정: ${cd ? esc(durText(d)) + ' 카운트다운' : a.level === 'info' ? '미니바 ' + esc(durText(d)) : `전체화면 팝업 ${fmtSec(this.fullSecOf(a))} → 상단 미니바 ${esc(durText(d))}`} · ${w.mode === 'now' ? '지금 바로 보냄' : w.mode === 'at' ? '예약' : '매일 반복'})</small></summary><div class="in">
         <div class="step"><span class="no">⏱</span><div><b>보여주는 시간 정하기</b>
           ${cd ? `<div class="sub">카운트다운 길이</div><small class="help" style="margin-top:0">‘시간 정하기’는 보낸 순간부터 거꾸로 셉니다. ‘몇 시까지’는 그 시각이 0이 되도록 셉니다.</small>
-              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지']], [['0:3:0', '3분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:15:0', '15분'], ['0:20:0', '20분'], ['1:0:0', '1시간']])}
+              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지']], [['0:3:0', '3분'], ['0:5:0', '5분'], ['0:7:0', '7분'], ['0:10:0', '10분'], ['0:15:0', '15분'], ['0:20:0', '20분'], ['1:0:0', '1시간']])}
               <div class="sub">0이 된 뒤 문구를 보여주는 시간</div><small class="help" style="margin-top:0">이 시간이 지나면 원래 화면으로 돌아갑니다.</small>
               <div class="tin">${num('afterM', a.afterM, 60, '분')}${num('afterS', a.afterS, 59, '초')}</div>
               <div class="quick">${[[0, '바로 끝내기'], [30, '30초'], [60, '1분'], [180, '3분'], [300, '5분']].map(([v, n]) => `<button type="button" class="btn" data-act="after-set" data-v="${v}">${n}</button>`).join('')}</div>`
@@ -4430,7 +4506,7 @@ const Admin = {
               <div class="tin">${num('fullM', a.fullM, 60, '분')}${num('fullS', a.fullS, 59, '초')}</div>
               <div class="quick">${q('full-set', 0, '팝업 안 함')}${q('full-set', 10, '10초')}${q('full-set', 20, '20초')}${q('full-set', 30, '30초')}${q('full-set', 60, '1분')}${q('full-set', 180, '3분')}<button type="button" class="btn ghost" data-act="full-default" title="다음부터 ${lvName}를 쓸 때 이 값으로 시작합니다">지금 값을 ‘${lvName}’ 기본값으로</button></div>` : ''}
               <div class="sub">상단 미니바 유지시간</div><small class="help" style="margin-top:0">미니바가 이 시간 동안 화면 위쪽에 남아 있다가 자동으로 사라집니다. 보낸 뒤에도 아래 목록에서 연장하거나 바로 내릴 수 있습니다.</small>
-              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지'], ['today', '오늘 자정까지'], ['manual', '직접 내릴 때까지']], [['0:1:0', '1분'], ['0:5:0', '5분'], ['0:10:0', '10분'], ['0:30:0', '30분'], ['1:0:0', '1시간'], ['3:0:0', '3시간']])}
+              ${durBox([['for', '시간 정하기'], ['until', '몇 시까지'], ['today', '오늘 자정까지'], ['manual', '직접 내릴 때까지']], [['0:1:0', '1분'], ['0:3:0', '3분'], ['0:5:0', '5분'], ['0:7:0', '7분'], ['0:10:0', '10분'], ['0:30:0', '30분'], ['1:0:0', '1시간'], ['3:0:0', '3시간']])}
               ${a.level !== 'info' ? `<div class="srow" style="margin-top:10px"><div class="sl"><b style="font-size:14px">확인 받기</b><small>태블릿에 ‘확인했습니다’ 버튼이 나오고, 누른 반이 아래 ‘지금 떠 있는 공지’에 표시됩니다. 대피처럼 전달 확인이 중요할 때 켜세요.</small></div><div class="sc">${UI.sw('ack', !!a.ack, '확인 받기')}</div></div>
 ` : ''}`}
         </div></div>
